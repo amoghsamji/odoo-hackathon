@@ -694,6 +694,11 @@
             const end = document.getElementById('report-end-date').value;
             const dept = document.getElementById('report-department-select').value;
 
+            if (start && end && new Date(start) > new Date(end)) {
+                alert('Validation Error: Start Date must be less than or equal to End Date.');
+                return;
+            }
+
             // Construct query parameters
             const params = new URLSearchParams();
             if (start) params.append('startDate', start);
