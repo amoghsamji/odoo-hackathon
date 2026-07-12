@@ -337,21 +337,20 @@ Organization Dashboard & Reports
 
 ## 📸 Screenshots
 
-| Login | Dashboard |
-|-------|-----------|
-| Add screenshot | Add screenshot |
+### Login Page
+![Login Page](screenshots/login.png)
 
-| Environmental | Social |
-|---------------|--------|
-| Add screenshot | Add screenshot |
+### Executive Dashboard
+![Executive Dashboard](screenshots/dashboard.png)
 
-| Governance | Gamification |
-|------------|--------------|
-| Add screenshot | Add screenshot |
+### Environmental Module — Emission Factors
+![Environmental Module](screenshots/environmental.png)
 
-| Reports | Settings |
-|---------|----------|
-| Add screenshot | Add screenshot |
+### Social Module — CSR Activities
+![Social CSR Activities](screenshots/social_activities.png)
+
+### Social Module — Employee Participation
+![Social Employee Participation](screenshots/social_participation.png)
 
 ---
 
@@ -371,11 +370,11 @@ https://link.excalidraw.com/l/65VNwvy7c4X/2m6lz9Ln4
 
 ## 👥 Team
 
-| Name | Role |
-|------|------|
-| Team Member 1 | — |
-| Team Member 2 | — |
-| Team Member 3 | — |
+| Name |
+|------|
+| Amogh Samji |
+| Chinmay B Sabarad |
+| Subhash Reddy |
 
 ---
 
