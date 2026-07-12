@@ -20,19 +20,47 @@ router.get('/settings', async (req: Request, res: Response) => {
 
 router.post('/settings', async (req: Request, res: Response) => {
   try {
-    const { evidence_requirement } = req.body;
-    if (evidence_requirement === undefined) {
-      return res.status(400).json({ error: 'Setting values are required' });
+    const settings = req.body;
+    if (!settings || typeof settings !== 'object') {
+      return res.status(400).json({ error: 'Settings object is required' });
     }
-    const val = evidence_requirement ? '1' : '0';
-    await sequelize.query(
-      'INSERT INTO settings (setting_key, setting_value) VALUES ("evidence_requirement", ?) ON DUPLICATE KEY UPDATE setting_value = ?',
-      {
-        replacements: [val, val],
-        type: QueryTypes.INSERT
-      }
-    );
+
+    for (const [key, value] of Object.entries(settings)) {
+      const val = value ? '1' : '0';
+      await sequelize.query(
+        'INSERT INTO settings (setting_key, setting_value) VALUES (?, ?) ON DUPLICATE KEY UPDATE setting_value = ?',
+        {
+          replacements: [key, val, val],
+          type: QueryTypes.INSERT
+        }
+      );
+    }
     res.json({ message: 'Settings updated successfully' });
+  } catch (error: any) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+// Get Categories list
+router.get('/categories', async (req: Request, res: Response) => {
+  try {
+    const csrCats = await sequelize.query('SELECT DISTINCT category FROM csr_activities', { type: QueryTypes.SELECT }) as any[];
+    const categories = csrCats.map((c, i) => ({
+      name: c.category,
+      code: `CAT-S${i+1}`,
+      type: 'Social',
+      description: `CSR activities relating to ${c.category.toLowerCase()}`
+    }));
+    
+    // Include Environmental categories
+    categories.unshift(
+      { name: 'Fleet', code: 'ENV-FL', type: 'Environmental', description: 'Vehicular fuel and logistics emissions' },
+      { name: 'Manufacturing', code: 'ENV-MF', type: 'Environmental', description: 'Grid electricity and factory fuel consumption' },
+      { name: 'Purchase', code: 'ENV-PR', type: 'Environmental', description: 'Product and office material purchases' },
+      { name: 'Expense', code: 'ENV-EX', type: 'Environmental', description: 'Business travel and general expenses' }
+    );
+    
+    res.json(categories);
   } catch (error: any) {
     res.status(500).json({ error: error.message });
   }

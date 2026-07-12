@@ -672,7 +672,7 @@
                 }
 
                 tbody.innerHTML = report.data.map(tx => {
-                    const dateStr = new Date(tx.timestamp).toLocaleDateString();
+                    const dateStr = new Date(tx.timestamp).toLocaleDateString('en-CA');
                     return `
                         <tr class="hover:bg-bgSidebar/50 transition-colors">
                             <td class="py-4 px-6 font-mono text-textSecondary text-xs">${dateStr}</td>
@@ -733,7 +733,7 @@
                                 </div>
                             </div>
                             <div class="text-[10px] text-textSecondary flex justify-between items-center pt-2 border-t border-borderDark/40">
-                                <span>Deadline: ${new Date(goal.deadline).toLocaleDateString()}</span>
+                                <span>Deadline: ${new Date(goal.deadline).toLocaleDateString('en-CA')}</span>
                                 <span class="font-semibold ${completionPct > 100 ? 'text-red-400' : 'text-esgGreen'}">
                                     ${completionPct > 100 ? 'Target Exceeded' : 'Under Limit'}
                                 </span>

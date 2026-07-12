@@ -494,7 +494,7 @@
             }
 
             tbody.innerHTML = policies.map(p => {
-                const dateStr = new Date(p.effective_date).toLocaleDateString();
+                const dateStr = new Date(p.effective_date).toLocaleDateString('en-CA');
                 
                 // Check if currently logged in user has pending sign-off
                 const userAck = acknowledgements.find(ack => ack.policy_id === p.id && ack.employee_name === document.getElementById('user-header-name').textContent);
@@ -655,7 +655,7 @@
                 }
 
                 tbody.innerHTML = allAudits.map(a => {
-                    const dateStr = new Date(a.audit_date).toLocaleDateString();
+                    const dateStr = new Date(a.audit_date).toLocaleDateString('en-CA');
                     let statusClass = 'bg-bgProgress text-textSecondary border-borderDark/40';
                     if (a.status === 'Completed') statusClass = 'bg-esgGreen/10 text-esgGreen border-esgGreen/20';
                     else if (a.status === 'In Progress') statusClass = 'bg-esgOrange/10 text-esgOrange border-esgOrange/20';
@@ -716,7 +716,7 @@
                 }
 
                 tbody.innerHTML = data.map(issue => {
-                    const dueStr = new Date(issue.due_date).toLocaleDateString();
+                    const dueStr = new Date(issue.due_date).toLocaleDateString('en-CA');
                     
                     let sevClass = 'bg-bgProgress text-textSecondary border-borderDark/40';
                     if (issue.severity === 'Critical') sevClass = 'bg-red-600/20 text-red-500 border-red-600/30';
@@ -940,7 +940,10 @@
                     </div>
                     <div class="flex flex-col gap-1.5">
                         <label class="font-semibold text-textSecondary">Effective Date</label>
-                        <input type="date" id="policy-date" required class="bg-bgMain border border-borderDark rounded text-xs text-textPrimary focus:outline-none p-2" />
+                        <div class="relative flex items-center">
+                            <span class="material-symbols-outlined text-[16px] absolute left-3 text-textSecondary pointer-events-none">calendar_today</span>
+                            <input type="date" id="policy-date" required onclick="this.showPicker()" class="w-full bg-bgMain border border-borderDark rounded text-xs text-textPrimary focus:outline-none p-2 pl-9" />
+                        </div>
                     </div>
                 </div>
                 <button type="submit" class="w-full py-2.5 mt-2 bg-esgPurple text-bgMain font-bold text-xs rounded hover:bg-esgPurple/90 transition-all shadow-md">Publish &amp; Assign Policy</button>
@@ -965,7 +968,10 @@
                 <div class="grid grid-cols-2 gap-4 text-left">
                     <div class="flex flex-col gap-1.5">
                         <label class="font-semibold text-textSecondary">Assessment Date</label>
-                        <input type="date" id="audit-date" required class="bg-bgMain border border-borderDark rounded text-xs text-textPrimary focus:outline-none p-2" />
+                        <div class="relative flex items-center">
+                            <span class="material-symbols-outlined text-[16px] absolute left-3 text-textSecondary pointer-events-none">calendar_today</span>
+                            <input type="date" id="audit-date" required onclick="this.showPicker()" class="w-full bg-bgMain border border-borderDark rounded text-xs text-textPrimary focus:outline-none p-2 pl-9" />
+                        </div>
                     </div>
                     <div class="flex flex-col gap-1.5">
                         <label class="font-semibold text-textSecondary">Status</label>
@@ -1013,7 +1019,10 @@
                     </div>
                     <div class="flex flex-col gap-1.5">
                         <label class="font-semibold text-textSecondary">Due Date</label>
-                        <input type="date" id="issue-due" required class="bg-bgMain border border-borderDark rounded text-xs text-textPrimary focus:outline-none p-2" />
+                        <div class="relative flex items-center">
+                            <span class="material-symbols-outlined text-[16px] absolute left-3 text-textSecondary pointer-events-none">calendar_today</span>
+                            <input type="date" id="issue-due" required onclick="this.showPicker()" class="w-full bg-bgMain border border-borderDark rounded text-xs text-textPrimary focus:outline-none p-2 pl-9" />
+                        </div>
                     </div>
                 </div>
                 <div class="flex flex-col gap-1.5 text-left">

@@ -1077,7 +1077,10 @@
                 <div class="grid grid-cols-2 gap-4 text-left">
                     <div class="flex flex-col gap-1.5">
                         <label class="font-semibold text-textSecondary">Deadline</label>
-                        <input type="date" id="challenge-deadline" required class="bg-bgMain border border-borderDark rounded text-xs text-textPrimary focus:outline-none p-2" />
+                        <div class="relative flex items-center">
+                            <span class="material-symbols-outlined text-[16px] absolute left-3 text-textSecondary pointer-events-none">calendar_today</span>
+                            <input type="date" id="challenge-deadline" required onclick="this.showPicker()" class="w-full bg-bgMain border border-borderDark rounded text-xs text-textPrimary focus:outline-none p-2 pl-9" />
+                        </div>
                     </div>
                     <div class="flex flex-col gap-1.5">
                         <label class="font-semibold text-textSecondary">Initial Status</label>

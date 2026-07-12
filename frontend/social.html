@@ -843,7 +843,7 @@
                 }
 
                 const completionDate = t.completion_date 
-                    ? new Date(t.completion_date).toLocaleDateString() 
+                    ? new Date(t.completion_date).toLocaleDateString('en-CA') 
                     : '-';
 
                 tr.innerHTML = `

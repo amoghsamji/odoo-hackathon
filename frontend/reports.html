@@ -7,6 +7,10 @@
     <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&amp;display=swap" rel="stylesheet"/>
     <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+    <!-- Export Libraries -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.8.2/jspdf.plugin.autotable.min.js"></script>
     <script>
         // Apply theme immediately to prevent flashing
         (function() {
@@ -274,7 +278,7 @@
                     </div>
 
                     <!-- ESG Summary -->
-                    <div class="bg-bgCard border border-borderDark rounded-xl p-5 hover:border-textPrimary/40 transition-all flex flex-col justify-between h-44 opacity-60">
+                    <div class="bg-bgCard border border-borderDark rounded-xl p-5 hover:border-textPrimary/40 transition-all flex flex-col justify-between h-44">
                         <div>
                             <div class="flex justify-between items-start mb-2">
                                 <span class="px-2 py-0.5 rounded text-[9px] font-bold bg-textPrimary/10 text-textPrimary uppercase">Comprehensive</span>
@@ -283,7 +287,7 @@
                             <h4 class="font-bold text-textPrimary text-sm">ESG Summary</h4>
                             <p class="text-xs text-textSecondary mt-1 line-clamp-2">Comprehensive overview of all ESG facets.</p>
                         </div>
-                        <button disabled class="w-full mt-4 py-2 bg-bgProgress text-textSecondary font-bold text-xs rounded cursor-not-allowed">Generate</button>
+                        <button onclick="generateEsgSummaryReport()" class="w-full mt-4 py-2 bg-textPrimary text-bgMain font-bold text-xs rounded hover:bg-textPrimary/90 transition-all">Generate</button>
                     </div>
                 </div>
             </div>
@@ -297,11 +301,17 @@
                     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
                         <div class="flex flex-col gap-2 text-xs">
                             <label class="font-semibold text-textSecondary">Start Date</label>
-                            <input type="date" id="report-start-date" class="bg-bgMain border border-borderDark rounded text-xs text-textPrimary focus:outline-none focus:border-esgBlue p-2" />
+                            <div class="relative flex items-center">
+                                <span class="material-symbols-outlined text-[16px] absolute left-3 text-textSecondary pointer-events-none">calendar_today</span>
+                                <input type="date" id="report-start-date" onclick="this.showPicker()" class="w-full bg-bgMain border border-borderDark rounded text-xs text-textPrimary focus:outline-none focus:border-esgBlue p-2 pl-9" />
+                            </div>
                         </div>
                         <div class="flex flex-col gap-2 text-xs">
                             <label class="font-semibold text-textSecondary">End Date</label>
-                            <input type="date" id="report-end-date" class="bg-bgMain border border-borderDark rounded text-xs text-textPrimary focus:outline-none focus:border-esgBlue p-2" />
+                            <div class="relative flex items-center">
+                                <span class="material-symbols-outlined text-[16px] absolute left-3 text-textSecondary pointer-events-none">calendar_today</span>
+                                <input type="date" id="report-end-date" onclick="this.showPicker()" class="w-full bg-bgMain border border-borderDark rounded text-xs text-textPrimary focus:outline-none focus:border-esgBlue p-2 pl-9" />
+                            </div>
                         </div>
                         <div class="flex flex-col gap-2 text-xs">
                             <label class="font-semibold text-textSecondary">Department</label>
@@ -317,6 +327,7 @@
                                 <option value="social">Social Module</option>
                                 <option value="governance">Governance Module</option>
                                 <option value="gamification">Gamification Module</option>
+                                <option value="esg_summary">Comprehensive ESG Summary</option>
                             </select>
                         </div>
                     </div>
@@ -327,9 +338,9 @@
                             Run Report
                         </button>
                         <div class="flex items-center gap-3">
-                            <button onclick="alert('Report exported as PDF successfully!')" class="px-4 py-2 bg-esgBlue hover:bg-esgBlue/90 text-textPrimary font-bold text-xs rounded transition-all shadow-sm">Export PDF</button>
-                            <button onclick="alert('Report exported as Excel successfully!')" class="px-4 py-2 bg-bgSidebar border border-borderDark text-textPrimary hover:bg-bgCard text-xs font-semibold rounded transition-all">Export Excel</button>
-                            <button onclick="alert('Report exported as CSV successfully!')" class="px-4 py-2 bg-bgSidebar border border-borderDark text-textPrimary hover:bg-bgCard text-xs font-semibold rounded transition-all">Export CSV</button>
+                            <button onclick="exportPDF()" class="px-4 py-2 bg-esgBlue hover:bg-esgBlue/90 text-textPrimary font-bold text-xs rounded transition-all shadow-sm">Export PDF</button>
+                            <button onclick="exportExcel()" class="px-4 py-2 bg-bgSidebar border border-borderDark text-textPrimary hover:bg-bgCard text-xs font-semibold rounded transition-all">Export Excel</button>
+                            <button onclick="exportCSV()" class="px-4 py-2 bg-bgSidebar border border-borderDark text-textPrimary hover:bg-bgCard text-xs font-semibold rounded transition-all">Export CSV</button>
                         </div>
                     </div>
                 </div>
@@ -455,6 +466,167 @@
         // ====================================================
         const API_URL = 'http://127.0.0.1:5000/api';
 
+        // Global variables to hold active report data for exporting
+        let currentReportData = [];
+        let currentReportModule = '';
+
+        // Helper function for consistent date formatting: YYYY-MM-DD
+        function formatDate(dateVal) {
+            if (!dateVal) return '';
+            const d = new Date(dateVal);
+            if (isNaN(d.getTime())) return String(dateVal);
+            const year = d.getFullYear();
+            const month = String(d.getMonth() + 1).padStart(2, '0');
+            const day = String(d.getDate()).padStart(2, '0');
+            return `${year}-${month}-${day}`;
+        }
+
+        // Standardized report data formatter for exports
+        function getFormattedReportData() {
+            if (!currentReportData || currentReportData.length === 0) return null;
+            
+            let headers = [];
+            let rows = [];
+            let filename = `ecosphere_${currentReportModule}_report`;
+            
+            if (currentReportModule === 'environmental') {
+                headers = ['Date', 'Department', 'Source Module', 'Record ID', 'Raw Qty', 'Emissions (kg CO2)'];
+                rows = currentReportData.map(tx => [
+                    formatDate(tx.timestamp),
+                    tx.department?.name || 'Unknown',
+                    tx.sourceModule,
+                    tx.recordId,
+                    `${tx.rawValue.toLocaleString()} ${tx.emissionFactor?.unit || ''}`,
+                    tx.calculatedEmission
+                ]);
+            } else if (currentReportModule === 'social') {
+                headers = ['Date', 'Department', 'Employee', 'Activity/Challenge', 'Hours Spent', 'Status', 'Points'];
+                rows = currentReportData.map(tx => [
+                    formatDate(tx.completion_date),
+                    tx.department_name || 'Global',
+                    tx.employee_name,
+                    tx.activity_name,
+                    tx.hours_spent,
+                    tx.status,
+                    tx.points
+                ]);
+            } else if (currentReportModule === 'governance') {
+                headers = ['Logged Date', 'Violation Description', 'Severity', 'Owner', 'Due Date', 'Status'];
+                rows = currentReportData.map(tx => [
+                    formatDate(tx.created_at),
+                    tx.description,
+                    tx.severity,
+                    tx.owner_name,
+                    formatDate(tx.due_date),
+                    tx.status
+                ]);
+            } else if (currentReportModule === 'gamification') {
+                headers = ['Completion Date', 'Department', 'Employee', 'Challenge Title', 'Difficulty', 'Status', 'XP Awarded'];
+                rows = currentReportData.map(tx => [
+                    tx.completion_date ? formatDate(tx.completion_date) : 'Pending Completion',
+                    tx.department_name || 'Global',
+                    tx.employee_name,
+                    tx.challenge_title,
+                    tx.difficulty,
+                    tx.status,
+                    tx.xp_awarded
+                ]);
+            } else if (currentReportModule === 'esg_summary') {
+                headers = ['Date', 'Facet', 'Description', 'Department', 'Impact/Status'];
+                rows = currentReportData.map(row => [
+                    row.dateStr,
+                    row.facet,
+                    row.description,
+                    row.department,
+                    row.impact
+                ]);
+            }
+            
+            return { headers, rows, filename };
+        }
+
+        // CSV Exporter
+        function exportCSV() {
+            const data = getFormattedReportData();
+            if (!data) {
+                alert('No data to export. Please run a report first.');
+                return;
+            }
+            
+            const { headers, rows, filename } = data;
+            let csvContent = "\uFEFF"; // Add BOM for excel utf-8 compliance
+            
+            // Add headers
+            csvContent += headers.map(h => `"${h.replace(/"/g, '""')}"`).join(",") + "\r\n";
+            
+            // Add rows
+            rows.forEach(row => {
+                csvContent += row.map(val => {
+                    const str = val === null || val === undefined ? '' : String(val);
+                    return `"${str.replace(/"/g, '""')}"`;
+                }).join(",") + "\r\n";
+            });
+            
+            const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+            const link = document.createElement("a");
+            const url = URL.createObjectURL(blob);
+            link.setAttribute("href", url);
+            link.setAttribute("download", `${filename}.csv`);
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        }
+
+        // Excel Exporter using SheetJS
+        function exportExcel() {
+            const data = getFormattedReportData();
+            if (!data) {
+                alert('No data to export. Please run a report first.');
+                return;
+            }
+            
+            const { headers, rows, filename } = data;
+            const worksheetData = [headers, ...rows];
+            const worksheet = XLSX.utils.aoa_to_sheet(worksheetData);
+            const workbook = XLSX.utils.book_new();
+            XLSX.utils.book_append_sheet(workbook, worksheet, "ESG Report");
+            XLSX.writeFile(workbook, `${filename}.xlsx`);
+        }
+
+        // PDF Exporter using jsPDF & autoTable
+        function exportPDF() {
+            const data = getFormattedReportData();
+            if (!data) {
+                alert('No data to export. Please run a report first.');
+                return;
+            }
+            
+            const { headers, rows, filename } = data;
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF('l', 'mm', 'a4'); // Landscape layout is cleaner for wide ESG tables
+            
+            // Title & Metadata
+            doc.setFontSize(16);
+            doc.setTextColor(16, 185, 129); // ESG green color #10b981
+            doc.text(`EcoSphere ESG - ${currentReportModule.toUpperCase()} REPORT`, 14, 15);
+            
+            doc.setFontSize(10);
+            doc.setTextColor(100, 116, 139); // Slate secondary text
+            doc.text(`Generated on: ${formatDate(new Date())}`, 14, 21);
+            
+            doc.autoTable({
+                head: [headers],
+                body: rows,
+                startY: 26,
+                theme: 'striped',
+                headStyles: { fillColor: [59, 130, 246] }, // blue color #3b82f6
+                styles: { fontSize: 9, cellPadding: 3 },
+                alternateRowStyles: { fillColor: [248, 250, 252] }
+            });
+            
+            doc.save(`${filename}.pdf`);
+        }
+
         // Static departments list
         const DEPARTMENTS = [
             { id: 1, name: 'Administration' },
@@ -494,6 +666,12 @@
             runReport();
         }
 
+        function generateEsgSummaryReport() {
+            document.getElementById('report-module-select').value = 'esg_summary';
+            switchSubTab('builder');
+            runReport();
+        }
+
         // Run report query
         async function runReport() {
             const module = document.getElementById('report-module-select').value;
@@ -525,6 +703,10 @@
                     if (!response.ok) throw new Error('Report query failed');
                     const report = await response.json();
 
+                    // Store data globally for exports
+                    currentReportData = report.data;
+                    currentReportModule = 'environmental';
+
                     // 1. Update summary widgets
                     document.getElementById('report-summary-count').textContent = report.summary.recordCount;
                     document.getElementById('report-summary-emissions').textContent = 
@@ -548,7 +730,7 @@
                     }
 
                     tbody.innerHTML = report.data.map(tx => {
-                        const dateStr = new Date(tx.timestamp).toLocaleDateString();
+                        const dateStr = formatDate(tx.timestamp);
                         return `
                             <tr class="hover:bg-bgSidebar/50 transition-colors">
                                 <td class="py-4 px-6 font-mono text-textSecondary text-xs">${dateStr}</td>
@@ -582,6 +764,10 @@
                     if (!response.ok) throw new Error('Report query failed');
                     const report = await response.json();
 
+                    // Store data globally for exports
+                    currentReportData = report.data;
+                    currentReportModule = 'social';
+
                     // 1. Update summary widgets
                     document.getElementById('report-summary-count').textContent = report.summary.recordCount;
                     document.getElementById('report-summary-emissions').textContent = 
@@ -605,7 +791,7 @@
                     }
 
                     tbody.innerHTML = report.data.map(tx => {
-                        const dateStr = new Date(tx.completion_date).toLocaleDateString();
+                        const dateStr = formatDate(tx.completion_date);
                         let statusClass = 'bg-esgOrange/10 text-esgOrange border-esgOrange/20';
                         if (tx.status === 'Approved') statusClass = 'bg-esgGreen/10 text-esgGreen border-esgGreen/20';
                         else if (tx.status === 'Rejected') statusClass = 'bg-red-500/10 text-red-500 border-red-500/20';
@@ -645,6 +831,10 @@
                     if (!response.ok) throw new Error('Report query failed');
                     const report = await response.json();
 
+                    // Store data globally for exports
+                    currentReportData = report.data;
+                    currentReportModule = 'governance';
+
                     // 1. Update summary widgets
                     document.getElementById('report-summary-count').textContent = report.summary.recordCount;
                     document.getElementById('report-summary-emissions').textContent = 
@@ -668,8 +858,8 @@
                     }
 
                     tbody.innerHTML = report.data.map(tx => {
-                        const dateStr = new Date(tx.created_at).toLocaleDateString();
-                        const dueStr = new Date(tx.due_date).toLocaleDateString();
+                        const dateStr = formatDate(tx.created_at);
+                        const dueStr = formatDate(tx.due_date);
                         
                         let sevClass = 'bg-bgProgress text-textSecondary border-borderDark/40';
                         if (tx.severity === 'Critical') sevClass = 'bg-red-600/20 text-red-500 border-red-600/30';
@@ -714,6 +904,10 @@
                     if (!response.ok) throw new Error('Report query failed');
                     const report = await response.json();
 
+                    // Store data globally for exports
+                    currentReportData = report.data;
+                    currentReportModule = 'gamification';
+
                     // 1. Update summary widgets
                     document.getElementById('report-summary-count').textContent = report.summary.recordCount;
                     document.getElementById('report-summary-emissions').textContent = 
@@ -737,7 +931,7 @@
                     }
 
                     tbody.innerHTML = report.data.map(tx => {
-                        const dateStr = tx.completion_date ? new Date(tx.completion_date).toLocaleDateString() : 'Pending Completion';
+                        const dateStr = tx.completion_date ? formatDate(tx.completion_date) : 'Pending Completion';
                         
                         let statusClass = 'bg-esgOrange/10 text-esgOrange border-esgOrange/20';
                         if (tx.status === 'Approved') statusClass = 'bg-esgGreen/10 text-esgGreen border-esgGreen/20';
@@ -759,6 +953,122 @@
                             </tr>
                         `;
                     }).join('');
+                } else if (module === 'esg_summary') {
+                    // Update headers & labels
+                    document.getElementById('report-summary-label-1').textContent = 'Total ESG Actions Logged';
+                    document.getElementById('report-summary-label-2').textContent = 'Environmental / Social / Gov Summary';
+                    document.getElementById('report-thead-row').innerHTML = `
+                        <th class="py-3 px-6">Date</th>
+                        <th class="py-3 px-6">Facet</th>
+                        <th class="py-3 px-6">Description</th>
+                        <th class="py-3 px-6">Department</th>
+                        <th class="py-3 px-6 text-right font-semibold">Impact / Status</th>
+                    `;
+
+                    // Fetch all modules data in parallel
+                    const [envRes, socRes, govRes, gamRes] = await Promise.all([
+                        fetch(`${API_URL}/environmental/report?${params.toString()}`),
+                        fetch(`${API_URL}/social/report?${params.toString()}`),
+                        fetch(`${API_URL}/governance/report?${params.toString()}`),
+                        fetch(`${API_URL}/gamification/report?${params.toString()}`)
+                    ]);
+
+                    if (!envRes.ok || !socRes.ok || !govRes.ok || !gamRes.ok) {
+                        throw new Error('One or more report queries failed');
+                    }
+
+                    const [envData, socData, govData, gamData] = await Promise.all([
+                        envRes.json(),
+                        socRes.json(),
+                        govRes.json(),
+                        gamRes.json()
+                    ]);
+
+                    // Map rows for each facet
+                    const envRows = envData.data.map(tx => ({
+                        date: tx.timestamp,
+                        dateStr: formatDate(tx.timestamp),
+                        facet: 'Environmental',
+                        description: `Carbon Emitted from ${tx.sourceModule} (${tx.recordId})`,
+                        department: tx.department?.name || 'Unknown',
+                        impact: `${tx.calculatedEmission.toLocaleString()} kg CO2`,
+                        impactClass: 'text-red-400 font-semibold'
+                    }));
+
+                    const socRows = socData.data.map(tx => ({
+                        date: tx.completion_date,
+                        dateStr: formatDate(tx.completion_date),
+                        facet: 'Social',
+                        description: `CSR Activity: ${tx.activity_name} (by ${tx.employee_name})`,
+                        department: tx.department_name || 'Global',
+                        impact: `+${tx.points} points`,
+                        impactClass: 'text-esgBlue font-semibold'
+                    }));
+
+                    const govRows = govData.data.map(tx => ({
+                        date: tx.created_at,
+                        dateStr: formatDate(tx.created_at),
+                        facet: 'Governance',
+                        description: `Compliance Issue Raised: ${tx.description} (Severity: ${tx.severity})`,
+                        department: 'Governance Office',
+                        impact: `${tx.status} / Due: ${formatDate(tx.due_date)}`,
+                        impactClass: tx.status === 'Resolved' ? 'text-esgGreen font-semibold' : 'text-red-500 font-bold'
+                    }));
+
+                    const gamRows = gamData.data.map(tx => ({
+                        date: tx.completion_date || new Date(),
+                        dateStr: tx.completion_date ? formatDate(tx.completion_date) : 'Pending Completion',
+                        facet: 'Gamification',
+                        description: `Challenge Completion: ${tx.challenge_title} (by ${tx.employee_name})`,
+                        department: tx.department_name || 'Global',
+                        impact: `+${tx.xp_awarded} XP`,
+                        impactClass: 'text-esgOrange font-semibold'
+                    }));
+
+                    // Sort descending
+                    const allRows = [...envRows, ...socRows, ...govRows, ...gamRows].sort((a, b) => new Date(b.date) - new Date(a.date));
+
+                    // Store globally
+                    currentReportData = allRows;
+                    currentReportModule = 'esg_summary';
+
+                    // Update widgets
+                    document.getElementById('report-summary-count').textContent = allRows.length;
+                    document.getElementById('report-summary-emissions').textContent = 
+                        `${envData.summary.totalEmissions.toLocaleString()} kg CO2 | ${socData.summary.totalPoints.toLocaleString()} pts | ${govData.summary.recordCount} Issues`;
+
+                    // Unhide
+                    document.getElementById('report-summary-row').classList.remove('hidden');
+                    document.getElementById('report-table-container').classList.remove('hidden');
+
+                    const tbody = document.getElementById('report-tbody');
+                    if (allRows.length === 0) {
+                        tbody.innerHTML = `
+                            <tr>
+                                <td colspan="5" class="py-6 text-center text-textSecondary text-xs">
+                                    No records found matching the configured filters.
+                                </td>
+                            </tr>
+                        `;
+                        return;
+                    }
+
+                    tbody.innerHTML = allRows.map(row => `
+                        <tr class="hover:bg-bgSidebar/50 transition-colors">
+                            <td class="py-4 px-6 font-mono text-textSecondary text-xs">${row.dateStr}</td>
+                            <td class="py-4 px-6 text-xs">
+                                <span class="px-2 py-0.5 rounded text-[10px] font-bold ${
+                                    row.facet === 'Environmental' ? 'bg-esgGreen/10 text-esgGreen' :
+                                    row.facet === 'Social' ? 'bg-esgBlue/10 text-esgBlue' :
+                                    row.facet === 'Governance' ? 'bg-esgPurple/10 text-esgPurple' :
+                                    'bg-esgOrange/10 text-esgOrange'
+                                }">${row.facet}</span>
+                            </td>
+                            <td class="py-4 px-6 text-xs text-textPrimary">${row.description}</td>
+                            <td class="py-4 px-6 text-xs text-textSecondary">${row.department}</td>
+                            <td class="py-4 px-6 text-right text-xs ${row.impactClass}">${row.impact}</td>
+                        </tr>
+                    `).join('');
                 }
 
             } catch (error) {
