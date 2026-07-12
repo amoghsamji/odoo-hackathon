@@ -8,7 +8,16 @@ async function seed() {
     
     // 1. Verify/create database and sync models with force: true to wipe existing tables
     await initializeDatabase();
+    await sequelize.query('SET FOREIGN_KEY_CHECKS = 0');
+    await sequelize.query('DROP TABLE IF EXISTS compliance_issues');
+    await sequelize.query('DROP TABLE IF EXISTS policy_acknowledgements');
+    await sequelize.query('DROP TABLE IF EXISTS esg_policies');
+    await sequelize.query('DROP TABLE IF EXISTS audits');
+    await sequelize.query('DROP TABLE IF EXISTS notifications');
+    await sequelize.query('DROP TABLE IF EXISTS employee_participations');
+    await sequelize.query('DROP TABLE IF EXISTS settings');
     await sequelize.sync({ force: true });
+    await sequelize.query('SET FOREIGN_KEY_CHECKS = 1');
     console.log('[Seed] Database tables recreated.');
 
     // 2. Seed Departments
@@ -501,6 +510,123 @@ async function seed() {
     `);
 
     console.log('[Seed] Social module tables populated successfully.');
+
+    // 10. Rebuild and Seed Governance Tables
+    console.log('[Seed] Rebuilding and seeding Governance module tables...');
+    await sequelize.query('DROP TABLE IF EXISTS compliance_issues');
+    await sequelize.query('DROP TABLE IF EXISTS policy_acknowledgements');
+    await sequelize.query('DROP TABLE IF EXISTS esg_policies');
+    await sequelize.query('DROP TABLE IF EXISTS audits');
+    await sequelize.query('DROP TABLE IF EXISTS notifications');
+
+    // Create Policies
+    await sequelize.query(`
+      CREATE TABLE esg_policies (
+        id INT AUTO_INCREMENT PRIMARY KEY,
+        title VARCHAR(255) NOT NULL,
+        description TEXT NOT NULL,
+        owner_name VARCHAR(255) NOT NULL,
+        status ENUM('Active', 'Archived') DEFAULT 'Active',
+        effective_date DATE NOT NULL,
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+      )
+    `);
+
+    // Create Policy Acknowledgements
+    await sequelize.query(`
+      CREATE TABLE policy_acknowledgements (
+        id INT AUTO_INCREMENT PRIMARY KEY,
+        policy_id INT NOT NULL,
+        employee_id INT NOT NULL,
+        acknowledged_at TIMESTAMP NULL,
+        status ENUM('Pending', 'Acknowledged') DEFAULT 'Pending',
+        FOREIGN KEY (policy_id) REFERENCES esg_policies(id) ON DELETE CASCADE,
+        FOREIGN KEY (employee_id) REFERENCES employees(id) ON DELETE CASCADE,
+        UNIQUE KEY unique_ack (policy_id, employee_id)
+      )
+    `);
+
+    // Create Audits
+    await sequelize.query(`
+      CREATE TABLE audits (
+        id INT AUTO_INCREMENT PRIMARY KEY,
+        title VARCHAR(255) NOT NULL,
+        auditor VARCHAR(255) NOT NULL,
+        audit_date DATE NOT NULL,
+        status ENUM('Draft', 'In Progress', 'Completed') DEFAULT 'Draft',
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+      )
+    `);
+
+    // Create Compliance Issues
+    await sequelize.query(`
+      CREATE TABLE compliance_issues (
+        id INT AUTO_INCREMENT PRIMARY KEY,
+        audit_id INT NULL,
+        description TEXT NOT NULL,
+        severity ENUM('Low', 'Medium', 'High', 'Critical') DEFAULT 'Low',
+        owner_name VARCHAR(255) NOT NULL,
+        due_date DATE NOT NULL,
+        status ENUM('Open', 'Resolved', 'Flagged') DEFAULT 'Open',
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        FOREIGN KEY (audit_id) REFERENCES audits(id) ON DELETE SET NULL
+      )
+    `);
+
+    // Create Notifications
+    await sequelize.query(`
+      CREATE TABLE notifications (
+        id INT AUTO_INCREMENT PRIMARY KEY,
+        type VARCHAR(50) NOT NULL,
+        message TEXT NOT NULL,
+        is_read BOOLEAN DEFAULT FALSE,
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+      )
+    `);
+
+    // Seed default Policies
+    await sequelize.query(`
+      INSERT INTO esg_policies (title, description, owner_name, status, effective_date) VALUES
+      ('Code of Conduct', 'Comprehensive compliance guidelines and ethical operational code for all employees.', 'Marcus Reed', 'Active', '2026-01-10'),
+      ('Supplier Code of Conduct', 'Outlines vendor ethical requirements, sustainability compliance, and carbon footprint targets.', 'Sarah Jenkins', 'Active', '2026-02-15'),
+      ('Information Security & Data Privacy', 'Compliance controls for safeguarding corporate data and customer privacy.', 'Marcus Reed', 'Active', '2026-03-01')
+    `);
+
+    // Seed Audits
+    await sequelize.query(`
+      INSERT INTO audits (title, auditor, audit_date, status) VALUES
+      ('Q3 Internal Controls Audit', 'Internal Risk Team', '2026-10-10', 'In Progress'),
+      ('ISO 14001 Surveillance Audit', 'Bureau Veritas', '2026-11-15', 'Draft')
+    `);
+
+    // Seed Compliance Issues
+    await sequelize.query(`
+      INSERT INTO compliance_issues (audit_id, description, severity, owner_name, due_date, status) VALUES
+      (1, 'Data Privacy Policy Update Delay (EU Region)', 'High', 'Marcus Reed', '2026-06-15', 'Flagged'),
+      (1, 'Supplier Code of Conduct Missing Acknowledgements', 'Medium', 'Sarah Jenkins', '2026-11-02', 'Open'),
+      (NULL, 'Q3 Board Diversity Reporting Gap', 'Low', 'Maria Lopez', '2026-05-30', 'Resolved')
+    `);
+
+    // Seed Policy Acknowledgements for employees
+    const dbEmpList = await sequelize.query('SELECT id, name FROM employees', { type: QueryTypes.SELECT }) as any[];
+    const dbPolicyList = await sequelize.query('SELECT id, title FROM esg_policies', { type: QueryTypes.SELECT }) as any[];
+
+    for (const p of dbPolicyList) {
+      for (const e of dbEmpList) {
+        let status = 'Pending';
+        let ackAt = null;
+        if (p.title === 'Code of Conduct' && (e.name === 'Sarah Jenkins' || e.name === 'Aditya S.')) {
+          status = 'Acknowledged';
+          ackAt = new Date();
+        }
+        await sequelize.query(
+          'INSERT INTO policy_acknowledgements (policy_id, employee_id, status, acknowledged_at) VALUES (?, ?, ?, ?)',
+          { replacements: [p.id, e.id, status, ackAt] }
+        );
+      }
+    }
+
+    console.log('[Seed] Governance module tables populated successfully.');
 
     console.log('[Seed] Database seeding completed successfully.');
     process.exit(0);

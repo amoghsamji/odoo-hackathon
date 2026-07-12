@@ -177,11 +177,32 @@
                 <button id="theme-toggle" onclick="toggleTheme()" class="p-1.5 text-textSecondary hover:text-textPrimary rounded-full hover:bg-bgCard focus:outline-none">
                     <span id="theme-icon" class="material-symbols-outlined text-[20px]">light_mode</span>
                 </button>
-                <button class="p-1.5 text-textSecondary hover:text-textPrimary rounded-full hover:bg-bgCard"><span class="material-symbols-outlined text-[20px]">notifications</span></button>
+                <div class="relative">
+                    <button id="notif-bell-btn" onclick="toggleNotifDropdown()" class="p-1.5 text-textSecondary hover:text-textPrimary rounded-full hover:bg-bgCard relative">
+                        <span class="material-symbols-outlined text-[20px]">notifications</span>
+                        <span id="notif-badge" class="absolute w-2 h-2 rounded-full bg-esgOrange top-1 right-1 hidden"></span>
+                    </button>
+                    <!-- Notification Dropdown -->
+                    <div id="notif-dropdown" class="hidden absolute right-0 mt-2 w-80 bg-bgCard border border-borderDark rounded-xl shadow-2xl overflow-hidden z-50 text-left">
+                        <div class="px-4 py-3 bg-bgSidebar border-b border-borderDark flex justify-between items-center">
+                            <span class="text-xs font-bold text-textPrimary uppercase tracking-wider">Live Notifications</span>
+                            <button onclick="clearNotifications()" class="text-[10px] text-esgPurple hover:underline font-semibold">Clear All</button>
+                        </div>
+                        <div id="notif-list" class="max-h-60 overflow-y-auto divide-y divide-borderDark/40 custom-scroll">
+                            <!-- Live updates -->
+                        </div>
+                    </div>
+                </div>
                 <div class="h-6 w-px bg-borderDark"></div>
                 <div class="flex items-center gap-2.5">
                     <img class="w-8 h-8 rounded-full border border-borderDark object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCyU1DjX1WEyXlSYLA9ykyxu_KZldTBys68h5s7TJlWjydSGJwwRirA2Tva7HhJKkXEKRHC9Uhdy1xQuac0OtdKLqTvs_wbhNCILmjU4ctmHDIBvl3RpPYoOZvqmPu8XyOsudsvdCOkX22EoZI5KjocYgi1kf0pPHX47Lh_-83Gepn9lI-hW4vTQkdcnjq1UdpQ81WMiQZdDGq78rS4sTS3-giUp4IHV8x-VLkC2ITlUQfDqs0dtN_Z" alt="User Headshot"/>
-                    <span class="text-xs font-semibold text-textPrimary hidden sm:inline">Sarah Jenkins</span>
+                    <div class="hidden sm:flex flex-col text-left">
+                        <span id="user-header-name" class="text-xs font-bold text-textPrimary">Sarah Jenkins</span>
+                        <span id="user-header-role" class="text-[9px] text-textSecondary uppercase font-bold tracking-wider">CEO</span>
+                    </div>
+                    <button onclick="logout()" class="p-1 text-textSecondary hover:text-red-400 rounded-full hover:bg-bgCard ml-1.5" title="Logout">
+                        <span class="material-symbols-outlined text-[18px]">logout</span>
+                    </button>
                 </div>
             </div>
         </header>
@@ -211,10 +232,10 @@
             <!-- 1. Policies Sub-tab -->
             <div id="content-policies" class="subtab-content space-y-6">
                 <div class="flex justify-between items-center">
-                    <button class="px-4 py-2 bg-esgPurple hover:bg-esgPurple/90 text-textPrimary font-bold text-xs rounded transition-all flex items-center gap-1"><span class="material-symbols-outlined text-sm font-bold">add</span><span>New Policy</span></button>
+                    <button onclick="openPolicyModal()" class="px-4 py-2 bg-esgPurple hover:bg-esgPurple/90 text-textPrimary font-bold text-xs rounded transition-all flex items-center gap-1"><span class="material-symbols-outlined text-sm font-bold">add</span><span>New Policy</span></button>
                     <div class="relative">
                         <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-textSecondary text-xs">search</span>
-                        <input class="w-60 pl-9 pr-4 py-1.5 bg-bgCard border border-borderDark rounded text-xs text-textPrimary focus:outline-none focus:border-esgPurple focus:ring-1 focus:ring-esgPurple" placeholder="Search policies..." type="text"/>
+                        <input oninput="searchPolicies(this.value)" class="w-60 pl-9 pr-4 py-1.5 bg-bgCard border border-borderDark rounded text-xs text-textPrimary focus:outline-none focus:border-esgPurple focus:ring-1 focus:ring-esgPurple" placeholder="Search policies..." type="text"/>
                     </div>
                 </div>
 
@@ -226,36 +247,12 @@
                                 <th class="py-3 px-6 text-xs font-bold text-textSecondary uppercase">Policy Name</th>
                                 <th class="py-3 px-6 text-xs font-bold text-textSecondary uppercase">Acknowledged</th>
                                 <th class="py-3 px-6 text-xs font-bold text-textSecondary uppercase">Owner</th>
+                                <th class="py-3 px-6 text-xs font-bold text-textSecondary uppercase text-center font-semibold">Sign-off Action</th>
                                 <th class="py-3 px-6 text-xs font-bold text-textSecondary uppercase text-center font-semibold">Status</th>
                             </tr>
                         </thead>
-                        <tbody class="divide-y divide-borderDark/40 text-sm">
-                            <tr class="hover:bg-bgSidebar/50 transition-colors">
-                                <td class="py-4 px-6 font-semibold">Code of Conduct</td>
-                                <td class="py-4 px-6">
-                                    <div class="flex items-center gap-3">
-                                        <div class="w-24 bg-bgProgress h-1.5 rounded-full overflow-hidden">
-                                            <div class="bg-esgGreen h-full" style="width: 100%"></div>
-                                        </div>
-                                        <span class="text-xs text-textSecondary font-mono">100%</span>
-                                    </div>
-                                </td>
-                                <td class="py-4 px-6 text-textSecondary">Marcus Reed</td>
-                                <td class="py-4 px-6 text-center"><span class="px-2 py-0.5 rounded text-[10px] font-bold bg-esgGreen/10 text-esgGreen border border-esgGreen/20">Compliant</span></td>
-                            </tr>
-                            <tr class="hover:bg-bgSidebar/50 transition-colors">
-                                <td class="py-4 px-6 font-semibold">Supplier Code of Conduct</td>
-                                <td class="py-4 px-6">
-                                    <div class="flex items-center gap-3">
-                                        <div class="w-24 bg-bgProgress h-1.5 rounded-full overflow-hidden">
-                                            <div class="bg-esgOrange h-full" style="width: 45%"></div>
-                                        </div>
-                                        <span class="text-xs text-textSecondary font-mono">45%</span>
-                                    </div>
-                                </td>
-                                <td class="py-4 px-6 text-textSecondary">Sarah Jenkins</td>
-                                <td class="py-4 px-6 text-center"><span class="px-2 py-0.5 rounded text-[10px] font-bold bg-red-500/10 text-red-400 border border-red-500/20">Non-Compliant</span></td>
-                            </tr>
+                        <tbody id="policies-tbody" class="divide-y divide-borderDark/40 text-sm">
+                            <!-- Populated dynamically -->
                         </tbody>
                     </table>
                 </div>
@@ -266,37 +263,26 @@
                 <div class="flex justify-between items-center">
                     <h3 class="text-md font-semibold text-textPrimary">Employee Acknowledgment Details</h3>
                 </div>
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-                    <div class="bg-bgCard border border-borderDark rounded-xl p-5 flex flex-col gap-4">
-                        <span class="text-xs text-textSecondary uppercase font-mono tracking-wider">Manufacturing</span>
-                        <div class="flex items-baseline gap-1">
-                            <span class="text-3xl font-extrabold text-esgBlue">88%</span>
-                            <span class="text-[10px] text-textSecondary">rate</span>
-                        </div>
-                        <div class="w-full bg-bgProgress h-1.5 rounded-full overflow-hidden">
-                            <div class="bg-esgBlue h-full" style="width: 88%"></div>
-                        </div>
-                    </div>
-                    <div class="bg-bgCard border border-borderDark rounded-xl p-5 flex flex-col gap-4">
-                        <span class="text-xs text-textSecondary uppercase font-mono tracking-wider">Logistics</span>
-                        <div class="flex items-baseline gap-1">
-                            <span class="text-3xl font-extrabold text-esgBlue">92%</span>
-                            <span class="text-[10px] text-textSecondary">rate</span>
-                        </div>
-                        <div class="w-full bg-bgProgress h-1.5 rounded-full overflow-hidden">
-                            <div class="bg-esgBlue h-full" style="width: 92%"></div>
-                        </div>
-                    </div>
-                    <div class="bg-bgCard border border-borderDark rounded-xl p-5 flex flex-col gap-4">
-                        <span class="text-xs text-textSecondary uppercase font-mono tracking-wider">Corporate</span>
-                        <div class="flex items-baseline gap-1">
-                            <span class="text-3xl font-extrabold text-esgGreen">100%</span>
-                            <span class="text-[10px] text-textSecondary">rate</span>
-                        </div>
-                        <div class="w-full bg-bgProgress h-1.5 rounded-full overflow-hidden">
-                            <div class="bg-esgGreen h-full" style="width: 100%"></div>
-                        </div>
-                    </div>
+                
+                <div id="acknowledgement-dept-cards" class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    <!-- Populated dynamically -->
+                </div>
+
+                <!-- Detailed logs table -->
+                <div class="bg-bgCard border border-borderDark rounded-xl overflow-hidden shadow-lg mt-6">
+                    <table class="w-full text-left border-collapse">
+                        <thead>
+                            <tr class="bg-bgSidebar border-b border-borderDark text-xs text-textSecondary uppercase font-bold">
+                                <th class="py-3 px-6">Policy</th>
+                                <th class="py-3 px-6">Employee</th>
+                                <th class="py-3 px-6">Acknowledged At</th>
+                                <th class="py-3 px-6 text-center font-semibold">Status</th>
+                            </tr>
+                        </thead>
+                        <tbody id="acknowledgement-details-tbody" class="divide-y divide-borderDark/40 text-sm">
+                            <!-- Populated dynamically -->
+                        </tbody>
+                    </table>
                 </div>
             </div>
 
@@ -307,6 +293,10 @@
                         <h3 class="text-md font-semibold text-textPrimary">Audits &amp; Assessments Schedule</h3>
                         <p class="text-xs text-textSecondary">Internal and external compliance assessments</p>
                     </div>
+                    <button onclick="openAuditModal()" class="px-4 py-2 bg-esgPurple hover:bg-esgPurple/90 text-textPrimary font-bold text-xs rounded transition-all flex items-center gap-1">
+                        <span class="material-symbols-outlined text-sm font-bold">add</span>
+                        <span>New Audit</span>
+                    </button>
                 </div>
                 <div class="bg-bgCard border border-borderDark rounded-xl overflow-hidden shadow-lg">
                     <table class="w-full text-left border-collapse">
@@ -318,19 +308,8 @@
                                 <th class="py-3 px-6 text-xs font-bold text-textSecondary uppercase text-center font-semibold">Status</th>
                             </tr>
                         </thead>
-                        <tbody class="divide-y divide-borderDark/40 text-sm">
-                            <tr class="hover:bg-bgSidebar/50 transition-colors">
-                                <td class="py-4 px-6 font-semibold">Q3 Internal Controls Audit</td>
-                                <td class="py-4 px-6 text-textSecondary">Internal Risk Team</td>
-                                <td class="py-4 px-6 font-mono text-textSecondary">2023-10-10</td>
-                                <td class="py-4 px-6 text-center"><span class="px-2 py-0.5 rounded text-[10px] font-bold bg-esgOrange/10 text-esgOrange border border-esgOrange/20">Findings Review</span></td>
-                            </tr>
-                            <tr class="hover:bg-bgSidebar/50 transition-colors">
-                                <td class="py-4 px-6 font-semibold">ISO 14001 Surveillance Audit</td>
-                                <td class="py-4 px-6 text-textSecondary">Bureau Veritas</td>
-                                <td class="py-4 px-6 font-mono text-textSecondary">2023-11-15</td>
-                                <td class="py-4 px-6 text-center"><span class="px-2 py-0.5 rounded text-[10px] font-bold bg-esgBlue/10 text-esgBlue border border-esgBlue/20">Scheduled</span></td>
-                            </tr>
+                        <tbody id="audits-tbody" class="divide-y divide-borderDark/40 text-sm">
+                            <!-- Populated dynamically -->
                         </tbody>
                     </table>
                 </div>
@@ -343,6 +322,10 @@
                         <h3 class="text-md font-semibold text-textPrimary">Compliance Issues Tracker</h3>
                         <p class="text-xs text-textSecondary">Compliance violations and remediation owner updates</p>
                     </div>
+                    <button onclick="openIssueModal()" class="px-4 py-2 bg-esgPurple hover:bg-esgPurple/90 text-textPrimary font-bold text-xs rounded transition-all flex items-center gap-1">
+                        <span class="material-symbols-outlined text-sm font-bold">add</span>
+                        <span>Raise Issue</span>
+                    </button>
                 </div>
                 <div class="bg-bgCard border border-borderDark rounded-xl overflow-hidden shadow-lg">
                     <table class="w-full text-left border-collapse">
@@ -353,34 +336,12 @@
                                 <th class="py-3 px-6 text-xs font-bold text-textSecondary uppercase">Severity</th>
                                 <th class="py-3 px-6 text-xs font-bold text-textSecondary uppercase">Owner</th>
                                 <th class="py-3 px-6 text-xs font-bold text-textSecondary uppercase">Due Date</th>
+                                <th class="py-3 px-6 text-xs font-bold text-textSecondary uppercase text-center font-semibold">Action</th>
                                 <th class="py-3 px-6 text-xs font-bold text-textSecondary uppercase text-center font-semibold">Status</th>
                             </tr>
                         </thead>
-                        <tbody class="divide-y divide-borderDark/40 text-sm">
-                            <tr class="hover:bg-bgSidebar/50 transition-colors">
-                                <td class="py-4 px-6 font-mono text-textSecondary font-semibold">ISS-2023-041</td>
-                                <td class="py-4 px-6">Data Privacy Policy Update Delay (EU Region)</td>
-                                <td class="py-4 px-6"><span class="px-2.5 py-0.5 rounded text-[10px] font-bold bg-red-500/10 text-red-400 border border-red-500/20">High</span></td>
-                                <td class="py-4 px-6 text-textSecondary">Marcus Reed</td>
-                                <td class="py-4 px-6 font-mono text-textSecondary">Oct 15, 2023</td>
-                                <td class="py-4 px-6 text-center"><span class="px-2 py-0.5 rounded text-[10px] font-bold bg-red-500/10 text-red-400 border border-red-500/20">Flagged</span></td>
-                            </tr>
-                            <tr class="hover:bg-bgSidebar/50 transition-colors">
-                                <td class="py-4 px-6 font-mono text-textSecondary font-semibold">ISS-2023-045</td>
-                                <td class="py-4 px-6">Supplier Code of Conduct Missing Acknowledgements</td>
-                                <td class="py-4 px-6"><span class="px-2.5 py-0.5 rounded text-[10px] font-bold bg-esgOrange/10 text-esgOrange border border-esgOrange/20">Medium</span></td>
-                                <td class="py-4 px-6 text-textSecondary">Sarah Jenkins</td>
-                                <td class="py-4 px-6 font-mono text-textSecondary">Nov 02, 2023</td>
-                                <td class="py-4 px-6 text-center"><span class="px-2 py-0.5 rounded text-[10px] font-bold bg-esgBlue/10 text-esgBlue border border-esgBlue/20">Open</span></td>
-                            </tr>
-                            <tr class="hover:bg-bgSidebar/50 transition-colors">
-                                <td class="py-4 px-6 font-mono text-textSecondary font-semibold">ISS-2023-038</td>
-                                <td class="py-4 px-6">Q3 Board Diversity Reporting Gap</td>
-                                <td class="py-4 px-6"><span class="px-2.5 py-0.5 rounded text-[10px] font-bold bg-bgProgress text-textSecondary">Low</span></td>
-                                <td class="py-4 px-6 text-textSecondary">Elena Lopez</td>
-                                <td class="py-4 px-6 font-mono text-textSecondary">Sep 30, 2023</td>
-                                <td class="py-4 px-6 text-center"><span class="px-2 py-0.5 rounded text-[10px] font-bold bg-esgGreen/10 text-esgGreen border border-esgGreen/20">Resolved</span></td>
-                            </tr>
+                        <tbody id="issues-tbody" class="divide-y divide-borderDark/40 text-sm">
+                            <!-- Populated dynamically -->
                         </tbody>
                     </table>
                 </div>
@@ -450,6 +411,490 @@
             }
         }
 
+        // ====================================================
+        // BACKEND API INTEGRATION - GOVERNANCE
+        // ====================================================
+        const API_URL = 'http://127.0.0.1:5000/api';
+        let allPolicies = [];
+        let allAudits = [];
+        let currentUserId = 2; // Default fallback to Marcus Reed if no session
+
+        // Session logic
+        function initSession() {
+            const sessionStr = localStorage.getItem('user_session');
+            if (sessionStr) {
+                const session = JSON.parse(sessionStr);
+                document.getElementById('user-header-name').textContent = session.name;
+                document.getElementById('user-header-role').textContent = session.role + (session.department ? ` (${session.department})` : '');
+                
+                // Map session user to an id (1=Sarah, 2=Marcus, 3=John, 4=Alice, 5=Robert, 6=Bill)
+                const nameMap = {
+                    'Sarah Jenkins': 1,
+                    'Marcus Reed': 2,
+                    'John Doe': 3,
+                    'Alice Smith': 4,
+                    'Robert Vance': 5,
+                    'Bill Gates': 6
+                };
+                currentUserId = nameMap[session.name] || 2;
+            }
+        }
+
+        function logout() {
+            localStorage.removeItem('user_session');
+            window.location.href = 'login.html';
+        }
+
+        // Live notification dropdown
+        function toggleNotifDropdown() {
+            const dropdown = document.getElementById('notif-dropdown');
+            dropdown.classList.toggle('hidden');
+        }
+
+        // Modal triggers
+        function openPolicyModal() { document.getElementById('policy-modal').classList.remove('hidden'); }
+        function closePolicyModal() { document.getElementById('policy-modal').classList.add('hidden'); }
+        function openAuditModal() { document.getElementById('audit-modal').classList.remove('hidden'); }
+        function closeAuditModal() { document.getElementById('audit-modal').classList.add('hidden'); }
+        function openIssueModal() {
+            populateAuditSelect();
+            document.getElementById('issue-modal').classList.remove('hidden');
+        }
+        function closeIssueModal() { document.getElementById('issue-modal').classList.add('hidden'); }
+
+        // Populate dynamic lists
+        function populateAuditSelect() {
+            const select = document.getElementById('issue-audit');
+            select.innerHTML = '<option value="">No Audit Reference</option>' +
+                allAudits.map(a => `<option value="${a.id}">${a.title}</option>`).join('');
+        }
+
+        // 1. Policies API Loaders
+        async function loadPolicies() {
+            try {
+                const res = await fetch(`${API_URL}/policies`);
+                if (!res.ok) throw new Error();
+                allPolicies = await res.json();
+                
+                // Fetch acknowledgements to check pending status for logged-in user
+                const ackRes = await fetch(`${API_URL}/acknowledgements`);
+                const ackData = await ackRes.json();
+                
+                renderPolicies(allPolicies, ackData.details);
+            } catch (err) {
+                console.error('Error loading policies:', err);
+            }
+        }
+
+        function renderPolicies(policies, acknowledgements) {
+            const tbody = document.getElementById('policies-tbody');
+            if (policies.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="5" class="py-6 text-center text-textSecondary text-xs">No policies published yet.</td></tr>`;
+                return;
+            }
+
+            tbody.innerHTML = policies.map(p => {
+                const dateStr = new Date(p.effective_date).toLocaleDateString();
+                
+                // Check if currently logged in user has pending sign-off
+                const userAck = acknowledgements.find(ack => ack.policy_id === p.id && ack.employee_name === document.getElementById('user-header-name').textContent);
+                const isPending = userAck && userAck.status === 'Pending';
+
+                let actionHtml = `<span class="text-xs text-esgGreen font-semibold flex items-center justify-center gap-1"><span class="material-symbols-outlined text-sm">check_circle</span>Signed Off</span>`;
+                if (isPending) {
+                    actionHtml = `<button onclick="signPolicy(${p.id})" class="px-3 py-1 bg-esgPurple hover:bg-esgPurple/90 text-bgMain font-bold text-[10px] rounded transition-all">Sign Off</button>`;
+                } else if (!userAck) {
+                    actionHtml = `<span class="text-xs text-textSecondary/60">-</span>`;
+                }
+
+                let statusClass = 'bg-esgGreen/10 text-esgGreen border-esgGreen/20';
+                if (p.acknowledgement_rate < 85) {
+                    statusClass = 'bg-esgOrange/10 text-esgOrange border-esgOrange/20';
+                }
+
+                return `
+                    <tr class="hover:bg-bgSidebar/50 transition-colors">
+                        <td class="py-4 px-6">
+                            <div class="font-semibold text-textPrimary">${p.title}</div>
+                            <div class="text-[10px] text-textSecondary mt-0.5">${p.description}</div>
+                        </td>
+                        <td class="py-4 px-6">
+                            <div class="flex items-center gap-3">
+                                <div class="w-24 bg-bgProgress h-1.5 rounded-full overflow-hidden">
+                                    <div class="bg-esgPurple h-full" style="width: ${p.acknowledgement_rate}%"></div>
+                                </div>
+                                <span class="text-xs text-textSecondary font-mono">${p.acknowledgement_rate}%</span>
+                            </div>
+                        </td>
+                        <td class="py-4 px-6 text-textSecondary">${p.owner_name}</td>
+                        <td class="py-4 px-6 text-center">${actionHtml}</td>
+                        <td class="py-4 px-6 text-center">
+                            <span class="px-2 py-0.5 rounded text-[10px] font-bold border ${statusClass}">${p.compliance_status}</span>
+                        </td>
+                    </tr>
+                `;
+            }).join('');
+        }
+
+        function searchPolicies(query) {
+            const filtered = allPolicies.filter(p => p.title.toLowerCase().includes(query.toLowerCase()) || p.description.toLowerCase().includes(query.toLowerCase()));
+            // Fetch ack details and render
+            fetch(`${API_URL}/acknowledgements`)
+                .then(r => r.json())
+                .then(ackData => {
+                    renderPolicies(filtered, ackData.details);
+                });
+        }
+
+        async function submitPolicy(e) {
+            e.preventDefault();
+            const payload = {
+                title: document.getElementById('policy-title').value,
+                description: document.getElementById('policy-desc').value,
+                owner_name: document.getElementById('policy-owner').value,
+                effective_date: document.getElementById('policy-date').value
+            };
+
+            try {
+                const res = await fetch(`${API_URL}/policies`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+                if (!res.ok) throw new Error();
+                
+                alert('Policy published & assigned successfully!');
+                closePolicyModal();
+                document.getElementById('policy-form').reset();
+                loadPolicies();
+                loadAcknowledgements();
+                loadNotifications();
+            } catch (err) {
+                alert('Failed to publish policy.');
+            }
+        }
+
+        async function signPolicy(policyId) {
+            try {
+                const res = await fetch(`${API_URL}/acknowledgements/sign`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ policyId, employeeId: currentUserId })
+                });
+                if (!res.ok) throw new Error();
+                
+                alert('Policy signed off successfully!');
+                loadPolicies();
+                loadAcknowledgements();
+            } catch (err) {
+                alert('Sign-off failed.');
+            }
+        }
+
+        // 2. Acknowledgements API Loaders
+        async function loadAcknowledgements() {
+            try {
+                const res = await fetch(`${API_URL}/acknowledgements`);
+                const data = await res.json();
+
+                // Render department rate cards
+                const cards = document.getElementById('acknowledgement-dept-cards');
+                cards.innerHTML = data.departmentRates.map(dr => `
+                    <div class="bg-bgCard border border-borderDark rounded-xl p-5 flex flex-col gap-4">
+                        <span class="text-xs text-textSecondary uppercase font-mono tracking-wider font-semibold">${dr.department_name}</span>
+                        <div class="flex items-baseline gap-1">
+                            <span class="text-3xl font-extrabold text-esgPurple">${dr.rate}%</span>
+                            <span class="text-[10px] text-textSecondary">signed off</span>
+                        </div>
+                        <div class="w-full bg-bgProgress h-1.5 rounded-full overflow-hidden">
+                            <div class="bg-esgPurple h-full" style="width: ${dr.rate}%"></div>
+                        </div>
+                    </div>
+                `).join('');
+
+                // Render detailed table
+                const tbody = document.getElementById('acknowledgement-details-tbody');
+                if (data.details.length === 0) {
+                    tbody.innerHTML = `<tr><td colspan="4" class="py-6 text-center text-textSecondary text-xs">No acknowledgement history.</td></tr>`;
+                    return;
+                }
+
+                tbody.innerHTML = data.details.map(ack => {
+                    const ackDate = ack.acknowledged_at ? new Date(ack.acknowledged_at).toLocaleString() : 'Pending';
+                    const statusClass = ack.status === 'Acknowledged' 
+                        ? 'bg-esgGreen/10 text-esgGreen border-esgGreen/20' 
+                        : 'bg-esgOrange/10 text-esgOrange border-esgOrange/20';
+
+                    return `
+                        <tr class="hover:bg-bgSidebar/50 transition-colors">
+                            <td class="py-4 px-6 text-textPrimary font-semibold">${ack.policy_title}</td>
+                            <td class="py-4 px-6 text-textSecondary">${ack.employee_name}</td>
+                            <td class="py-4 px-6 font-mono text-textSecondary text-xs">${ackDate}</td>
+                            <td class="py-4 px-6 text-center">
+                                <span class="px-2 py-0.5 rounded text-[10px] font-bold border ${statusClass}">${ack.status}</span>
+                            </td>
+                        </tr>
+                    `;
+                }).join('');
+
+            } catch (err) {
+                console.error('Error loading acknowledgements:', err);
+            }
+        }
+
+        // 3. Audits API Loaders
+        async function loadAudits() {
+            try {
+                const res = await fetch(`${API_URL}/audits`);
+                allAudits = await res.json();
+                
+                const tbody = document.getElementById('audits-tbody');
+                if (allAudits.length === 0) {
+                    tbody.innerHTML = `<tr><td colspan="4" class="py-6 text-center text-textSecondary text-xs">No audits scheduled.</td></tr>`;
+                    return;
+                }
+
+                tbody.innerHTML = allAudits.map(a => {
+                    const dateStr = new Date(a.audit_date).toLocaleDateString();
+                    let statusClass = 'bg-bgProgress text-textSecondary border-borderDark/40';
+                    if (a.status === 'Completed') statusClass = 'bg-esgGreen/10 text-esgGreen border-esgGreen/20';
+                    else if (a.status === 'In Progress') statusClass = 'bg-esgOrange/10 text-esgOrange border-esgOrange/20';
+
+                    return `
+                        <tr class="hover:bg-bgSidebar/50 transition-colors">
+                            <td class="py-4 px-6 font-semibold">${a.title}</td>
+                            <td class="py-4 px-6 text-textSecondary">${a.auditor}</td>
+                            <td class="py-4 px-6 font-mono text-textSecondary">${dateStr}</td>
+                            <td class="py-4 px-6 text-center">
+                                <span class="px-2 py-0.5 rounded text-[10px] font-bold border ${statusClass}">${a.status}</span>
+                            </td>
+                        </tr>
+                    `;
+                }).join('');
+
+            } catch (err) {
+                console.error('Error loading audits:', err);
+            }
+        }
+
+        async function submitAudit(e) {
+            e.preventDefault();
+            const payload = {
+                title: document.getElementById('audit-title').value,
+                auditor: document.getElementById('audit-auditor').value,
+                audit_date: document.getElementById('audit-date').value,
+                status: document.getElementById('audit-status').value
+            };
+
+            try {
+                const res = await fetch(`${API_URL}/audits`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+                if (!res.ok) throw new Error();
+                
+                alert('Audit scheduled successfully!');
+                closeAuditModal();
+                document.getElementById('audit-form').reset();
+                loadAudits();
+            } catch (err) {
+                alert('Failed to schedule audit.');
+            }
+        }
+
+        // 4. Compliance Issues API Loaders
+        async function loadIssues() {
+            try {
+                const res = await fetch(`${API_URL}/issues`);
+                const data = await res.json();
+                
+                const tbody = document.getElementById('issues-tbody');
+                if (data.length === 0) {
+                    tbody.innerHTML = `<tr><td colspan="7" class="py-6 text-center text-textSecondary text-xs">No compliance issues logged.</td></tr>`;
+                    return;
+                }
+
+                tbody.innerHTML = data.map(issue => {
+                    const dueStr = new Date(issue.due_date).toLocaleDateString();
+                    
+                    let sevClass = 'bg-bgProgress text-textSecondary border-borderDark/40';
+                    if (issue.severity === 'Critical') sevClass = 'bg-red-600/20 text-red-500 border-red-600/30';
+                    else if (issue.severity === 'High') sevClass = 'bg-red-500/10 text-red-400 border-red-500/20';
+                    else if (issue.severity === 'Medium') sevClass = 'bg-esgOrange/10 text-esgOrange border-esgOrange/20';
+
+                    let statusClass = 'bg-esgBlue/10 text-esgBlue border-esgBlue/20';
+                    if (issue.status === 'Resolved') statusClass = 'bg-esgGreen/10 text-esgGreen border-esgGreen/20';
+                    else if (issue.status === 'Flagged') statusClass = 'bg-red-500/10 text-red-400 border-red-500/20 font-bold';
+
+                    let actionHtml = `<span class="text-textSecondary/50 text-[10px]">-</span>`;
+                    if (issue.status !== 'Resolved') {
+                        actionHtml = `<button onclick="resolveIssue(${issue.id})" class="px-2 py-0.5 bg-esgGreen text-bgMain font-bold text-[9px] rounded hover:bg-esgGreen/90 transition-all">Resolve</button>`;
+                    }
+
+                    return `
+                        <tr class="hover:bg-bgSidebar/50 transition-colors">
+                            <td class="py-4 px-6 font-mono text-textSecondary text-xs">ISS-${String(issue.id).padStart(4, '0')}</td>
+                            <td class="py-4 px-6 text-textPrimary">
+                                <div>${issue.description}</div>
+                                ${issue.audit_title ? `<div class="text-[9px] text-textSecondary mt-0.5">Ref: ${issue.audit_title}</div>` : ''}
+                            </td>
+                            <td class="py-4 px-6"><span class="px-2 py-0.5 rounded text-[10px] font-bold border ${sevClass}">${issue.severity}</span></td>
+                            <td class="py-4 px-6 text-textSecondary">${issue.owner_name}</td>
+                            <td class="py-4 px-6 font-mono text-textSecondary text-xs">${dueStr}</td>
+                            <td class="py-4 px-6 text-center">${actionHtml}</td>
+                            <td class="py-4 px-6 text-center"><span class="px-2 py-0.5 rounded text-[10px] font-bold border ${statusClass}">${issue.status}</span></td>
+                        </tr>
+                    `;
+                }).join('');
+
+            } catch (err) {
+                console.error('Error loading compliance issues:', err);
+            }
+        }
+
+        async function submitIssue(e) {
+            e.preventDefault();
+            const payload = {
+                description: document.getElementById('issue-desc').value,
+                severity: document.getElementById('issue-severity').value,
+                owner_name: document.getElementById('issue-owner').value,
+                due_date: document.getElementById('issue-due').value,
+                audit_id: document.getElementById('issue-audit').value || null
+            };
+
+            try {
+                const res = await fetch(`${API_URL}/issues`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+                if (!res.ok) throw new Error();
+                
+                alert('Compliance issue raised successfully!');
+                closeIssueModal();
+                document.getElementById('issue-form').reset();
+                loadIssues();
+                loadNotifications();
+            } catch (err) {
+                alert('Failed to log issue.');
+            }
+        }
+
+        async function resolveIssue(issueId) {
+            try {
+                const res = await fetch(`${API_URL}/issues/${issueId}/resolve`, { method: 'POST' });
+                if (!res.ok) throw new Error();
+                alert('Compliance issue resolved!');
+                loadIssues();
+            } catch (err) {
+                alert('Failed to resolve issue.');
+            }
+        }
+
+        // 5. Notifications Live Loader
+        async function loadNotifications() {
+            try {
+                const res = await fetch(`${API_URL}/notifications`);
+                const notifs = await res.json();
+                
+                const badge = document.getElementById('notif-badge');
+                const unread = notifs.filter(n => !n.is_read).length;
+                if (unread > 0) {
+                    badge.classList.remove('hidden');
+                } else {
+                    badge.classList.add('hidden');
+                }
+
+                const container = document.getElementById('notif-list');
+                if (notifs.length === 0) {
+                    container.innerHTML = `<div class="px-4 py-6 text-center text-textSecondary text-xs">No new notifications.</div>`;
+                    return;
+                }
+
+                container.innerHTML = notifs.map(n => {
+                    const dateStr = new Date(n.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+                    return `
+                        <div class="px-4 py-3 hover:bg-bgSidebar/40 transition-colors text-xs ${!n.is_read ? 'bg-esgPurple/5' : ''}">
+                            <div class="flex justify-between items-start">
+                                <span class="font-bold text-[9px] text-esgPurple uppercase">${n.type.replace(/_/g, ' ')}</span>
+                                <span class="text-[9px] text-textSecondary font-mono">${dateStr}</span>
+                            </div>
+                            <p class="text-textSecondary mt-1 line-clamp-2">${n.message}</p>
+                        </div>
+                    `;
+                }).join('');
+
+            } catch (err) {
+                console.error('Error loading notifications:', err);
+            }
+        }
+
+        async function clearNotifications() {
+            try {
+                await fetch(`${API_URL}/notifications/clear`, { method: 'POST' });
+                loadNotifications();
+            } catch (err) {
+                console.error(err);
+            }
+        }
+
+        // Page Load Init
+        window.addEventListener('DOMContentLoaded', () => {
+            initSession();
+            loadPolicies();
+            loadAcknowledgements();
+            loadAudits();
+            loadIssues();
+            loadNotifications();
+            
+            // Poll for notifications and issue warnings every 10 seconds
+            setInterval(() => {
+                loadNotifications();
+                loadIssues();
+            }, 10000);
+        });
+
+        // Close dropdown when clicking outside
+        window.addEventListener('click', (e) => {
+            const dropdown = document.getElementById('notif-dropdown');
+            const bell = document.getElementById('notif-bell-btn');
+            if (dropdown && bell && !dropdown.contains(e.target) && !bell.contains(e.target)) {
+                dropdown.classList.add('hidden');
+            }
+        });
+
+        // Original horizontal subtab logic
+        function switchSubTab(tabId) {
+            document.querySelectorAll('.subtab-content').forEach(content => {
+                content.classList.add('hidden');
+            });
+            const targetContent = document.getElementById('content-' + tabId);
+            if (targetContent) {
+                targetContent.classList.remove('hidden');
+            }
+
+            document.querySelectorAll('.subtab-btn').forEach(btn => {
+                btn.classList.remove('bg-esgPurple', 'text-bgMain', 'font-semibold');
+                btn.classList.add('text-textSecondary', 'font-medium');
+            });
+            const targetBtn = document.getElementById('tab-' + tabId);
+            if (targetBtn) {
+                targetBtn.classList.remove('text-textSecondary', 'font-medium');
+                targetBtn.classList.add('bg-esgPurple', 'text-bgMain', 'font-semibold');
+            }
+
+            document.querySelectorAll('.sidebar-subtab').forEach(link => {
+                link.classList.remove('bg-esgGreen/10', 'border-l-4', 'border-esgGreen', 'text-textPrimary', 'font-semibold');
+                link.classList.add('text-textSecondary');
+            });
+            const targetSidebarLink = document.getElementById(tabId + '-link');
+            if (targetSidebarLink) {
+                targetSidebarLink.classList.remove('text-textSecondary');
+                targetSidebarLink.classList.add('bg-esgGreen/10', 'border-l-4', 'border-esgGreen', 'text-textPrimary', 'font-semibold');
+            }
+        }
+
         // On Page Load, check hash in URL to default to specific subtab
         window.addEventListener('DOMContentLoaded', () => {
             const hash = window.location.hash.substring(1);
@@ -460,7 +905,6 @@
             }
         });
 
-        // Listen for hash changes
         window.addEventListener('hashchange', () => {
             const hash = window.location.hash.substring(1);
             if (hash && ['policies', 'acknowledgements', 'audits', 'issues'].includes(hash)) {
@@ -468,5 +912,120 @@
             }
         });
     </script>
+
+    <!-- Modals Layout Elements -->
+    <!-- New Policy Modal -->
+    <div id="policy-modal" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+        <div class="bg-bgCard border border-borderDark w-full max-w-lg rounded-2xl shadow-2xl p-6 relative">
+            <button onclick="closePolicyModal()" class="absolute top-4 right-4 text-textSecondary hover:text-textPrimary flex items-center"><span class="material-symbols-outlined">close</span></button>
+            <h3 class="text-md font-bold text-textPrimary mb-4">Create Governance Policy</h3>
+            <form id="policy-form" onsubmit="submitPolicy(event)" class="space-y-4 text-xs">
+                <div class="flex flex-col gap-1.5 text-left">
+                    <label class="font-semibold text-textSecondary">Policy Title</label>
+                    <input type="text" id="policy-title" required class="bg-bgMain border border-borderDark rounded text-xs text-textPrimary focus:outline-none p-2" placeholder="e.g. Environmental Purchasing Standard" />
+                </div>
+                <div class="flex flex-col gap-1.5 text-left">
+                    <label class="font-semibold text-textSecondary">Description</label>
+                    <textarea id="policy-desc" required rows="3" class="bg-bgMain border border-borderDark rounded text-xs text-textPrimary focus:outline-none p-2" placeholder="Detail policy guidelines..."></textarea>
+                </div>
+                <div class="grid grid-cols-2 gap-4 text-left">
+                    <div class="flex flex-col gap-1.5">
+                        <label class="font-semibold text-textSecondary">Owner Name</label>
+                        <select id="policy-owner" required class="bg-bgMain border border-borderDark rounded text-xs text-textPrimary focus:outline-none p-2">
+                            <option value="Marcus Reed">Marcus Reed (CTO)</option>
+                            <option value="Sarah Jenkins">Sarah Jenkins (CEO)</option>
+                            <option value="John Doe">John Doe (Logistics Head)</option>
+                            <option value="Alice Smith">Alice Smith (MFG Head)</option>
+                        </select>
+                    </div>
+                    <div class="flex flex-col gap-1.5">
+                        <label class="font-semibold text-textSecondary">Effective Date</label>
+                        <input type="date" id="policy-date" required class="bg-bgMain border border-borderDark rounded text-xs text-textPrimary focus:outline-none p-2" />
+                    </div>
+                </div>
+                <button type="submit" class="w-full py-2.5 mt-2 bg-esgPurple text-bgMain font-bold text-xs rounded hover:bg-esgPurple/90 transition-all shadow-md">Publish &amp; Assign Policy</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- New Audit Modal -->
+    <div id="audit-modal" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+        <div class="bg-bgCard border border-borderDark w-full max-w-md rounded-2xl shadow-2xl p-6 relative">
+            <button onclick="closeAuditModal()" class="absolute top-4 right-4 text-textSecondary hover:text-textPrimary flex items-center"><span class="material-symbols-outlined">close</span></button>
+            <h3 class="text-md font-bold text-textPrimary mb-4">Schedule Governance Audit</h3>
+            <form id="audit-form" onsubmit="submitAudit(event)" class="space-y-4 text-xs">
+                <div class="flex flex-col gap-1.5 text-left">
+                    <label class="font-semibold text-textSecondary">Audit Assessment Title</label>
+                    <input type="text" id="audit-title" required class="bg-bgMain border border-borderDark rounded text-xs text-textPrimary focus:outline-none p-2" placeholder="e.g. Q4 Financial Integrity Check" />
+                </div>
+                <div class="flex flex-col gap-1.5 text-left">
+                    <label class="font-semibold text-textSecondary">Auditing Body / Agency</label>
+                    <input type="text" id="audit-auditor" required class="bg-bgMain border border-borderDark rounded text-xs text-textPrimary focus:outline-none p-2" placeholder="e.g. Bureau Veritas / Internal Risk Team" />
+                </div>
+                <div class="grid grid-cols-2 gap-4 text-left">
+                    <div class="flex flex-col gap-1.5">
+                        <label class="font-semibold text-textSecondary">Assessment Date</label>
+                        <input type="date" id="audit-date" required class="bg-bgMain border border-borderDark rounded text-xs text-textPrimary focus:outline-none p-2" />
+                    </div>
+                    <div class="flex flex-col gap-1.5">
+                        <label class="font-semibold text-textSecondary">Status</label>
+                        <select id="audit-status" required class="bg-bgMain border border-borderDark rounded text-xs text-textPrimary focus:outline-none p-2">
+                            <option value="Draft">Draft</option>
+                            <option value="In Progress">In Progress</option>
+                            <option value="Completed">Completed</option>
+                        </select>
+                    </div>
+                </div>
+                <button type="submit" class="w-full py-2.5 mt-2 bg-esgPurple text-bgMain font-bold text-xs rounded hover:bg-esgPurple/90 transition-all shadow-md">Create Assessment</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- New Compliance Issue Modal -->
+    <div id="issue-modal" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+        <div class="bg-bgCard border border-borderDark w-full max-w-md rounded-2xl shadow-2xl p-6 relative">
+            <button onclick="closeIssueModal()" class="absolute top-4 right-4 text-textSecondary hover:text-textPrimary flex items-center"><span class="material-symbols-outlined">close</span></button>
+            <h3 class="text-md font-bold text-textPrimary mb-4">Raise Compliance Issue</h3>
+            <form id="issue-form" onsubmit="submitIssue(event)" class="space-y-4 text-xs">
+                <div class="flex flex-col gap-1.5 text-left">
+                    <label class="font-semibold text-textSecondary">Violation Description</label>
+                    <textarea id="issue-desc" required rows="3" class="bg-bgMain border border-borderDark rounded text-xs text-textPrimary focus:outline-none p-2" placeholder="Describe the compliance gap..."></textarea>
+                </div>
+                <div class="flex flex-col gap-1.5 text-left">
+                    <label class="font-semibold text-textSecondary">Severity Rating</label>
+                    <select id="issue-severity" required class="bg-bgMain border border-borderDark rounded text-xs text-textPrimary focus:outline-none p-2">
+                        <option value="Low">Low</option>
+                        <option value="Medium">Medium</option>
+                        <option value="High">High</option>
+                        <option value="Critical">Critical</option>
+                    </select>
+                </div>
+                <div class="grid grid-cols-2 gap-4 text-left">
+                    <div class="flex flex-col gap-1.5">
+                        <label class="font-semibold text-textSecondary">Owner Name</label>
+                        <select id="issue-owner" required class="bg-bgMain border border-borderDark rounded text-xs text-textPrimary focus:outline-none p-2">
+                            <option value="Sarah Jenkins">Sarah Jenkins (CEO)</option>
+                            <option value="Marcus Reed">Marcus Reed (CTO)</option>
+                            <option value="John Doe">John Doe (Logistics Head)</option>
+                            <option value="Alice Smith">Alice Smith (MFG Head)</option>
+                            <option value="Maria Lopez">Maria Lopez (Board Diverse)</option>
+                        </select>
+                    </div>
+                    <div class="flex flex-col gap-1.5">
+                        <label class="font-semibold text-textSecondary">Due Date</label>
+                        <input type="date" id="issue-due" required class="bg-bgMain border border-borderDark rounded text-xs text-textPrimary focus:outline-none p-2" />
+                    </div>
+                </div>
+                <div class="flex flex-col gap-1.5 text-left">
+                    <label class="font-semibold text-textSecondary">Linked Assessment / Audit</label>
+                    <select id="issue-audit" class="bg-bgMain border border-borderDark rounded text-xs text-textPrimary focus:outline-none p-2">
+                        <option value="">No Audit Reference</option>
+                        <!-- Populated dynamically -->
+                    </select>
+                </div>
+                <button type="submit" class="w-full py-2.5 mt-2 bg-esgPurple text-bgMain font-bold text-xs rounded hover:bg-esgPurple/90 transition-all shadow-md">Log Issue</button>
+            </form>
+        </div>
+    </div>
 </body>
 </html>

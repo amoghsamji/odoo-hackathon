@@ -248,7 +248,7 @@
                     </div>
 
                     <!-- Governance Report -->
-                    <div class="bg-bgCard border border-borderDark rounded-xl p-5 hover:border-esgPurple/40 transition-all flex flex-col justify-between h-44 opacity-60">
+                    <div class="bg-bgCard border border-borderDark rounded-xl p-5 hover:border-esgPurple/40 transition-all flex flex-col justify-between h-44">
                         <div>
                             <div class="flex justify-between items-start mb-2">
                                 <span class="px-2 py-0.5 rounded text-[9px] font-bold bg-esgPurple/10 text-esgPurple uppercase">Governance</span>
@@ -257,7 +257,7 @@
                             <h4 class="font-bold text-textPrimary text-sm">Governance Report</h4>
                             <p class="text-xs text-textSecondary mt-1 line-clamp-2">Policies, audits, and compliance issues.</p>
                         </div>
-                        <button disabled class="w-full mt-4 py-2 bg-bgProgress text-textSecondary font-bold text-xs rounded cursor-not-allowed">Generate</button>
+                        <button onclick="generateGovernanceReport()" class="w-full mt-4 py-2 bg-esgPurple hover:bg-esgPurple/90 text-textPrimary font-bold text-xs rounded transition-all">Generate</button>
                     </div>
 
                     <!-- ESG Summary -->
@@ -302,6 +302,7 @@
                             <select id="report-module-select" class="bg-bgMain border border-borderDark rounded text-xs text-textPrimary focus:outline-none focus:border-esgBlue p-2">
                                 <option value="environmental">Environmental Module</option>
                                 <option value="social">Social Module</option>
+                                <option value="governance">Governance Module</option>
                             </select>
                         </div>
                     </div>
@@ -467,6 +468,12 @@
             runReport();
         }
 
+        function generateGovernanceReport() {
+            document.getElementById('report-module-select').value = 'governance';
+            switchSubTab('builder');
+            runReport();
+        }
+
         // Run report query
         async function runReport() {
             const module = document.getElementById('report-module-select').value;
@@ -537,7 +544,7 @@
                             </tr>
                         `;
                     }).join('');
-                } else {
+                } else if (module === 'social') {
                     // Social Module Report
                     document.getElementById('report-summary-label-1').textContent = 'Participation Count';
                     document.getElementById('report-summary-label-2').textContent = 'Total Volunteer Hours / Approved Points';
@@ -597,6 +604,74 @@
                                 </td>
                                 <td class="py-4 px-6 text-right font-mono text-esgBlue text-xs font-bold">
                                     +${tx.points} pts
+                                </td>
+                            </tr>
+                        `;
+                    }).join('');
+                } else if (module === 'governance') {
+                    // Governance Module Report
+                    document.getElementById('report-summary-label-1').textContent = 'Compliance Issues Count';
+                    document.getElementById('report-summary-label-2').textContent = 'Overdue/Open vs Resolved Issues';
+                    document.getElementById('report-thead-row').innerHTML = `
+                        <th class="py-3 px-6">Logged Date</th>
+                        <th class="py-3 px-6">Violation Description</th>
+                        <th class="py-3 px-6">Severity</th>
+                        <th class="py-3 px-6">Owner</th>
+                        <th class="py-3 px-6">Due Date</th>
+                        <th class="py-3 px-6 text-center">Status</th>
+                    `;
+
+                    const response = await fetch(`${API_URL}/governance/report?${params.toString()}`);
+                    if (!response.ok) throw new Error('Report query failed');
+                    const report = await response.json();
+
+                    // 1. Update summary widgets
+                    document.getElementById('report-summary-count').textContent = report.summary.recordCount;
+                    document.getElementById('report-summary-emissions').textContent = 
+                        `${report.summary.openCount + report.summary.flaggedCount} Open/Overdue | ${report.summary.resolvedCount} Resolved`;
+
+                    // Unhide summary row and table
+                    document.getElementById('report-summary-row').classList.remove('hidden');
+                    document.getElementById('report-table-container').classList.remove('hidden');
+
+                    // 2. Render table body
+                    const tbody = document.getElementById('report-tbody');
+                    if (report.data.length === 0) {
+                        tbody.innerHTML = `
+                            <tr>
+                                <td colspan="6" class="py-6 text-center text-textSecondary text-xs">
+                                    No records found matching the configured filters.
+                                </td>
+                            </tr>
+                        `;
+                        return;
+                    }
+
+                    tbody.innerHTML = report.data.map(tx => {
+                        const dateStr = new Date(tx.created_at).toLocaleDateString();
+                        const dueStr = new Date(tx.due_date).toLocaleDateString();
+                        
+                        let sevClass = 'bg-bgProgress text-textSecondary border-borderDark/40';
+                        if (tx.severity === 'Critical') sevClass = 'bg-red-600/20 text-red-500 border-red-600/30';
+                        else if (tx.severity === 'High') sevClass = 'bg-red-500/10 text-red-400 border-red-500/20';
+                        else if (tx.severity === 'Medium') sevClass = 'bg-esgOrange/10 text-esgOrange border-esgOrange/20';
+
+                        let statusClass = 'bg-esgBlue/10 text-esgBlue border-esgBlue/20';
+                        if (tx.status === 'Resolved') statusClass = 'bg-esgGreen/10 text-esgGreen border-esgGreen/20';
+                        else if (tx.status === 'Flagged') statusClass = 'bg-red-500/10 text-red-400 border-red-500/20 font-bold';
+
+                        return `
+                            <tr class="hover:bg-bgSidebar/50 transition-colors">
+                                <td class="py-4 px-6 font-mono text-textSecondary text-xs">${dateStr}</td>
+                                <td class="py-4 px-6 text-xs text-textPrimary">
+                                    <div>${tx.description}</div>
+                                    ${tx.audit_title ? `<div class="text-[9px] text-textSecondary mt-0.5">Ref: ${tx.audit_title}</div>` : ''}
+                                </td>
+                                <td class="py-4 px-6"><span class="px-2 py-0.5 rounded text-[10px] font-bold border ${sevClass}">${tx.severity}</span></td>
+                                <td class="py-4 px-6 text-xs text-textSecondary">${tx.owner_name}</td>
+                                <td class="py-4 px-6 font-mono text-textSecondary text-xs">${dueStr}</td>
+                                <td class="py-4 px-6 text-center text-xs">
+                                    <span class="px-2 py-0.5 rounded text-[10px] font-bold border ${statusClass}">${tx.status}</span>
                                 </td>
                             </tr>
                         `;
