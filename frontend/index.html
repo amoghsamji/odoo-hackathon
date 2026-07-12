@@ -1,0 +1,463 @@
+<!DOCTYPE html>
+<html class="dark" lang="en">
+<head>
+    <meta charset="utf-8"/>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+    <title>EcoSphere - Executive Dashboard</title>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&amp;display=swap" rel="stylesheet"/>
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+    <script>
+        // Apply theme immediately to prevent flashing
+        (function() {
+            const theme = localStorage.getItem('theme') || 'dark';
+            if (theme === 'dark') {
+                document.documentElement.classList.add('dark');
+            } else {
+                document.documentElement.classList.remove('dark');
+            }
+        })();
+    </script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        bgMain: "var(--bg-main)",
+                        bgSidebar: "var(--bg-sidebar)",
+                        bgCard: "var(--bg-card)",
+                        bgHeader: "var(--bg-header)",
+                        bgProgress: "var(--bg-progress)",
+                        borderDark: "var(--border-dark)",
+                        textPrimary: "var(--text-primary)",
+                        textSecondary: "var(--text-secondary)",
+                        esgGreen: "#10b981",
+                        esgBlue: "#3b82f6",
+                        esgOrange: "#f97316",
+                        esgPurple: "#a855f7"
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        :root {
+            --bg-main: #f8f9ff;
+            --bg-sidebar: #eff4ff;
+            --bg-card: #ffffff;
+            --bg-header: #ffffff;
+            --bg-progress: #e2e8f0;
+            --border-dark: #cbd5e1;
+            --text-primary: #0f172a;
+            --text-secondary: #475569;
+        }
+        .dark {
+            --bg-main: #0b0f17;
+            --bg-sidebar: #11151d;
+            --bg-card: #181d28;
+            --bg-header: #0d111a;
+            --bg-progress: #202735;
+            --border-dark: #262c3a;
+            --text-primary: #f3f4f6;
+            --text-secondary: #9ca3af;
+        }
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--bg-main);
+            color: var(--text-primary);
+        }
+        svg circle {
+            fill: var(--bg-main);
+        }
+        .custom-scroll::-webkit-scrollbar {
+            width: 5px;
+            height: 5px;
+        }
+        .custom-scroll::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        .custom-scroll::-webkit-scrollbar-thumb {
+            background: var(--border-dark);
+            border-radius: 4px;
+        }
+        .custom-scroll::-webkit-scrollbar-thumb:hover {
+            background: var(--text-secondary);
+        }
+    </style>
+</head>
+<body class="flex h-screen overflow-hidden bg-bgMain text-textPrimary antialiased">
+
+    <!-- GLOBAL SIDEBAR -->
+    <aside class="hidden lg:flex flex-col w-64 bg-bgSidebar border-r border-borderDark h-screen sticky top-0 overflow-y-auto custom-scroll shrink-0">
+        <!-- Logo -->
+        <div class="px-6 py-5 border-b border-borderDark flex flex-col gap-1.5">
+            <h1 class="text-xl font-bold text-esgGreen flex items-center gap-2">
+                <span class="material-symbols-outlined text-3xl font-bold">eco</span>
+                EcoSphere
+            </h1>
+            <p class="text-[10px] text-textSecondary uppercase tracking-widest font-semibold">ESG Management</p>
+        </div>
+        <!-- Global Nav Menu -->
+        <nav class="flex-grow px-4 py-6 flex flex-col gap-6">
+            <div>
+                <span class="px-4 text-[10px] font-bold text-textSecondary/50 uppercase tracking-widest">Global Navigation</span>
+                <ul class="mt-2 space-y-1">
+                    <li>
+                        <a href="index.html" class="flex items-center gap-3 px-4 py-2.5 rounded-lg text-textPrimary bg-esgGreen/10 border-l-4 border-esgGreen font-semibold transition-all">
+                            <span class="material-symbols-outlined text-[20px]" style="font-variation-settings: 'FILL' 1;">dashboard</span>
+                            <span>Dashboard</span>
+                        </a>
+                    </li>
+                </ul>
+            </div>
+
+            <div>
+                <span class="px-4 text-[10px] font-bold text-textSecondary/50 uppercase tracking-widest">Environmental</span>
+                <ul class="mt-2 space-y-1 text-sm text-textSecondary">
+                    <li><a href="environmental.html#factors" class="flex items-center gap-3 px-4 py-2 rounded-lg hover:bg-bgCard hover:text-textPrimary transition-all"><span class="material-symbols-outlined text-[18px]">calculate</span><span>Emission Factors</span></a></li>
+                    <li><a href="environmental.html#profiles" class="flex items-center gap-3 px-4 py-2 rounded-lg hover:bg-bgCard hover:text-textPrimary transition-all"><span class="material-symbols-outlined text-[18px]">inventory_2</span><span>Product ESG Profiles</span></a></li>
+                    <li><a href="environmental.html#transactions" class="flex items-center gap-3 px-4 py-2 rounded-lg hover:bg-bgCard hover:text-textPrimary transition-all"><span class="material-symbols-outlined text-[18px]">receipt_long</span><span>Carbon Transactions</span></a></li>
+                    <li><a href="environmental.html#goals" class="flex items-center gap-3 px-4 py-2 rounded-lg hover:bg-bgCard hover:text-textPrimary transition-all"><span class="material-symbols-outlined text-[18px]">flag</span><span>Environmental Goals</span></a></li>
+                </ul>
+            </div>
+
+            <div>
+                <span class="px-4 text-[10px] font-bold text-textSecondary/50 uppercase tracking-widest">Social</span>
+                <ul class="mt-2 space-y-1 text-sm text-textSecondary">
+                    <li><a href="social.html#activities" class="flex items-center gap-3 px-4 py-2 rounded-lg hover:bg-bgCard hover:text-textPrimary transition-all"><span class="material-symbols-outlined text-[18px]">volunteer_activism</span><span>CSR Activities</span></a></li>
+                    <li><a href="social.html#participation" class="flex items-center gap-3 px-4 py-2 rounded-lg hover:bg-bgCard hover:text-textPrimary transition-all"><span class="material-symbols-outlined text-[18px]">group</span><span>Employee Participation</span></a></li>
+                    <li><a href="social.html#diversity" class="flex items-center gap-3 px-4 py-2 rounded-lg hover:bg-bgCard hover:text-textPrimary transition-all"><span class="material-symbols-outlined text-[18px]">equalizer</span><span>Diversity Dashboard</span></a></li>
+                </ul>
+            </div>
+
+            <div>
+                <span class="px-4 text-[10px] font-bold text-textSecondary/50 uppercase tracking-widest">Governance</span>
+                <ul class="mt-2 space-y-1 text-sm text-textSecondary">
+                    <li><a href="governance.html#policies" class="flex items-center gap-3 px-4 py-2 rounded-lg hover:bg-bgCard hover:text-textPrimary transition-all"><span class="material-symbols-outlined text-[18px]">gavel</span><span>Policies</span></a></li>
+                    <li><a href="governance.html#acknowledgements" class="flex items-center gap-3 px-4 py-2 rounded-lg hover:bg-bgCard hover:text-textPrimary transition-all"><span class="material-symbols-outlined text-[18px]">assignment_turned_in</span><span>Policy Acknowledgements</span></a></li>
+                    <li><a href="governance.html#audits" class="flex items-center gap-3 px-4 py-2 rounded-lg hover:bg-bgCard hover:text-textPrimary transition-all"><span class="material-symbols-outlined text-[18px]">fact_check</span><span>Audits</span></a></li>
+                    <li><a href="governance.html#issues" class="flex items-center gap-3 px-4 py-2 rounded-lg hover:bg-bgCard hover:text-textPrimary transition-all"><span class="material-symbols-outlined text-[18px]">error</span><span>Compliance Issues</span></a></li>
+                </ul>
+            </div>
+
+            <div>
+                <span class="px-4 text-[10px] font-bold text-textSecondary/50 uppercase tracking-widest">Gamification</span>
+                <ul class="mt-2 space-y-1 text-sm text-textSecondary">
+                    <li><a href="gamification.html#challenges" class="flex items-center gap-3 px-4 py-2 rounded-lg hover:bg-bgCard hover:text-textPrimary transition-all"><span class="material-symbols-outlined text-[18px]">military_tech</span><span>Challenges</span></a></li>
+                    <li><a href="gamification.html#participation" class="flex items-center gap-3 px-4 py-2 rounded-lg hover:bg-bgCard hover:text-textPrimary transition-all"><span class="material-symbols-outlined text-[18px]">workspace_premium</span><span>Challenge Participation</span></a></li>
+                    <li><a href="gamification.html#badges" class="flex items-center gap-3 px-4 py-2 rounded-lg hover:bg-bgCard hover:text-textPrimary transition-all"><span class="material-symbols-outlined text-[18px]">shield</span><span>Badges</span></a></li>
+                    <li><a href="gamification.html#rewards" class="flex items-center gap-3 px-4 py-2 rounded-lg hover:bg-bgCard hover:text-textPrimary transition-all"><span class="material-symbols-outlined text-[18px]">redeem</span><span>Rewards</span></a></li>
+                    <li><a href="gamification.html#leaderboard" class="flex items-center gap-3 px-4 py-2 rounded-lg hover:bg-bgCard hover:text-textPrimary transition-all"><span class="material-symbols-outlined text-[18px]">leaderboard</span><span>Leaderboard</span></a></li>
+                </ul>
+            </div>
+
+            <div>
+                <span class="px-4 text-[10px] font-bold text-textSecondary/50 uppercase tracking-widest">Reports & Settings</span>
+                <ul class="mt-2 space-y-1 text-sm text-textSecondary">
+                    <li><a href="reports.html" class="flex items-center gap-3 px-4 py-2 rounded-lg hover:bg-bgCard hover:text-textPrimary transition-all"><span class="material-symbols-outlined text-[18px]">analytics</span><span>Reports</span></a></li>
+                    <li><a href="settings.html" class="flex items-center gap-3 px-4 py-2 rounded-lg hover:bg-bgCard hover:text-textPrimary transition-all"><span class="material-symbols-outlined text-[18px]">settings</span><span>Settings</span></a></li>
+                </ul>
+            </div>
+        </nav>
+    </aside>
+
+    <!-- MAIN VIEW AREA -->
+    <main class="flex-1 flex flex-col h-screen overflow-hidden">
+        <!-- TOP APP BAR -->
+        <header class="flex justify-between items-center px-8 py-4 border-b border-borderDark shrink-0 bg-bgHeader">
+            <div class="flex items-center gap-3">
+                <button class="lg:hidden text-textSecondary hover:text-textPrimary"><span class="material-symbols-outlined text-2xl">menu</span></button>
+                <div>
+                    <h2 class="text-lg font-bold text-textPrimary">EcoSphere Dashboard</h2>
+                    <p class="text-xs text-textSecondary">Executive Overview</p>
+                </div>
+            </div>
+            <!-- Search & Actions -->
+            <div class="flex items-center gap-4">
+                <div class="relative hidden md:block">
+                    <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-textSecondary text-sm">search</span>
+                    <input class="w-64 pl-9 pr-4 py-1.5 bg-bgCard border border-borderDark rounded-full text-xs text-textPrimary placeholder-textSecondary/50 focus:outline-none focus:border-esgGreen focus:ring-1 focus:ring-esgGreen transition-all" placeholder="Search parameters..." type="text"/>
+                </div>
+                <!-- Theme Toggle -->
+                <button id="theme-toggle" onclick="toggleTheme()" class="p-1.5 text-textSecondary hover:text-textPrimary rounded-full hover:bg-bgCard focus:outline-none">
+                    <span id="theme-icon" class="material-symbols-outlined text-[20px]">light_mode</span>
+                </button>
+                <button class="p-1.5 text-textSecondary hover:text-textPrimary rounded-full hover:bg-bgCard relative"><span class="material-symbols-outlined text-[20px]">notifications</span><span class="absolute w-2 h-2 rounded-full bg-esgOrange top-1 right-1"></span></button>
+                <div class="h-6 w-px bg-borderDark"></div>
+                <div class="flex items-center gap-2.5">
+                    <img class="w-8 h-8 rounded-full border border-borderDark object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCyU1DjX1WEyXlSYLA9ykyxu_KZldTBys68h5s7TJlWjydSGJwwRirA2Tva7HhJKkXEKRHC9Uhdy1xQuac0OtdKLqTvs_wbhNCILmjU4ctmHDIBvl3RpPYoOZvqmPu8XyOsudsvdCOkX22EoZI5KjocYgi1kf0pPHX47Lh_-83Gepn9lI-hW4vTQkdcnjq1UdpQ81WMiQZdDGq78rS4sTS3-giUp4IHV8x-VLkC2ITlUQfDqs0dtN_Z" alt="User Headshot"/>
+                    <span class="text-xs font-semibold text-textPrimary hidden sm:inline">Sarah Jenkins</span>
+                </div>
+            </div>
+        </header>
+
+        <!-- TOP ROUTE TAB BAR -->
+        <nav class="flex px-8 border-b border-borderDark shrink-0 bg-bgHeader overflow-x-auto custom-scroll">
+            <a href="index.html" class="px-6 py-3 border-b-2 border-esgGreen text-esgGreen text-sm font-semibold whitespace-nowrap">Dashboard</a>
+            <a href="environmental.html" class="px-6 py-3 border-b-2 border-transparent text-textSecondary hover:text-textPrimary hover:border-textSecondary/50 text-sm font-medium whitespace-nowrap transition-all">Environmental</a>
+            <a href="social.html" class="px-6 py-3 border-b-2 border-transparent text-textSecondary hover:text-textPrimary hover:border-textSecondary/50 text-sm font-medium whitespace-nowrap transition-all">Social</a>
+            <a href="governance.html" class="px-6 py-3 border-b-2 border-transparent text-textSecondary hover:text-textPrimary hover:border-textSecondary/50 text-sm font-medium whitespace-nowrap transition-all">Governance</a>
+            <a href="gamification.html" class="px-6 py-3 border-b-2 border-transparent text-textSecondary hover:text-textPrimary hover:border-textSecondary/50 text-sm font-medium whitespace-nowrap transition-all">Gamification</a>
+            <a href="reports.html" class="px-6 py-3 border-b-2 border-transparent text-textSecondary hover:text-textPrimary hover:border-textSecondary/50 text-sm font-medium whitespace-nowrap transition-all">Reports</a>
+            <a href="settings.html" class="px-6 py-3 border-b-2 border-transparent text-textSecondary hover:text-textPrimary hover:border-textSecondary/50 text-sm font-medium whitespace-nowrap transition-all">Settings</a>
+        </nav>
+
+        <!-- SCROLLABLE DASHBOARD CONTENT -->
+        <div class="flex-grow overflow-y-auto p-8 custom-scroll space-y-6">
+            <!-- MODULE SCORECARDS ROW -->
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                <!-- Environmental Scorecard -->
+                <div class="bg-bgCard border border-borderDark rounded-xl p-5 hover:border-esgGreen/50 transition-all flex flex-col justify-between h-36">
+                    <div class="flex justify-between items-start">
+                        <span class="text-xs font-bold text-textSecondary uppercase tracking-wider">Environmental Score</span>
+                        <span class="material-symbols-outlined text-esgGreen">eco</span>
+                    </div>
+                    <div class="flex items-baseline gap-2">
+                        <span class="text-4xl font-extrabold text-esgGreen">82</span>
+                        <span class="text-xs text-textSecondary">/ 100</span>
+                    </div>
+                    <div class="w-full bg-bgProgress h-1.5 rounded-full overflow-hidden">
+                        <div class="bg-esgGreen h-full" style="width: 82%"></div>
+                    </div>
+                </div>
+                <!-- Social Scorecard -->
+                <div class="bg-bgCard border border-borderDark rounded-xl p-5 hover:border-esgBlue/50 transition-all flex flex-col justify-between h-36">
+                    <div class="flex justify-between items-start">
+                        <span class="text-xs font-bold text-textSecondary uppercase tracking-wider">Social Score</span>
+                        <span class="material-symbols-outlined text-esgBlue">group</span>
+                    </div>
+                    <div class="flex items-baseline gap-2">
+                        <span class="text-4xl font-extrabold text-esgBlue">74</span>
+                        <span class="text-xs text-textSecondary">/ 100</span>
+                    </div>
+                    <div class="w-full bg-bgProgress h-1.5 rounded-full overflow-hidden">
+                        <div class="bg-esgBlue h-full" style="width: 74%"></div>
+                    </div>
+                </div>
+                <!-- Governance Scorecard -->
+                <div class="bg-bgCard border border-borderDark rounded-xl p-5 hover:border-esgPurple/50 transition-all flex flex-col justify-between h-36">
+                    <div class="flex justify-between items-start">
+                        <span class="text-xs font-bold text-textSecondary uppercase tracking-wider">Governance Score</span>
+                        <span class="material-symbols-outlined text-esgPurple">gavel</span>
+                    </div>
+                    <div class="flex items-baseline gap-2">
+                        <span class="text-4xl font-extrabold text-esgPurple">78</span>
+                        <span class="text-xs text-textSecondary">/ 100</span>
+                    </div>
+                    <div class="w-full bg-bgProgress h-1.5 rounded-full overflow-hidden">
+                        <div class="bg-esgPurple h-full" style="width: 78%"></div>
+                    </div>
+                </div>
+                <!-- Overall ESG Scorecard -->
+                <div class="bg-bgCard border border-borderDark rounded-xl p-5 hover:border-textPrimary/50 transition-all flex flex-col justify-between h-36 relative overflow-hidden group">
+                    <div class="absolute -right-4 -bottom-4 w-24 h-24 bg-esgGreen/5 rounded-full blur-2xl group-hover:bg-esgGreen/10 transition-all"></div>
+                    <div class="flex justify-between items-start">
+                        <span class="text-xs font-bold text-textSecondary uppercase tracking-wider">Overall ESG Score</span>
+                        <span class="material-symbols-outlined text-textPrimary">star_half</span>
+                    </div>
+                    <div class="flex items-baseline gap-2">
+                        <span class="text-4xl font-extrabold text-textPrimary">81</span>
+                        <span class="text-xs text-textSecondary">/ 100</span>
+                    </div>
+                    <div class="w-full bg-bgProgress h-1.5 rounded-full overflow-hidden">
+                        <div class="bg-textPrimary h-full" style="width: 81%"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- CHARTS SECTION (BENTO GRID STYLE) -->
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+                <!-- Database Trend (Line Chart SVG Simulation) -->
+                <div class="lg:col-span-8 bg-bgCard border border-borderDark rounded-xl p-6 flex flex-col justify-between min-h-[320px]">
+                    <div class="flex justify-between items-center mb-4">
+                        <div>
+                            <h3 class="text-sm font-semibold text-textPrimary">Database Trend</h3>
+                            <p class="text-[10px] text-textSecondary">Carbon emissions (tCO2e) over last 6 months</p>
+                        </div>
+                        <div class="flex items-center gap-1.5 text-xs text-esgGreen font-medium bg-esgGreen/10 px-2 py-0.5 rounded">
+                            <span class="material-symbols-outlined text-sm">trending_down</span>
+                            <span>-4.2% MoM</span>
+                        </div>
+                    </div>
+                    <!-- Line Chart Visual (SVG) -->
+                    <div class="flex-grow w-full h-48 mt-4 relative">
+                        <svg class="w-full h-full" viewBox="0 0 600 180" preserveAspectRatio="none">
+                            <defs>
+                                <linearGradient id="chartGradient" x1="0" y1="0" x2="0" y2="1">
+                                    <stop offset="0%" stop-color="#10b981" stop-opacity="0.25"/>
+                                    <stop offset="100%" stop-color="#10b981" stop-opacity="0.0"/>
+                                </linearGradient>
+                            </defs>
+                            <!-- Grid lines -->
+                            <line x1="0" y1="30" x2="600" y2="30" stroke="var(--border-dark)" stroke-dasharray="4" stroke-width="1"/>
+                            <line x1="0" y1="80" x2="600" y2="80" stroke="var(--border-dark)" stroke-dasharray="4" stroke-width="1"/>
+                            <line x1="0" y1="130" x2="600" y2="130" stroke="var(--border-dark)" stroke-dasharray="4" stroke-width="1"/>
+                            <line x1="0" y1="170" x2="600" y2="170" stroke="var(--border-dark)" stroke-width="1"/>
+                            
+                            <!-- Area fill under line -->
+                            <path d="M 0 170 Q 100 130, 200 90 T 400 120 T 600 50 L 600 170 L 0 170 Z" fill="url(#chartGradient)" />
+                            <!-- Curve Line -->
+                            <path d="M 0 170 Q 100 130, 200 90 T 400 120 T 600 50" fill="none" stroke="#10b981" stroke-width="3"/>
+                            
+                            <!-- Indicator Dots & Markers -->
+                            <circle cx="0" cy="170" r="4" stroke="#10b981" stroke-width="2"/>
+                            <circle cx="100" cy="148" r="4" stroke="#10b981" stroke-width="2"/>
+                            <circle cx="200" cy="90" r="4" stroke="#10b981" stroke-width="2"/>
+                            <circle cx="300" cy="96" r="4" stroke="#10b981" stroke-width="2"/>
+                            <circle cx="400" cy="120" r="4" stroke="#10b981" stroke-width="2"/>
+                            <circle cx="500" cy="90" r="4" stroke="#10b981" stroke-width="2"/>
+                            <circle cx="600" cy="50" r="4" stroke="#10b981" stroke-width="2"/>
+                        </svg>
+                        <!-- Chart Labels -->
+                        <div class="absolute bottom-0 left-0 right-0 flex justify-between px-1 text-[10px] text-textSecondary font-mono">
+                            <span>Jan</span>
+                            <span>Feb</span>
+                            <span>Mar</span>
+                            <span>Apr</span>
+                            <span>May</span>
+                            <span>Jun</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Department ESG Ranking (Bar Chart Simulation) -->
+                <div class="lg:col-span-4 bg-bgCard border border-borderDark rounded-xl p-6 flex flex-col justify-between min-h-[320px]">
+                    <div class="flex justify-between items-center mb-4">
+                        <div>
+                            <h3 class="text-sm font-semibold text-textPrimary">Department ESG Ranking</h3>
+                            <p class="text-[10px] text-textSecondary">Average performance scores</p>
+                        </div>
+                        <span class="material-symbols-outlined text-textSecondary text-xl">bar_chart</span>
+                    </div>
+                    <!-- Bar Chart Visual -->
+                    <div class="flex-grow flex items-end justify-between h-48 px-2 pt-6">
+                        <!-- Bar 1 (Adm) -->
+                        <div class="flex flex-col items-center gap-2 w-1/5 group">
+                            <div class="w-7 bg-esgBlue hover:bg-esgBlue/80 rounded-t-md transition-all relative flex flex-col justify-end" style="height: 120px;">
+                                <span class="absolute -top-6 left-1/2 -translate-x-1/2 text-[9px] font-bold text-textPrimary opacity-0 group-hover:opacity-100 transition-opacity">82%</span>
+                            </div>
+                            <span class="text-[10px] text-textSecondary font-semibold">Adm</span>
+                        </div>
+                        <!-- Bar 2 (Fin) -->
+                        <div class="flex flex-col items-center gap-2 w-1/5 group">
+                            <div class="w-7 bg-esgBlue hover:bg-esgBlue/80 rounded-t-md transition-all relative flex flex-col justify-end" style="height: 80px;">
+                                <span class="absolute -top-6 left-1/2 -translate-x-1/2 text-[9px] font-bold text-textPrimary opacity-0 group-hover:opacity-100 transition-opacity">56%</span>
+                            </div>
+                            <span class="text-[10px] text-textSecondary font-semibold">Fin</span>
+                        </div>
+                        <!-- Bar 3 (Mkt) -->
+                        <div class="flex flex-col items-center gap-2 w-1/5 group">
+                            <div class="w-7 bg-esgBlue hover:bg-esgBlue/80 rounded-t-md transition-all relative flex flex-col justify-end" style="height: 100px;">
+                                <span class="absolute -top-6 left-1/2 -translate-x-1/2 text-[9px] font-bold text-textPrimary opacity-0 group-hover:opacity-100 transition-opacity">70%</span>
+                            </div>
+                            <span class="text-[10px] text-textSecondary font-semibold">Mkt</span>
+                        </div>
+                        <!-- Bar 4 (Ops) -->
+                        <div class="flex flex-col items-center gap-2 w-1/5 group">
+                            <div class="w-7 bg-esgGreen hover:bg-esgGreen/80 rounded-t-md transition-all relative flex flex-col justify-end" style="height: 135px;">
+                                <span class="absolute -top-6 left-1/2 -translate-x-1/2 text-[9px] font-bold text-textPrimary opacity-0 group-hover:opacity-100 transition-opacity">92%</span>
+                            </div>
+                            <span class="text-[10px] text-textSecondary font-semibold">Ops</span>
+                        </div>
+                        <!-- Bar 5 (Sup) -->
+                        <div class="flex flex-col items-center gap-2 w-1/5 group">
+                            <div class="w-7 bg-esgOrange hover:bg-esgOrange/80 rounded-t-md transition-all relative flex flex-col justify-end" style="height: 60px;">
+                                <span class="absolute -top-6 left-1/2 -translate-x-1/2 text-[9px] font-bold text-textPrimary opacity-0 group-hover:opacity-100 transition-opacity">42%</span>
+                            </div>
+                            <span class="text-[10px] text-textSecondary font-semibold">Sup</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- SOCIAL ACTIVITY FEED & QUICK ACTIONS -->
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+                <!-- Social Activity Feed -->
+                <div class="lg:col-span-8 bg-bgCard border border-borderDark rounded-xl p-6">
+                    <h3 class="text-sm font-semibold text-textPrimary mb-4">Social Activity</h3>
+                    <div class="space-y-3.5">
+                        <label class="flex items-start gap-3 p-3 rounded-lg border border-borderDark/40 bg-bgMain/20 hover:bg-bgMain/40 transition-all cursor-pointer">
+                            <input type="checkbox" checked class="w-4 h-4 mt-0.5 rounded text-esgGreen bg-bgMain border-borderDark focus:ring-offset-bgCard focus:ring-esgGreen"/>
+                            <div class="flex flex-col">
+                                <span class="text-xs font-semibold text-textPrimary">Pilot compliance policy update review</span>
+                                <span class="text-[9px] text-textSecondary mt-0.5">Assigned to: Board Director • Status: Completed</span>
+                            </div>
+                        </label>
+                        <label class="flex items-start gap-3 p-3 rounded-lg border border-borderDark/40 bg-bgMain/20 hover:bg-bgMain/40 transition-all cursor-pointer">
+                            <input type="checkbox" class="w-4 h-4 mt-0.5 rounded text-esgGreen bg-bgMain border-borderDark focus:ring-offset-bgCard focus:ring-esgGreen"/>
+                            <div class="flex flex-col">
+                                <span class="text-xs font-semibold text-textPrimary">New compliance issue raised in Logistics</span>
+                                <span class="text-[9px] text-textSecondary mt-0.5">Assigned to: Marcus Reed • Status: Overdue Warning</span>
+                            </div>
+                        </label>
+                        <label class="flex items-start gap-3 p-3 rounded-lg border border-borderDark/40 bg-bgMain/20 hover:bg-bgMain/40 transition-all cursor-pointer">
+                            <input type="checkbox" checked class="w-4 h-4 mt-0.5 rounded text-esgGreen bg-bgMain border-borderDark focus:ring-offset-bgCard focus:ring-esgGreen"/>
+                            <div class="flex flex-col">
+                                <span class="text-xs font-semibold text-textPrimary">Review carbon transactions logging</span>
+                                <span class="text-[9px] text-textSecondary mt-0.5">Assigned to: Sarah Jenkins • Status: Completed</span>
+                            </div>
+                        </label>
+                        <label class="flex items-start gap-3 p-3 rounded-lg border border-borderDark/40 bg-bgMain/20 hover:bg-bgMain/40 transition-all cursor-pointer">
+                            <input type="checkbox" class="w-4 h-4 mt-0.5 rounded text-esgGreen bg-bgMain border-borderDark focus:ring-offset-bgCard focus:ring-esgGreen"/>
+                            <div class="flex flex-col">
+                                <span class="text-xs font-semibold text-textPrimary">CSR verification and correction checks</span>
+                                <span class="text-[9px] text-textSecondary mt-0.5">Assigned to: Audit Committee • Status: Pending</span>
+                            </div>
+                        </label>
+                    </div>
+                </div>
+
+                <!-- Quick Actions Panel -->
+                <div class="lg:col-span-4 bg-bgCard border border-borderDark rounded-xl p-6 flex flex-col justify-between gap-4">
+                    <h3 class="text-sm font-semibold text-textPrimary">Quick Actions</h3>
+                    <div class="flex flex-col gap-3 flex-grow justify-center">
+                        <a href="environmental.html#factors" class="w-full flex items-center gap-3 px-4 py-3 rounded-lg bg-esgGreen text-bgMain font-bold hover:bg-esgGreen/90 transition-all text-xs shadow-sm">
+                            <span class="material-symbols-outlined text-base">add_circle</span>
+                            <span>Log Carbon Data</span>
+                        </a>
+                        <a href="gamification.html#challenges" class="w-full flex items-center gap-3 px-4 py-3 rounded-lg bg-esgOrange text-bgMain font-bold hover:bg-esgOrange/90 transition-all text-xs shadow-sm">
+                            <span class="material-symbols-outlined text-base">star</span>
+                            <span>Join Challenge</span>
+                        </a>
+                        <a href="reports.html" class="w-full flex items-center gap-3 px-4 py-3 rounded-lg bg-esgBlue text-textPrimary font-bold hover:bg-esgBlue/90 transition-all text-xs shadow-sm">
+                            <span class="material-symbols-outlined text-base">description</span>
+                            <span>Run Reports</span>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- THEME CONTROLLER SCRIPT -->
+    <script>
+        function applyTheme() {
+            const theme = localStorage.getItem('theme') || 'dark';
+            const html = document.documentElement;
+            const themeIcon = document.getElementById('theme-icon');
+            
+            if (theme === 'dark') {
+                html.classList.add('dark');
+                if (themeIcon) themeIcon.textContent = 'light_mode';
+            } else {
+                html.classList.remove('dark');
+                if (themeIcon) themeIcon.textContent = 'dark_mode';
+            }
+        }
+
+        function toggleTheme() {
+            const currentTheme = localStorage.getItem('theme') || 'dark';
+            const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+            localStorage.setItem('theme', newTheme);
+            applyTheme();
+        }
+
+        // Initialize icon text
+        applyTheme();
+    </script>
+</body>
+</html>
