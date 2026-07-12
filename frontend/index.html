@@ -184,9 +184,13 @@
             </div>
             <!-- Search & Actions -->
             <div class="flex items-center gap-4">
-                <div class="relative hidden md:block">
+                <div class="relative hidden md:block z-50">
                     <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-textSecondary text-sm">search</span>
-                    <input class="w-64 pl-9 pr-4 py-1.5 bg-bgCard border border-borderDark rounded-full text-xs text-textPrimary placeholder-textSecondary/50 focus:outline-none focus:border-esgGreen focus:ring-1 focus:ring-esgGreen transition-all" placeholder="Search parameters..." type="text"/>
+                    <input id="search-parameters" autocomplete="off" class="w-64 pl-9 pr-4 py-1.5 bg-bgCard border border-borderDark rounded-full text-xs text-textPrimary placeholder-textSecondary/50 focus:outline-none focus:border-esgGreen focus:ring-1 focus:ring-esgGreen transition-all" placeholder="Search across EcoSphere..." type="text"/>
+                    <!-- Global Search Results Dropdown -->
+                    <div id="search-results-dropdown" class="hidden absolute left-0 mt-2 w-[450px] bg-bgCard border border-borderDark rounded-xl shadow-2xl overflow-hidden text-left max-h-[480px] overflow-y-auto custom-scroll">
+                        <!-- Grouped results will go here -->
+                    </div>
                 </div>
                 <!-- Theme Toggle -->
                 <button id="theme-toggle" onclick="toggleTheme()" class="p-1.5 text-textSecondary hover:text-textPrimary rounded-full hover:bg-bgCard focus:outline-none">
@@ -496,6 +500,7 @@
 
         // ECOSPHERE BACKEND INTEGRATION
         const API_URL = 'http://localhost:5000/api/environmental';
+        let allActiveGoals = [];
 
         async function fetchDashboard() {
             try {
@@ -546,42 +551,9 @@
                 }
 
                 // 3. Render Active Goals
-                const goalsContainer = document.getElementById('active-goals-container');
-                if (goalsContainer && data.activeGoals) {
-                    if (data.activeGoals.length === 0) {
-                        goalsContainer.innerHTML = `
-                            <div class="col-span-full bg-bgCard border border-borderDark rounded-xl p-5 text-textSecondary text-xs text-center">
-                                No active sustainability goals defined at this time.
-                            </div>
-                        `;
-                    } else {
-                        goalsContainer.innerHTML = data.activeGoals.map(goal => `
-                            <div class="bg-bgCard border border-borderDark rounded-xl p-5 hover:border-esgGreen/30 transition-all flex flex-col gap-4">
-                                <div class="flex justify-between items-start">
-                                    <div>
-                                        <h4 class="font-bold text-textPrimary text-xs">${goal.title}</h4>
-                                        <p class="text-[10px] text-textSecondary mt-0.5">Department: ${goal.department}</p>
-                                    </div>
-                                    <span class="px-2 py-0.5 rounded text-[9px] font-bold bg-esgGreen/10 text-esgGreen border border-esgGreen/20">Active</span>
-                                </div>
-                                <div class="space-y-1.5">
-                                    <div class="flex justify-between text-[10px] font-semibold">
-                                        <span class="text-textSecondary">Progress: ${goal.currentValue.toLocaleString()} / ${goal.targetValue.toLocaleString()} ${goal.unit}</span>
-                                        <span class="text-esgGreen font-mono font-bold">${goal.completionPercentage}%</span>
-                                    </div>
-                                    <div class="w-full bg-bgProgress h-1.5 rounded-full overflow-hidden">
-                                        <div class="bg-esgGreen h-full" style="width: ${goal.completionPercentage}%"></div>
-                                    </div>
-                                </div>
-                                <div class="text-[9px] text-textSecondary/80 flex items-center justify-between border-t border-borderDark/30 pt-2">
-                                    <span>Deadline: ${new Date(goal.deadline).toLocaleDateString('en-CA')}</span>
-                                    <span class="font-bold uppercase text-[8px] ${goal.completionPercentage > 100 ? 'text-red-400' : 'text-esgGreen'}">
-                                        ${goal.completionPercentage > 100 ? 'Exceeded Limit' : 'Within Target'}
-                                    </span>
-                                </div>
-                            </div>
-                        `).join('');
-                    }
+                if (data.activeGoals) {
+                    allActiveGoals = data.activeGoals;
+                    renderActiveGoals(allActiveGoals);
                 }
 
                 // 4. Render Department ESG Rankings Bar Chart
@@ -688,6 +660,45 @@
             }
         }
 
+        function renderActiveGoals(goals) {
+            const goalsContainer = document.getElementById('active-goals-container');
+            if (!goalsContainer) return;
+            if (goals.length === 0) {
+                goalsContainer.innerHTML = `
+                    <div class="col-span-full bg-bgCard border border-borderDark rounded-xl p-5 text-textSecondary text-xs text-center">
+                        No active sustainability goals match your search.
+                    </div>
+                `;
+            } else {
+                goalsContainer.innerHTML = goals.map(goal => `
+                    <div class="bg-bgCard border border-borderDark rounded-xl p-5 hover:border-esgGreen/30 transition-all flex flex-col gap-4">
+                        <div class="flex justify-between items-start">
+                            <div>
+                                <h4 class="font-bold text-textPrimary text-xs">${goal.title}</h4>
+                                <p class="text-[10px] text-textSecondary mt-0.5">Department: ${goal.department}</p>
+                            </div>
+                            <span class="px-2 py-0.5 rounded text-[9px] font-bold bg-esgGreen/10 text-esgGreen border border-esgGreen/20">Active</span>
+                        </div>
+                        <div class="space-y-1.5">
+                            <div class="flex justify-between text-[10px] font-semibold">
+                                <span class="text-textSecondary">Progress: ${goal.currentValue.toLocaleString()} / ${goal.targetValue.toLocaleString()} ${goal.unit}</span>
+                                <span class="text-esgGreen font-mono font-bold">${goal.completionPercentage}%</span>
+                            </div>
+                            <div class="w-full bg-bgProgress h-1.5 rounded-full overflow-hidden">
+                                <div class="bg-esgGreen h-full" style="width: ${goal.completionPercentage}%"></div>
+                            </div>
+                        </div>
+                        <div class="text-[9px] text-textSecondary/80 flex items-center justify-between border-t border-borderDark/30 pt-2">
+                            <span>Deadline: ${new Date(goal.deadline).toLocaleDateString('en-CA')}</span>
+                            <span class="font-bold uppercase text-[8px] ${goal.completionPercentage > 100 ? 'text-red-400' : 'text-esgGreen'}">
+                                ${goal.completionPercentage > 100 ? 'Exceeded Limit' : 'Within Target'}
+                            </span>
+                        </div>
+                    </div>
+                `).join('');
+            }
+        }
+
         // Fetch on load
         window.addEventListener('DOMContentLoaded', () => {
             fetchDashboard();
@@ -696,6 +707,102 @@
             
             // Poll notifications every 10 seconds
             setInterval(loadNotifications, 10000);
+
+            // Set up search parameters listener (Global Search across EcoSphere)
+            const searchInput = document.getElementById('search-parameters');
+            const searchDropdown = document.getElementById('search-results-dropdown');
+            
+            if (searchInput && searchDropdown) {
+                let debounceTimeout = null;
+
+                searchInput.addEventListener('input', (e) => {
+                    const query = e.target.value.trim();
+                    if (query.length < 2) {
+                        searchDropdown.classList.add('hidden');
+                        searchDropdown.innerHTML = '';
+                        return;
+                    }
+
+                    searchDropdown.classList.remove('hidden');
+                    searchDropdown.innerHTML = `
+                        <div class="px-4 py-6 text-center text-textSecondary text-xs flex items-center justify-center gap-2">
+                            <span class="animate-spin material-symbols-outlined text-sm">progress_activity</span>
+                            Searching EcoSphere...
+                        </div>
+                    `;
+
+                    clearTimeout(debounceTimeout);
+                    debounceTimeout = setTimeout(async () => {
+                        try {
+                            const notifApiUrl = API_URL.replace('/environmental', '');
+                            const res = await fetch(`${notifApiUrl}/search?q=${encodeURIComponent(query)}`);
+                            const data = await res.json();
+
+                            if (searchInput.value.trim() !== query) return; // Stale query
+
+                            let html = '';
+                            let totalResults = 0;
+
+                            const categories = [
+                                { key: 'environmental', label: 'Environmental', color: 'text-esgGreen', bg: 'bg-esgGreen/10' },
+                                { key: 'social', label: 'Social', color: 'text-esgBlue', bg: 'bg-esgBlue/10' },
+                                { key: 'governance', label: 'Governance', color: 'text-esgPurple', bg: 'bg-esgPurple/10' },
+                                { key: 'gamification', label: 'Gamification', color: 'text-esgOrange', bg: 'bg-esgOrange/10' }
+                            ];
+
+                            categories.forEach(cat => {
+                                const list = data[cat.key] || [];
+                                if (list.length > 0) {
+                                    totalResults += list.length;
+                                    html += `
+                                        <div class="px-4 py-2 bg-bgSidebar/80 border-y border-borderDark/60 flex justify-between items-center">
+                                            <span class="text-[10px] font-extrabold ${cat.color} uppercase tracking-wider">${cat.label}</span>
+                                            <span class="text-[9px] text-textSecondary font-semibold">${list.length} matches</span>
+                                        </div>
+                                        <div class="divide-y divide-borderDark/20">
+                                    `;
+                                    list.forEach(item => {
+                                        html += `
+                                            <a href="${item.link}" class="block px-4 py-3 hover:bg-bgSidebar/40 transition-colors">
+                                                <div class="flex justify-between items-start">
+                                                    <span class="font-bold text-[9px] px-1.5 py-0.5 rounded ${cat.bg} ${cat.color} uppercase tracking-wide">${item.type}</span>
+                                                </div>
+                                                <h5 class="text-xs font-bold text-textPrimary mt-1.5 leading-tight">${item.title}</h5>
+                                                <p class="text-[10px] text-textSecondary mt-0.5 truncate leading-relaxed">${item.subtitle}</p>
+                                            </a>
+                                        `;
+                                    });
+                                    html += `</div>`;
+                                }
+                            });
+
+                            if (totalResults === 0) {
+                                searchDropdown.innerHTML = `
+                                    <div class="px-4 py-8 text-center text-textSecondary text-xs">
+                                        No matches found for <span class="text-textPrimary font-semibold">"${query}"</span>
+                                    </div>
+                                `;
+                            } else {
+                                searchDropdown.innerHTML = html;
+                            }
+                        } catch (err) {
+                            console.error('[Global Search] Error:', err);
+                            searchDropdown.innerHTML = `
+                                <div class="px-4 py-6 text-center text-red-400 text-xs">
+                                    Error performing search. Please try again.
+                                </div>
+                            `;
+                        }
+                    }, 300);
+                });
+
+                // Close dropdown when clicking outside
+                window.addEventListener('click', (e) => {
+                    if (!searchDropdown.contains(e.target) && !searchInput.contains(e.target)) {
+                        searchDropdown.classList.add('hidden');
+                    }
+                });
+            }
         });
 
         // Close dropdown when clicking outside
