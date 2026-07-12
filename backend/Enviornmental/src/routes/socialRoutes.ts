@@ -417,4 +417,64 @@ router.get('/trainings', async (req: Request, res: Response) => {
   }
 });
 
+// Social Custom Report Builder endpoint
+router.get('/social/report', async (req: Request, res: Response) => {
+  try {
+    const { startDate, endDate, departmentId } = req.query;
+
+    let query = `
+      SELECT ep.id, ep.completion_date, ep.hours_spent, ep.points, ep.status, ep.proof,
+             e.name AS employee_name, a.name AS activity_name, d.name AS department_name
+      FROM employee_participations ep
+      JOIN employees e ON ep.employee_id = e.id
+      JOIN csr_activities a ON ep.activity_id = a.id
+      LEFT JOIN departments d ON e.department_id = d.id
+      WHERE 1=1
+    `;
+    const replacements: any[] = [];
+
+    if (startDate) {
+      query += ' AND ep.completion_date >= ?';
+      replacements.push(startDate);
+    }
+    if (endDate) {
+      query += ' AND ep.completion_date <= ?';
+      replacements.push(endDate + ' 23:59:59');
+    }
+    if (departmentId) {
+      query += ' AND e.department_id = ?';
+      replacements.push(departmentId);
+    }
+
+    query += ' ORDER BY ep.completion_date DESC';
+
+    const data = await sequelize.query(query, {
+      replacements,
+      type: QueryTypes.SELECT
+    }) as any[];
+
+    // Calculate totals
+    let totalHours = 0;
+    let totalPoints = 0;
+    data.forEach(item => {
+      totalHours += item.hours_spent || 0;
+      if (item.status === 'Approved') {
+        totalPoints += item.points || 0;
+      }
+    });
+
+    res.json({
+      summary: {
+        recordCount: data.length,
+        totalHours,
+        totalPoints
+      },
+      data
+    });
+
+  } catch (error: any) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
 export default router;

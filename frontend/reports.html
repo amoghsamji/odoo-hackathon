@@ -231,11 +231,11 @@
                             <h4 class="font-bold text-textPrimary text-sm">Environmental Report</h4>
                             <p class="text-xs text-textSecondary mt-1 line-clamp-2">Emissions, goals, and resource footprints.</p>
                         </div>
-                        <button onclick="switchSubTab('builder')" class="w-full mt-4 py-2 bg-esgBlue hover:bg-esgBlue/90 text-textPrimary font-bold text-xs rounded transition-all">Generate</button>
+                        <button onclick="generateEnvironmentalReport()" class="w-full mt-4 py-2 bg-esgBlue hover:bg-esgBlue/90 text-textPrimary font-bold text-xs rounded transition-all">Generate</button>
                     </div>
 
                     <!-- Social Report -->
-                    <div class="bg-bgCard border border-borderDark rounded-xl p-5 hover:border-esgBlue/40 transition-all flex flex-col justify-between h-44 opacity-60">
+                    <div class="bg-bgCard border border-borderDark rounded-xl p-5 hover:border-esgBlue/40 transition-all flex flex-col justify-between h-44">
                         <div>
                             <div class="flex justify-between items-start mb-2">
                                 <span class="px-2 py-0.5 rounded text-[9px] font-bold bg-esgBlue/10 text-esgBlue uppercase">Social</span>
@@ -244,7 +244,7 @@
                             <h4 class="font-bold text-textPrimary text-sm">Social Report</h4>
                             <p class="text-xs text-textSecondary mt-1 line-clamp-2">Diversity, CSR participation, and training completion.</p>
                         </div>
-                        <button disabled class="w-full mt-4 py-2 bg-bgProgress text-textSecondary font-bold text-xs rounded cursor-not-allowed">Generate</button>
+                        <button onclick="generateSocialReport()" class="w-full mt-4 py-2 bg-esgBlue hover:bg-esgBlue/90 text-textPrimary font-bold text-xs rounded transition-all">Generate</button>
                     </div>
 
                     <!-- Governance Report -->
@@ -299,8 +299,9 @@
                         </div>
                         <div class="flex flex-col gap-2 text-xs">
                             <label class="font-semibold text-textSecondary">Module</label>
-                            <select disabled class="bg-bgMain border border-borderDark rounded text-xs text-textSecondary/50 bg-bgProgress focus:outline-none p-2 cursor-not-allowed">
-                                <option>Environmental (Only Active Module)</option>
+                            <select id="report-module-select" class="bg-bgMain border border-borderDark rounded text-xs text-textPrimary focus:outline-none focus:border-esgBlue p-2">
+                                <option value="environmental">Environmental Module</option>
+                                <option value="social">Social Module</option>
                             </select>
                         </div>
                     </div>
@@ -321,11 +322,11 @@
                 <!-- Report Summary Row -->
                 <div id="report-summary-row" class="hidden grid grid-cols-1 sm:grid-cols-2 gap-6">
                     <div class="bg-bgCard border border-borderDark rounded-xl p-5 shadow-md">
-                        <span class="text-[10px] uppercase font-bold text-textSecondary">Activity Logs Count</span>
+                        <span id="report-summary-label-1" class="text-[10px] uppercase font-bold text-textSecondary">Activity Logs Count</span>
                         <div id="report-summary-count" class="text-2xl font-extrabold text-textPrimary mt-1">0</div>
                     </div>
                     <div class="bg-bgCard border border-borderDark rounded-xl p-5 shadow-md">
-                        <span class="text-[10px] uppercase font-bold text-textSecondary">Total Calculated Carbon</span>
+                        <span id="report-summary-label-2" class="text-[10px] uppercase font-bold text-textSecondary">Total Calculated Carbon</span>
                         <div id="report-summary-emissions" class="text-2xl font-extrabold text-esgGreen mt-1">0 kg CO2</div>
                     </div>
                 </div>
@@ -334,7 +335,7 @@
                 <div id="report-table-container" class="hidden bg-bgCard border border-borderDark rounded-xl overflow-hidden shadow-lg">
                     <table class="w-full text-left border-collapse">
                         <thead>
-                            <tr class="bg-bgSidebar border-b border-borderDark text-xs text-textSecondary uppercase font-bold">
+                            <tr id="report-thead-row" class="bg-bgSidebar border-b border-borderDark text-xs text-textSecondary uppercase font-bold">
                                 <th class="py-3 px-6">Date</th>
                                 <th class="py-3 px-6">Department</th>
                                 <th class="py-3 px-6">Source Module</th>
@@ -437,7 +438,7 @@
         // ====================================================
         // BACKEND API INTEGRATION
         // ====================================================
-        const API_URL = 'http://localhost:5000/api/environmental';
+        const API_URL = 'http://127.0.0.1:5000/api';
 
         // Static departments list
         const DEPARTMENTS = [
@@ -454,8 +455,21 @@
                 DEPARTMENTS.map(d => `<option value="${d.id}">${d.name}</option>`).join('');
         }
 
+        function generateEnvironmentalReport() {
+            document.getElementById('report-module-select').value = 'environmental';
+            switchSubTab('builder');
+            runReport();
+        }
+
+        function generateSocialReport() {
+            document.getElementById('report-module-select').value = 'social';
+            switchSubTab('builder');
+            runReport();
+        }
+
         // Run report query
         async function runReport() {
+            const module = document.getElementById('report-module-select').value;
             const start = document.getElementById('report-start-date').value;
             const end = document.getElementById('report-end-date').value;
             const dept = document.getElementById('report-department-select').value;
@@ -467,53 +481,131 @@
             if (dept) params.append('departmentId', dept);
 
             try {
-                const response = await fetch(`${API_URL}/report?${params.toString()}`);
-                if (!response.ok) throw new Error('Report query failed');
-                const report = await response.json();
-
-                // 1. Update summary widgets
-                document.getElementById('report-summary-count').textContent = report.summary.recordCount;
-                document.getElementById('report-summary-emissions').textContent = 
-                    `${report.summary.totalEmissions.toLocaleString()} kg CO2`;
-
-                // Unhide summary row and table
-                document.getElementById('report-summary-row').classList.remove('hidden');
-                document.getElementById('report-table-container').classList.remove('hidden');
-
-                // 2. Render table body
-                const tbody = document.getElementById('report-tbody');
-                if (report.data.length === 0) {
-                    tbody.innerHTML = `
-                        <tr>
-                            <td colspan="6" class="py-6 text-center text-textSecondary text-xs">
-                                No records found matching the configured filters.
-                            </td>
-                        </tr>
+                if (module === 'environmental') {
+                    // Update headers & labels
+                    document.getElementById('report-summary-label-1').textContent = 'Activity Logs Count';
+                    document.getElementById('report-summary-label-2').textContent = 'Total Calculated Carbon';
+                    document.getElementById('report-thead-row').innerHTML = `
+                        <th class="py-3 px-6">Date</th>
+                        <th class="py-3 px-6">Department</th>
+                        <th class="py-3 px-6">Source Module</th>
+                        <th class="py-3 px-6">Record ID</th>
+                        <th class="py-3 px-6 text-right">Raw Qty</th>
+                        <th class="py-3 px-6 text-right">Emissions (kg CO2)</th>
                     `;
-                    return;
+
+                    const response = await fetch(`${API_URL}/environmental/report?${params.toString()}`);
+                    if (!response.ok) throw new Error('Report query failed');
+                    const report = await response.json();
+
+                    // 1. Update summary widgets
+                    document.getElementById('report-summary-count').textContent = report.summary.recordCount;
+                    document.getElementById('report-summary-emissions').textContent = 
+                        `${report.summary.totalEmissions.toLocaleString()} kg CO2`;
+
+                    // Unhide summary row and table
+                    document.getElementById('report-summary-row').classList.remove('hidden');
+                    document.getElementById('report-table-container').classList.remove('hidden');
+
+                    // 2. Render table body
+                    const tbody = document.getElementById('report-tbody');
+                    if (report.data.length === 0) {
+                        tbody.innerHTML = `
+                            <tr>
+                                <td colspan="6" class="py-6 text-center text-textSecondary text-xs">
+                                    No records found matching the configured filters.
+                                </td>
+                            </tr>
+                        `;
+                        return;
+                    }
+
+                    tbody.innerHTML = report.data.map(tx => {
+                        const dateStr = new Date(tx.timestamp).toLocaleDateString();
+                        return `
+                            <tr class="hover:bg-bgSidebar/50 transition-colors">
+                                <td class="py-4 px-6 font-mono text-textSecondary text-xs">${dateStr}</td>
+                                <td class="py-4 px-6 text-xs">${tx.department?.name || 'Unknown'}</td>
+                                <td class="py-4 px-6 text-xs font-semibold">${tx.sourceModule}</td>
+                                <td class="py-4 px-6 text-textSecondary text-xs">${tx.recordId}</td>
+                                <td class="py-4 px-6 text-right font-mono text-textSecondary text-xs">
+                                    ${tx.rawValue.toLocaleString()} ${tx.emissionFactor?.unit || ''}
+                                </td>
+                                <td class="py-4 px-6 text-right font-mono text-esgGreen text-xs font-bold">
+                                    ${tx.calculatedEmission.toLocaleString()} kg CO2
+                                </td>
+                            </tr>
+                        `;
+                    }).join('');
+                } else {
+                    // Social Module Report
+                    document.getElementById('report-summary-label-1').textContent = 'Participation Count';
+                    document.getElementById('report-summary-label-2').textContent = 'Total Volunteer Hours / Approved Points';
+                    document.getElementById('report-thead-row').innerHTML = `
+                        <th class="py-3 px-6">Date</th>
+                        <th class="py-3 px-6">Department</th>
+                        <th class="py-3 px-6">Employee</th>
+                        <th class="py-3 px-6">Activity/Challenge</th>
+                        <th class="py-3 px-6 text-right">Hours</th>
+                        <th class="py-3 px-6 text-center">Status</th>
+                        <th class="py-3 px-6 text-right font-semibold">Points</th>
+                    `;
+
+                    const response = await fetch(`${API_URL}/social/report?${params.toString()}`);
+                    if (!response.ok) throw new Error('Report query failed');
+                    const report = await response.json();
+
+                    // 1. Update summary widgets
+                    document.getElementById('report-summary-count').textContent = report.summary.recordCount;
+                    document.getElementById('report-summary-emissions').textContent = 
+                        `${report.summary.totalHours.toLocaleString()} hrs / ${report.summary.totalPoints.toLocaleString()} pts`;
+
+                    // Unhide summary row and table
+                    document.getElementById('report-summary-row').classList.remove('hidden');
+                    document.getElementById('report-table-container').classList.remove('hidden');
+
+                    // 2. Render table body
+                    const tbody = document.getElementById('report-tbody');
+                    if (report.data.length === 0) {
+                        tbody.innerHTML = `
+                            <tr>
+                                <td colspan="7" class="py-6 text-center text-textSecondary text-xs">
+                                    No records found matching the configured filters.
+                                </td>
+                            </tr>
+                        `;
+                        return;
+                    }
+
+                    tbody.innerHTML = report.data.map(tx => {
+                        const dateStr = new Date(tx.completion_date).toLocaleDateString();
+                        let statusClass = 'bg-esgOrange/10 text-esgOrange border-esgOrange/20';
+                        if (tx.status === 'Approved') statusClass = 'bg-esgGreen/10 text-esgGreen border-esgGreen/20';
+                        else if (tx.status === 'Rejected') statusClass = 'bg-red-500/10 text-red-500 border-red-500/20';
+
+                        return `
+                            <tr class="hover:bg-bgSidebar/50 transition-colors">
+                                <td class="py-4 px-6 font-mono text-textSecondary text-xs">${dateStr}</td>
+                                <td class="py-4 px-6 text-xs">${tx.department_name || 'Global'}</td>
+                                <td class="py-4 px-6 text-xs font-semibold">${tx.employee_name}</td>
+                                <td class="py-4 px-6 text-xs text-textSecondary">${tx.activity_name}</td>
+                                <td class="py-4 px-6 text-right font-mono text-textSecondary text-xs">
+                                    ${tx.hours_spent} hrs
+                                </td>
+                                <td class="py-4 px-6 text-center text-xs">
+                                    <span class="px-2 py-0.5 rounded text-[10px] font-bold border ${statusClass}">${tx.status}</span>
+                                </td>
+                                <td class="py-4 px-6 text-right font-mono text-esgBlue text-xs font-bold">
+                                    +${tx.points} pts
+                                </td>
+                            </tr>
+                        `;
+                    }).join('');
                 }
-
-                tbody.innerHTML = report.data.map(tx => {
-                    const dateStr = new Date(tx.timestamp).toLocaleDateString();
-                    return `
-                        <tr class="hover:bg-bgSidebar/50 transition-colors">
-                            <td class="py-4 px-6 font-mono text-textSecondary text-xs">${dateStr}</td>
-                            <td class="py-4 px-6 text-xs">${tx.department?.name || 'Unknown'}</td>
-                            <td class="py-4 px-6 text-xs font-semibold">${tx.sourceModule}</td>
-                            <td class="py-4 px-6 text-textSecondary text-xs">${tx.recordId}</td>
-                            <td class="py-4 px-6 text-right font-mono text-textSecondary text-xs">
-                                ${tx.rawValue.toLocaleString()} ${tx.emissionFactor?.unit || ''}
-                            </td>
-                            <td class="py-4 px-6 text-right font-mono text-esgGreen text-xs font-bold">
-                                ${tx.calculatedEmission.toLocaleString()} kg CO2
-                            </td>
-                        </tr>
-                    `;
-                }).join('');
 
             } catch (error) {
                 console.error('[Report Integration] Error:', error);
-                alert('Failed to generate environmental report. Please check server status.');
+                alert('Failed to generate report. Please check server status.');
             }
         }
 

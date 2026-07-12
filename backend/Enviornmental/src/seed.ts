@@ -339,7 +339,9 @@ async function seed() {
         is_leadership BOOLEAN DEFAULT FALSE,
         is_board BOOLEAN DEFAULT FALSE,
         points INT DEFAULT 0,
-        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+        department_id INT NULL,
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        FOREIGN KEY (department_id) REFERENCES departments(id) ON DELETE SET NULL
       )
     `);
 
@@ -409,13 +411,13 @@ async function seed() {
 
     // Seed Employees
     await sequelize.query(`
-      INSERT INTO employees (name, email, gender, ethnicity, is_leadership, is_board, points) VALUES
-      ('Aditya S.', 'aditya@ecosphere.com', 'Male', 'South Asian', FALSE, FALSE, 100),
-      ('Sohan Shah', 'sohan@ecosphere.com', 'Male', 'South Asian', FALSE, FALSE, 30),
-      ('Sarah Jenkins', 'sarah@ecosphere.com', 'Female', 'White', TRUE, FALSE, 200),
-      ('Maria Lopez', 'maria@ecosphere.com', 'Female', 'Hispanic', TRUE, TRUE, 150),
-      ('John Doe', 'john@ecosphere.com', 'Male', 'White', FALSE, TRUE, 80),
-      ('Alex Chen', 'alex@ecosphere.com', 'Other', 'East Asian', FALSE, FALSE, 50)
+      INSERT INTO employees (name, email, gender, ethnicity, is_leadership, is_board, points, department_id) VALUES
+      ('Aditya S.', 'aditya@ecosphere.com', 'Male', 'South Asian', FALSE, FALSE, 100, 2),
+      ('Sohan Shah', 'sohan@ecosphere.com', 'Male', 'South Asian', FALSE, FALSE, 30, 3),
+      ('Sarah Jenkins', 'sarah@ecosphere.com', 'Female', 'White', TRUE, FALSE, 200, 1),
+      ('Maria Lopez', 'maria@ecosphere.com', 'Female', 'Hispanic', TRUE, TRUE, 150, 1),
+      ('John Doe', 'john@ecosphere.com', 'Male', 'White', FALSE, TRUE, 80, 2),
+      ('Alex Chen', 'alex@ecosphere.com', 'Other', 'East Asian', FALSE, FALSE, 50, 4)
     `);
 
     // Seed Trainings
