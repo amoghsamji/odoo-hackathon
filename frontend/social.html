@@ -178,7 +178,22 @@
                 <button id="theme-toggle" onclick="toggleTheme()" class="p-1.5 text-textSecondary hover:text-textPrimary rounded-full hover:bg-bgCard focus:outline-none">
                     <span id="theme-icon" class="material-symbols-outlined text-[20px]">light_mode</span>
                 </button>
-                <button class="p-1.5 text-textSecondary hover:text-textPrimary rounded-full hover:bg-bgCard"><span class="material-symbols-outlined text-[20px]">notifications</span></button>
+                <div class="relative">
+                    <button id="notif-bell-btn" onclick="toggleNotifDropdown()" class="p-1.5 text-textSecondary hover:text-textPrimary rounded-full hover:bg-bgCard relative">
+                        <span class="material-symbols-outlined text-[20px]">notifications</span>
+                        <span id="notif-badge" class="absolute w-2 h-2 rounded-full bg-esgOrange top-1 right-1 hidden"></span>
+                    </button>
+                    <!-- Notification Dropdown -->
+                    <div id="notif-dropdown" class="hidden absolute right-0 mt-2 w-80 bg-bgCard border border-borderDark rounded-xl shadow-2xl overflow-hidden z-50 text-left">
+                        <div class="px-4 py-3 bg-bgSidebar border-b border-borderDark flex justify-between items-center">
+                            <span class="text-xs font-bold text-textPrimary uppercase tracking-wider">Live Notifications</span>
+                            <button onclick="clearNotifications()" class="text-[10px] text-esgPurple hover:underline font-semibold">Clear All</button>
+                        </div>
+                        <div id="notif-list" class="max-h-60 overflow-y-auto divide-y divide-borderDark/40 custom-scroll">
+                            <!-- Live updates -->
+                        </div>
+                    </div>
+                </div>
                 <div class="h-6 w-px bg-borderDark"></div>
                 <div class="flex items-center gap-2.5">
                     <img class="w-8 h-8 rounded-full border border-borderDark object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCyU1DjX1WEyXlSYLA9ykyxu_KZldTBys68h5s7TJlWjydSGJwwRirA2Tva7HhJKkXEKRHC9Uhdy1xQuac0OtdKLqTvs_wbhNCILmjU4ctmHDIBvl3RpPYoOZvqmPu8XyOsudsvdCOkX22EoZI5KjocYgi1kf0pPHX47Lh_-83Gepn9lI-hW4vTQkdcnjq1UdpQ81WMiQZdDGq78rS4sTS3-giUp4IHV8x-VLkC2ITlUQfDqs0dtN_Z" alt="User Headshot"/>
@@ -460,7 +475,7 @@
 
     <!-- THEME CONTROLLER & TAB SWITCHING SCRIPT -->
     <script>
-        const API_URL = 'http://127.0.0.1:5000/api';
+        const API_URL = 'http://localhost:5000/api';
         let evidenceRequirement = true;
 
         function applyTheme() {
@@ -882,6 +897,10 @@
                 updateSettings(e.target.checked);
             });
 
+            loadNotifications();
+            // Poll notifications every 10 seconds
+            setInterval(loadNotifications, 10000);
+
             // Set up Search
             document.getElementById('search-activities').addEventListener('input', (e) => {
                 fetchActivities(e.target.value);
@@ -965,6 +984,71 @@
                 }
             });
         });
+
+        // Close dropdown when clicking outside
+        window.addEventListener('click', (e) => {
+            const dropdown = document.getElementById('notif-dropdown');
+            const bell = document.getElementById('notif-bell-btn');
+            if (dropdown && bell && !dropdown.contains(e.target) && !bell.contains(e.target)) {
+                dropdown.classList.add('hidden');
+            }
+        });
+
+        // Notification functions
+        function toggleNotifDropdown() {
+            const dropdown = document.getElementById('notif-dropdown');
+            if (dropdown) dropdown.classList.toggle('hidden');
+        }
+
+        async function loadNotifications() {
+            try {
+                const res = await fetch(`${API_URL}/notifications`);
+                const notifs = await res.json();
+                
+                const badge = document.getElementById('notif-badge');
+                if (badge) {
+                    const unread = notifs.filter(n => !n.is_read).length;
+                    if (unread > 0) {
+                        badge.classList.remove('hidden');
+                    } else {
+                        badge.classList.add('hidden');
+                    }
+                }
+
+                const container = document.getElementById('notif-list');
+                if (container) {
+                    if (notifs.length === 0) {
+                        container.innerHTML = `<div class="px-4 py-6 text-center text-textSecondary text-xs">No new notifications.</div>`;
+                        return;
+                    }
+
+                    container.innerHTML = notifs.map(n => {
+                        const dateStr = new Date(n.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+                        const colorClass = n.type.includes('reward') || n.type.includes('badge') ? 'text-esgGreen' : 'text-esgOrange';
+                        return `
+                            <div class="px-4 py-3 hover:bg-bgSidebar/40 transition-colors text-xs ${!n.is_read ? 'bg-esgOrange/5' : ''}">
+                                <div class="flex justify-between items-start">
+                                    <span class="font-bold text-[9px] ${colorClass} uppercase">${n.type.replace(/_/g, ' ')}</span>
+                                    <span class="text-[9px] text-textSecondary font-mono">${dateStr}</span>
+                                </div>
+                                <p class="text-textSecondary mt-1 line-clamp-2">${n.message}</p>
+                            </div>
+                        `;
+                    }).join('');
+                }
+            } catch (err) {
+                console.error('Error loading notifications:', err);
+            }
+        }
+
+        async function clearNotifications() {
+            try {
+                await fetch(`${API_URL}/notifications/clear`, { method: 'POST' });
+                loadNotifications();
+            } catch (err) {
+                console.error(err);
+            }
+        }
 
         // Listen for hash changes
         window.addEventListener('hashchange', () => {
