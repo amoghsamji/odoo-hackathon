@@ -2,8 +2,6 @@
 > Integrate Environmental, Social and Governance (ESG) management directly into day-to-day ERP operations.
 
 ![Odoo](https://img.shields.io/badge/Odoo-Hackathon-714B67?style=for-the-badge&logo=odoo&logoColor=white)
-![Python](https://img.shields.io/badge/Python-3.x-blue?style=for-the-badge&logo=python)
-![License](https://img.shields.io/badge/License-MIT-green?style=for-the-badge)
 
 ---
 
@@ -75,68 +73,6 @@ EcoSphere integrates ESG directly into day-to-day ERP operations by measuring su
 - CSS
 - JavaScript
 - Bootstrap
-
-### Backend
-- Python
-- Odoo Framework
-
-### Database
-- PostgreSQL
-
-### AI / ML (if applicable)
-- OpenAI API
-- Hugging Face
-- LangChain
-
-### Deployment
-- Docker
-- Odoo Server
-
----
-
-# 📂 Project Structure
-
-```
-ecosphere-esg-platform/
-│
-├── addons/
-│   └── ecosphere_esg/
-│       ├── models/
-│       │   ├── department.py
-│       │   ├── category.py
-│       │   ├── emission_factor.py
-│       │   ├── product_esg_profile.py
-│       │   ├── environmental_goal.py
-│       │   ├── esg_policy.py
-│       │   ├── badge.py
-│       │   ├── reward.py
-│       │   ├── carbon_transaction.py
-│       │   ├── csr_activity.py
-│       │   ├── employee_participation.py
-│       │   ├── challenge.py
-│       │   ├── challenge_participation.py
-│       │   ├── policy_acknowledgement.py
-│       │   ├── audit.py
-│       │   ├── compliance_issue.py
-│       │   └── department_score.py
-│       ├── views/
-│       ├── security/
-│       ├── reports/
-│       └── static/
-│
-├── static/
-│
-├── templates/
-│
-├── screenshots/
-│
-├── docs/
-│
-├── requirements.txt
-├── docker-compose.yml
-├── README.md
-└── LICENSE
-```
 
 ---
 
@@ -221,51 +157,6 @@ The following are in scope, not optional, since they directly support the core m
 
 ---
 
-# ⚙️ Installation
-
-### Clone Repository
-```bash
-git clone https://github.com/yourusername/ecosphere-esg-platform.git
-cd ecosphere-esg-platform
-```
-
-### Create Virtual Environment
-```bash
-python -m venv venv
-```
-
-Windows
-```bash
-venv\Scripts\activate
-```
-
-Linux/Mac
-```bash
-source venv/bin/activate
-```
-
-### Install Dependencies
-```bash
-pip install -r requirements.txt
-```
-
-### Run Odoo
-```bash
-python odoo-bin
-```
-
----
-
-# 🚀 Usage
-
-1. Start the Odoo server.
-2. Install the EcoSphere ESG custom module.
-3. Open the application in your browser.
-4. Configure Departments, Categories, and Emission Factors under Settings.
-5. Explore the Environmental, Social, Governance and Gamification modules.
-6. Generate reports from the Reports menu (or build a custom one via the Report Builder).
-
----
 
 # 📸 Screenshots
 
