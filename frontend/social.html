@@ -126,6 +126,7 @@
                     <li><a href="#activities" onclick="switchSubTab('activities')" class="sidebar-subtab flex items-center gap-3 px-4 py-2 rounded-lg transition-all" id="activities-link"><span class="material-symbols-outlined text-[18px]">volunteer_activism</span><span>CSR Activities</span></a></li>
                     <li><a href="#participation" onclick="switchSubTab('participation')" class="sidebar-subtab flex items-center gap-3 px-4 py-2 rounded-lg transition-all" id="participation-link"><span class="material-symbols-outlined text-[18px]">group</span><span>Employee Participation</span></a></li>
                     <li><a href="#diversity" onclick="switchSubTab('diversity')" class="sidebar-subtab flex items-center gap-3 px-4 py-2 rounded-lg transition-all" id="diversity-link"><span class="material-symbols-outlined text-[18px]">equalizer</span><span>Diversity Dashboard</span></a></li>
+                    <li><a href="#trainings" onclick="switchSubTab('trainings')" class="sidebar-subtab flex items-center gap-3 px-4 py-2 rounded-lg transition-all" id="trainings-link"><span class="material-symbols-outlined text-[18px]">school</span><span>Training Completion</span></a></li>
                 </ul>
             </div>
 
@@ -202,6 +203,7 @@
             <button id="tab-activities" onclick="switchSubTab('activities')" class="subtab-btn px-4 py-1.5 rounded-full text-xs font-semibold bg-esgBlue text-bgMain transition-all">CSR Activities</button>
             <button id="tab-participation" onclick="switchSubTab('participation')" class="subtab-btn px-4 py-1.5 rounded-full text-xs font-medium text-textSecondary hover:text-textPrimary hover:bg-bgCard transition-all">Employee Participation</button>
             <button id="tab-diversity" onclick="switchSubTab('diversity')" class="subtab-btn px-4 py-1.5 rounded-full text-xs font-medium text-textSecondary hover:text-textPrimary hover:bg-bgCard transition-all">Diversity Dashboard</button>
+            <button id="tab-trainings" onclick="switchSubTab('trainings')" class="subtab-btn px-4 py-1.5 rounded-full text-xs font-medium text-textSecondary hover:text-textPrimary hover:bg-bgCard transition-all">Training Completion</button>
         </div>
 
         <!-- CONTENT VIEW CARDS -->
@@ -210,65 +212,23 @@
             <!-- 1. CSR Activities Sub-tab -->
             <div id="content-activities" class="subtab-content space-y-6">
                 <div class="flex justify-between items-center">
-                    <button class="px-4 py-2 bg-esgBlue hover:bg-esgBlue/90 text-textPrimary font-bold text-xs rounded transition-all flex items-center gap-1"><span class="material-symbols-outlined text-sm font-bold">add</span><span>New Activity</span></button>
+                    <div class="flex items-center gap-4">
+                        <button id="new-activity-btn" class="px-4 py-2 bg-esgBlue hover:bg-esgBlue/90 text-textPrimary font-bold text-xs rounded transition-all flex items-center gap-1"><span class="material-symbols-outlined text-sm font-bold">add</span><span>New Activity</span></button>
+                        <div class="flex items-center gap-2 bg-bgCard border border-borderDark rounded px-3 py-1.5 shadow-sm">
+                            <input type="checkbox" id="evidence-required-toggle" class="rounded bg-bgMain border-borderDark text-esgBlue focus:ring-esgBlue h-4 w-4 cursor-pointer"/>
+                            <label for="evidence-required-toggle" class="text-xs text-textSecondary font-semibold select-none cursor-pointer">Evidence Required for Approval</label>
+                        </div>
+                    </div>
                     <div class="relative">
                         <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-textSecondary text-xs">search</span>
-                        <input class="w-60 pl-9 pr-4 py-1.5 bg-bgCard border border-borderDark rounded text-xs text-textPrimary focus:outline-none focus:border-esgBlue focus:ring-1 focus:ring-esgBlue" placeholder="Search activities..." type="text"/>
+                        <input id="search-activities" class="w-60 pl-9 pr-4 py-1.5 bg-bgCard border border-borderDark rounded text-xs text-textPrimary focus:outline-none focus:border-esgBlue focus:ring-1 focus:ring-esgBlue" placeholder="Search activities..." type="text"/>
                     </div>
                 </div>
 
                 <!-- Activities Grid -->
-                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-                    <!-- Tree Plantation -->
-                    <div class="bg-bgCard border border-borderDark rounded-xl p-5 hover:border-esgGreen/40 transition-all flex flex-col justify-between h-48">
-                        <div>
-                            <div class="flex justify-between items-start mb-2">
-                                <span class="px-2 py-0.5 rounded text-[9px] font-bold bg-esgGreen/10 text-esgGreen uppercase">Environmental</span>
-                                <span class="material-symbols-outlined text-esgGreen text-xl">forest</span>
-                            </div>
-                            <h4 class="font-bold text-textPrimary text-sm">Tree Plantation</h4>
-                            <p class="text-xs text-textSecondary mt-1 line-clamp-2">Participate in planting local native trees. Earn 50 points.</p>
-                        </div>
-                        <button class="w-full mt-4 py-2 bg-esgBlue hover:bg-esgBlue/90 text-textPrimary font-bold text-xs rounded transition-all">Join</button>
-                    </div>
-
-                    <!-- Blood Donation -->
-                    <div class="bg-bgCard border border-borderDark rounded-xl p-5 hover:border-red-500/40 transition-all flex flex-col justify-between h-48">
-                        <div>
-                            <div class="flex justify-between items-start mb-2">
-                                <span class="px-2 py-0.5 rounded text-[9px] font-bold bg-red-500/10 text-red-400 uppercase">Social / Health</span>
-                                <span class="material-symbols-outlined text-red-500 text-xl">volunteer_activism</span>
-                            </div>
-                            <h4 class="font-bold text-textPrimary text-sm">Blood Donation</h4>
-                            <p class="text-xs text-textSecondary mt-1 line-clamp-2">Participate in our quarterly corporate blood drive. Earn 30 points.</p>
-                        </div>
-                        <button class="w-full mt-4 py-2 bg-esgBlue hover:bg-esgBlue/90 text-textPrimary font-bold text-xs rounded transition-all">Join</button>
-                    </div>
-
-                    <!-- Climate Change Seminar -->
-                    <div class="bg-bgCard border border-borderDark rounded-xl p-5 hover:border-esgOrange/40 transition-all flex flex-col justify-between h-48">
-                        <div>
-                            <div class="flex justify-between items-start mb-2">
-                                <span class="px-2 py-0.5 rounded text-[9px] font-bold bg-esgOrange/10 text-esgOrange uppercase">Education</span>
-                                <span class="material-symbols-outlined text-esgOrange text-xl">school</span>
-                            </div>
-                            <h4 class="font-bold text-textPrimary text-sm">Climate Change Seminar</h4>
-                            <p class="text-xs text-textSecondary mt-1 line-clamp-2">Learn about environmental impacts and carbon metrics. Earn 20 points.</p>
-                        </div>
-                        <button class="w-full mt-4 py-2 bg-esgBlue hover:bg-esgBlue/90 text-textPrimary font-bold text-xs rounded transition-all">Join</button>
-                    </div>
-
-                    <!-- ESG Workshop -->
-                    <div class="bg-bgCard border border-borderDark rounded-xl p-5 hover:border-esgPurple/40 transition-all flex flex-col justify-between h-48">
-                        <div>
-                            <div class="flex justify-between items-start mb-2">
-                                <span class="px-2 py-0.5 rounded text-[9px] font-bold bg-esgPurple/10 text-esgPurple uppercase">Governance</span>
-                                <span class="material-symbols-outlined text-esgPurple text-xl">gavel</span>
-                            </div>
-                            <h4 class="font-bold text-textPrimary text-sm">ESG Workshop</h4>
-                            <p class="text-xs text-textSecondary mt-1 line-clamp-2">Understand ESG configuration policies and compliance. Earn 30 points.</p>
-                        </div>
-                        <button class="w-full mt-4 py-2 bg-esgBlue hover:bg-esgBlue/90 text-textPrimary font-bold text-xs rounded transition-all">Join</button>
+                <div id="activities-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                    <div class="col-span-full text-center text-xs text-textSecondary py-8">
+                        <span class="animate-pulse">Loading ESG Activities from backend...</span>
                     </div>
                 </div>
             </div>
@@ -286,85 +246,99 @@
                         <thead>
                             <tr class="bg-bgSidebar border-b border-borderDark">
                                 <th class="py-3 px-6 text-xs font-bold text-textSecondary uppercase">Employee</th>
-                                <th class="py-3 px-6 text-xs font-bold text-textSecondary uppercase">Activity/Challenge</th>
-                                <th class="py-3 px-6 text-xs font-bold text-textSecondary uppercase">Proof</th>
-                                <th class="py-3 px-6 text-xs font-bold text-textSecondary uppercase text-center">Points</th>
-                                <th class="py-3 px-6 text-xs font-bold text-textSecondary uppercase text-center font-semibold">Approval</th>
+                                <th class="py-3 px-6 text-xs font-bold text-textSecondary uppercase">Activity &amp; Notes</th>
+                                <th class="py-3 px-6 text-xs font-bold text-textSecondary uppercase text-center font-semibold">Hours</th>
+                                <th class="py-3 px-6 text-xs font-bold text-textSecondary uppercase text-center font-semibold">Proof</th>
+                                <th class="py-3 px-6 text-xs font-bold text-textSecondary uppercase text-center font-semibold">Points</th>
+                                <th class="py-3 px-6 text-xs font-bold text-textSecondary uppercase text-center font-semibold">Approval Status</th>
                             </tr>
                         </thead>
-                        <tbody class="divide-y divide-borderDark/40 text-sm">
-                            <tr class="hover:bg-bgSidebar/50 transition-colors">
-                                <td class="py-4 px-6 font-semibold flex items-center gap-2">
-                                    <div class="w-7 h-7 rounded-full bg-esgBlue/15 text-esgBlue flex items-center justify-center text-xs font-bold">AS</div>
-                                    <span>Aditya S.</span>
-                                </td>
-                                <td class="py-4 px-6">Tree Plantation</td>
-                                <td class="py-4 px-6 font-mono text-xs text-esgBlue hover:underline cursor-pointer"><span class="flex items-center gap-1"><span class="material-symbols-outlined text-sm">description</span><span>Docx.pdf</span></span></td>
-                                <td class="py-4 px-6 text-center font-mono font-semibold">50</td>
-                                <td class="py-4 px-6 text-center">
-                                    <div class="flex justify-center items-center gap-2">
-                                        <span class="px-2 py-0.5 rounded text-[10px] font-bold bg-esgOrange/10 text-esgOrange border border-esgOrange/20 mr-2">Pending</span>
-                                        <button class="px-2 py-1 bg-esgGreen hover:bg-esgGreen/90 text-bgMain font-bold text-[10px] rounded transition-all shadow-sm">Approve</button>
-                                        <button class="px-2 py-1 bg-red-500 hover:bg-red-600 text-textPrimary font-bold text-[10px] rounded transition-all shadow-sm">Reject</button>
-                                    </div>
-                                </td>
-                            </tr>
-                            <tr class="hover:bg-bgSidebar/50 transition-colors">
-                                <td class="py-4 px-6 font-semibold flex items-center gap-2">
-                                    <div class="w-7 h-7 rounded-full bg-esgGreen/15 text-esgGreen flex items-center justify-center text-xs font-bold">SS</div>
-                                    <span>Sohan Shah</span>
-                                </td>
-                                <td class="py-4 px-6">ESG Workshop</td>
-                                <td class="py-4 px-6 font-mono text-xs text-esgBlue hover:underline cursor-pointer"><span class="flex items-center gap-1"><span class="material-symbols-outlined text-sm">image</span><span>image.png</span></span></td>
-                                <td class="py-4 px-6 text-center font-mono font-semibold">30</td>
-                                <td class="py-4 px-6 text-center">
-                                    <span class="px-2 py-0.5 rounded text-[10px] font-bold bg-esgGreen/10 text-esgGreen border border-esgGreen/20">Approved</span>
-                                </td>
-                            </tr>
+                        <tbody id="participations-tbody" class="divide-y divide-borderDark/40 text-sm">
+                            <!-- Filled dynamically -->
                         </tbody>
                     </table>
                 </div>
             </div>
 
-            <!-- 3. Diversity Dashboard Sub-tab -->
             <div id="content-diversity" class="subtab-content hidden space-y-6">
-                <h3 class="text-md font-semibold text-textPrimary">Diversity &amp; Inclusion Metrics</h3>
+                <div class="flex justify-between items-center">
+                    <div>
+                        <h3 class="text-md font-semibold text-textPrimary">Diversity &amp; Inclusion Metrics</h3>
+                        <p class="text-xs text-textSecondary">Demographics computed dynamically from active participants in approved CSR activities.</p>
+                    </div>
+                </div>
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
                     <!-- Gender Distribution -->
                     <div class="bg-bgCard border border-borderDark rounded-xl p-6">
-                        <h4 class="text-xs font-bold text-textSecondary uppercase mb-4 tracking-wider">Gender Distribution (Global)</h4>
-                        <div class="w-full h-8 bg-bgMain rounded-full overflow-hidden flex mb-6">
-                            <div class="h-full bg-esgGreen" style="width: 48%;" title="Female (48%)"></div>
-                            <div class="h-full bg-esgBlue" style="width: 45%;" title="Male (45%)"></div>
-                            <div class="h-full bg-esgOrange" style="width: 7%;" title="Other (7%)"></div>
+                        <h4 class="text-xs font-bold text-textSecondary uppercase mb-4 tracking-wider">Gender Distribution (Active Participants)</h4>
+                        <div id="gender-bar-container" class="w-full h-8 bg-bgMain rounded-full overflow-hidden flex mb-6">
+                            <!-- Filled dynamically -->
                         </div>
-                        <div class="flex justify-between text-xs font-semibold px-2">
-                            <div class="flex items-center gap-2"><div class="w-3 h-3 rounded-full bg-esgGreen"></div>Female (48%)</div>
-                            <div class="flex items-center gap-2"><div class="w-3 h-3 rounded-full bg-esgBlue"></div>Male (45%)</div>
-                            <div class="flex items-center gap-2"><div class="w-3 h-3 rounded-full bg-esgOrange"></div>Other (7%)</div>
+                        <div id="gender-label-container" class="flex justify-between text-xs font-semibold px-2">
+                            <!-- Filled dynamically -->
                         </div>
                     </div>
 
                     <!-- Leadership Ethnicity -->
                     <div class="bg-bgCard border border-borderDark rounded-xl p-6 flex flex-col gap-5">
-                        <h4 class="text-xs font-bold text-textSecondary uppercase tracking-wider">Leadership Ethnicity Target vs Actual</h4>
+                        <h4 class="text-xs font-bold text-textSecondary uppercase tracking-wider">Leadership &amp; Board Diversity (Active Participants)</h4>
                         <div class="space-y-4">
                             <div>
                                 <div class="flex justify-between text-xs font-semibold mb-1">
-                                    <span>Underrepresented Groups</span>
-                                    <span class="text-esgOrange font-mono">32% / 35%</span>
+                                    <span>Underrepresented Groups (Leadership)</span>
+                                    <span id="leadership-ethnicity-value" class="text-esgOrange font-mono">0% / 35%</span>
                                 </div>
                                 <div class="w-full h-2 bg-bgMain rounded-full overflow-hidden">
-                                    <div class="h-full bg-esgOrange rounded-full" style="width: 91%;"></div>
+                                    <div id="leadership-ethnicity-bar" class="h-full bg-esgOrange rounded-full transition-all duration-500" style="width: 0%;"></div>
                                 </div>
                             </div>
                             <div>
                                 <div class="flex justify-between text-xs font-semibold mb-1">
                                     <span>Board Diversity</span>
-                                    <span class="text-esgGreen font-mono">40% / 40%</span>
+                                    <span id="board-diversity-value" class="text-esgGreen font-mono">0% / 40%</span>
                                 </div>
                                 <div class="w-full h-2 bg-bgMain rounded-full overflow-hidden">
-                                    <div class="h-full bg-esgGreen rounded-full" style="width: 100%;"></div>
+                                    <div id="board-diversity-bar" class="h-full bg-esgGreen rounded-full transition-all duration-500" style="width: 0%;"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Engagement and Total hours -->
+                    <div class="bg-bgCard border border-borderDark rounded-xl p-6 flex flex-col gap-5 md:col-span-2">
+                        <div class="flex justify-between items-center border-b border-borderDark pb-3">
+                            <h4 class="text-xs font-bold text-textSecondary uppercase tracking-wider">CSR Category Engagement Breakdown</h4>
+                            <div class="flex items-center gap-2 bg-esgBlue/10 text-esgBlue px-3 py-1.5 rounded-lg text-xs font-bold font-mono">
+                                <span class="material-symbols-outlined text-[16px]">volunteer_activism</span>
+                                <span id="diversity-total-hours">Total CSR Hours: 0 hrs</span>
+                            </div>
+                        </div>
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 pt-2">
+                            <div>
+                                <div class="flex justify-between text-xs font-semibold mb-1">
+                                    <span>Environmental Engagement</span>
+                                    <span id="env-engagement-value" class="text-esgGreen font-mono">0%</span>
+                                </div>
+                                <div class="w-full h-2 bg-bgMain rounded-full overflow-hidden">
+                                    <div id="env-engagement-bar" class="h-full bg-esgGreen rounded-full transition-all duration-500" style="width: 0%;"></div>
+                                </div>
+                            </div>
+                            <div>
+                                <div class="flex justify-between text-xs font-semibold mb-1">
+                                    <span>Social &amp; Educational Engagement</span>
+                                    <span id="soc-engagement-value" class="text-esgBlue font-mono">0%</span>
+                                </div>
+                                <div class="w-full h-2 bg-bgMain rounded-full overflow-hidden">
+                                    <div id="soc-engagement-bar" class="h-full bg-esgBlue rounded-full transition-all duration-500" style="width: 0%;"></div>
+                                </div>
+                            </div>
+                            <div>
+                                <div class="flex justify-between text-xs font-semibold mb-1">
+                                    <span>Governance Engagement</span>
+                                    <span id="gov-engagement-value" class="text-esgPurple font-mono">0%</span>
+                                </div>
+                                <div class="w-full h-2 bg-bgMain rounded-full overflow-hidden">
+                                    <div id="gov-engagement-bar" class="h-full bg-esgPurple rounded-full transition-all duration-500" style="width: 0%;"></div>
                                 </div>
                             </div>
                         </div>
@@ -372,11 +346,123 @@
                 </div>
             </div>
 
+            <!-- 4. Training Completion Sub-tab -->
+            <div id="content-trainings" class="subtab-content hidden space-y-6">
+                <div class="flex justify-between items-center bg-bgCard border border-borderDark rounded-xl p-5 shadow-sm">
+                    <div>
+                        <h3 class="text-md font-semibold text-textPrimary flex items-center gap-2">
+                            <span class="material-symbols-outlined text-esgBlue">school</span>
+                            Compliance Training Status
+                        </h3>
+                        <p class="text-xs text-textSecondary">Monitor corporate compliance, sustainability standards, and data security training completions.</p>
+                    </div>
+                    <div class="flex flex-col items-end">
+                        <span class="text-2xl font-extrabold text-esgGreen font-mono" id="trainings-total-hours">0 hrs</span>
+                        <span class="text-[10px] text-textSecondary font-bold uppercase tracking-wider">Total Completed Compliance Hours</span>
+                    </div>
+                </div>
+                <div class="bg-bgCard border border-borderDark rounded-xl overflow-hidden shadow-lg">
+                    <table class="w-full text-left border-collapse">
+                        <thead>
+                            <tr class="bg-bgSidebar border-b border-borderDark">
+                                <th class="py-3 px-6 text-xs font-bold text-textSecondary uppercase">Employee</th>
+                                <th class="py-3 px-6 text-xs font-bold text-textSecondary uppercase">Course Name</th>
+                                <th class="py-3 px-6 text-xs font-bold text-textSecondary uppercase text-center font-semibold">Hours Required</th>
+                                <th class="py-3 px-6 text-xs font-bold text-textSecondary uppercase text-center font-semibold">Status</th>
+                                <th class="py-3 px-6 text-xs font-bold text-textSecondary uppercase text-center">Completion Date</th>
+                            </tr>
+                        </thead>
+                        <tbody id="trainings-tbody" class="divide-y divide-borderDark/40 text-sm">
+                            <!-- Filled dynamically -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
         </div>
     </main>
 
+    <!-- JOIN ACTIVITY MODAL -->
+    <div id="join-activity-modal" class="fixed inset-0 bg-black/60 backdrop-blur-sm hidden flex items-center justify-center z-50">
+        <div class="bg-bgCard border border-borderDark rounded-xl p-6 w-full max-w-md shadow-2xl relative">
+            <button id="close-join-modal" class="absolute top-4 right-4 text-textSecondary hover:text-textPrimary">
+                <span class="material-symbols-outlined">close</span>
+            </button>
+            <h3 class="text-lg font-bold text-textPrimary mb-1">Join Activity</h3>
+            <p id="join-activity-title" class="text-xs text-textSecondary mb-4 font-semibold"></p>
+            <form id="join-activity-form" class="space-y-4">
+                <input type="hidden" id="join-form-activity-id"/>
+                <div>
+                    <label class="block text-xs font-bold text-textSecondary uppercase mb-1">Select Employee</label>
+                    <select id="join-form-employee" required class="w-full px-3 py-2 bg-bgMain border border-borderDark rounded text-sm text-textPrimary focus:outline-none focus:border-esgBlue">
+                        <!-- Loaded dynamically -->
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-xs font-bold text-textSecondary uppercase mb-1">Hours Contributed</label>
+                    <input type="number" id="join-form-hours" min="1" required value="2" class="w-full px-3 py-2 bg-bgMain border border-borderDark rounded text-sm text-textPrimary focus:outline-none focus:border-esgBlue"/>
+                </div>
+                <div>
+                    <label class="block text-xs font-bold text-textSecondary uppercase mb-1">Proof Document Name</label>
+                    <input type="text" id="join-form-proof" placeholder="e.g. clean_photo.jpg or ticket.pdf" class="w-full px-3 py-2 bg-bgMain border border-borderDark rounded text-sm text-textPrimary focus:outline-none focus:border-esgBlue"/>
+                    <p id="join-proof-notice" class="text-[10px] text-textSecondary mt-1"></p>
+                </div>
+                <div>
+                    <label class="block text-xs font-bold text-textSecondary uppercase mb-1">Participant Notes / Comments</label>
+                    <textarea id="join-form-notes" rows="2" placeholder="Describe your contribution..." class="w-full px-3 py-2 bg-bgMain border border-borderDark rounded text-sm text-textPrimary focus:outline-none focus:border-esgBlue"></textarea>
+                </div>
+                <button type="submit" class="w-full py-2.5 bg-esgBlue hover:bg-esgBlue/90 text-textPrimary font-bold text-sm rounded transition-all">Submit Participation</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- NEW CSR ACTIVITY MODAL -->
+    <div id="new-activity-modal" class="fixed inset-0 bg-black/60 backdrop-blur-sm hidden flex items-center justify-center z-50">
+        <div class="bg-bgCard border border-borderDark rounded-xl p-6 w-full max-w-md shadow-2xl relative">
+            <button id="close-modal" class="absolute top-4 right-4 text-textSecondary hover:text-textPrimary">
+                <span class="material-symbols-outlined">close</span>
+            </button>
+            <h3 class="text-lg font-bold text-textPrimary mb-4">Create New CSR Activity</h3>
+            <form id="new-activity-form" class="space-y-4">
+                <div>
+                    <label class="block text-xs font-bold text-textSecondary uppercase mb-1">Activity Name</label>
+                    <input type="text" id="form-name" required class="w-full px-3 py-2 bg-bgMain border border-borderDark rounded text-sm text-textPrimary focus:outline-none focus:border-esgBlue"/>
+                </div>
+                <div>
+                    <label class="block text-xs font-bold text-textSecondary uppercase mb-1">Category</label>
+                    <select id="form-category" class="w-full px-3 py-2 bg-bgMain border border-borderDark rounded text-sm text-textPrimary focus:outline-none focus:border-esgBlue">
+                        <option value="Environmental">Environmental</option>
+                        <option value="Social / Health">Social / Health</option>
+                        <option value="Education">Education</option>
+                        <option value="Governance">Governance</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-xs font-bold text-textSecondary uppercase mb-1">Icon Type</label>
+                    <select id="form-icon" class="w-full px-3 py-2 bg-bgMain border border-borderDark rounded text-sm text-textPrimary focus:outline-none focus:border-esgBlue">
+                        <option value="forest">Forest (Environmental)</option>
+                        <option value="volunteer_activism">Heart/Volunteer (Social/Health)</option>
+                        <option value="school">School/Education (Education)</option>
+                        <option value="gavel">Gavel (Governance)</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-xs font-bold text-textSecondary uppercase mb-1">Points</label>
+                    <input type="number" id="form-points" min="1" required class="w-full px-3 py-2 bg-bgMain border border-borderDark rounded text-sm text-textPrimary focus:outline-none focus:border-esgBlue"/>
+                </div>
+                <div>
+                    <label class="block text-xs font-bold text-textSecondary uppercase mb-1">Description</label>
+                    <textarea id="form-description" rows="3" required class="w-full px-3 py-2 bg-bgMain border border-borderDark rounded text-sm text-textPrimary focus:outline-none focus:border-esgBlue"></textarea>
+                </div>
+                <button type="submit" class="w-full py-2.5 bg-esgBlue hover:bg-esgBlue/90 text-textPrimary font-bold text-sm rounded transition-all">Submit Activity</button>
+            </form>
+        </div>
+    </div>
+
     <!-- THEME CONTROLLER & TAB SWITCHING SCRIPT -->
     <script>
+        const API_URL = 'http://127.0.0.1:5000/api';
+        let evidenceRequirement = true;
+
         function applyTheme() {
             const theme = localStorage.getItem('theme') || 'dark';
             const html = document.documentElement;
@@ -436,20 +522,454 @@
             }
         }
 
-        // On Page Load, check hash in URL to default to specific subtab
+        // --- BACKEND API INTEGRATION ---
+
+        async function fetchSettings() {
+            try {
+                const response = await fetch(`${API_URL}/settings`);
+                const data = await response.json();
+                evidenceRequirement = data.evidence_requirement;
+                document.getElementById('evidence-required-toggle').checked = evidenceRequirement;
+                
+                // Update text notice in proof input field
+                const labelText = document.getElementById('join-proof-notice');
+                if (evidenceRequirement) {
+                    labelText.textContent = '* Evidence is strictly required to join.';
+                    labelText.className = 'text-[10px] text-red-400 mt-1 font-semibold';
+                    document.getElementById('join-form-proof').required = true;
+                } else {
+                    labelText.textContent = 'Evidence optional (Leave blank if no proof).';
+                    labelText.className = 'text-[10px] text-textSecondary mt-1';
+                    document.getElementById('join-form-proof').required = false;
+                }
+            } catch (err) {
+                console.error('Error fetching settings:', err);
+            }
+        }
+
+        async function updateSettings(checked) {
+            try {
+                await fetch(`${API_URL}/settings`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ evidence_requirement: checked })
+                });
+                fetchSettings();
+            } catch (err) {
+                console.error('Error saving settings:', err);
+            }
+        }
+
+        async function fetchEmployees() {
+            try {
+                const response = await fetch(`${API_URL}/employees`);
+                const data = await response.json();
+                const select = document.getElementById('join-form-employee');
+                select.innerHTML = '<option value="">-- Choose Employee --</option>';
+                data.forEach(emp => {
+                    const opt = document.createElement('option');
+                    opt.value = emp.id;
+                    opt.textContent = emp.name;
+                    select.appendChild(opt);
+                });
+            } catch (err) {
+                console.error('Error fetching employees:', err);
+            }
+        }
+
+        async function fetchActivities(searchQuery = '') {
+            try {
+                const response = await fetch(`${API_URL}/activities?search=${encodeURIComponent(searchQuery)}`);
+                const data = await response.json();
+                renderActivities(data);
+            } catch (err) {
+                console.error('Error fetching activities:', err);
+            }
+        }
+
+        function renderActivities(activities) {
+            const grid = document.getElementById('activities-grid');
+            grid.innerHTML = '';
+
+            if (activities.length === 0) {
+                grid.innerHTML = '<p class="col-span-full text-center text-xs text-textSecondary py-8">No activities found</p>';
+                return;
+            }
+
+            activities.forEach(activity => {
+                let borderClass = 'hover:border-esgBlue/40';
+                let tagBg = 'bg-esgBlue/10 text-esgBlue';
+                let iconColor = 'text-esgBlue';
+
+                if (activity.category.includes('Environmental')) {
+                    borderClass = 'hover:border-esgGreen/40';
+                    tagBg = 'bg-esgGreen/10 text-esgGreen';
+                    iconColor = 'text-esgGreen';
+                } else if (activity.category.includes('Social') || activity.category.includes('Health')) {
+                    borderClass = 'hover:border-red-500/40';
+                    tagBg = 'bg-red-500/10 text-red-400';
+                    iconColor = 'text-red-500';
+                } else if (activity.category.includes('Education')) {
+                    borderClass = 'hover:border-esgOrange/40';
+                    tagBg = 'bg-esgOrange/10 text-esgOrange';
+                    iconColor = 'text-esgOrange';
+                } else if (activity.category.includes('Governance')) {
+                    borderClass = 'hover:border-esgPurple/40';
+                    tagBg = 'bg-esgPurple/10 text-esgPurple';
+                    iconColor = 'text-esgPurple';
+                }
+
+                // Create prerequisite pill
+                let prereqHtml = '';
+                if (activity.prerequisite_name) {
+                    prereqHtml = `
+                        <span class="mt-2 px-2 py-0.5 rounded text-[9px] font-bold bg-amber-500/10 text-amber-500 border border-amber-500/20 uppercase flex items-center gap-1 w-max">
+                            <span class="material-symbols-outlined text-[11px] font-bold">lock</span>
+                            <span>Prereq: ${activity.prerequisite_name}</span>
+                        </span>
+                    `;
+                }
+
+                const card = document.createElement('div');
+                card.className = `bg-bgCard border border-borderDark rounded-xl p-5 ${borderClass} transition-all flex flex-col justify-between h-52`;
+                card.innerHTML = `
+                    <div>
+                        <div class="flex justify-between items-start mb-1.5">
+                            <span class="px-2 py-0.5 rounded text-[9px] font-bold ${tagBg} uppercase">${activity.category}</span>
+                            <span class="material-symbols-outlined ${iconColor} text-xl">${activity.icon}</span>
+                        </div>
+                        <h4 class="font-bold text-textPrimary text-sm">${activity.name}</h4>
+                        <p class="text-xs text-textSecondary mt-0.5 line-clamp-2">${activity.description}</p>
+                        ${prereqHtml}
+                    </div>
+                    <button onclick="openJoinModal(${activity.id}, '${activity.name}')" class="w-full mt-3 py-2 bg-esgBlue hover:bg-esgBlue/90 text-textPrimary font-bold text-xs rounded transition-all">Join</button>
+                `;
+                grid.appendChild(card);
+            });
+        }
+
+        function openJoinModal(activityId, title) {
+            document.getElementById('join-form-activity-id').value = activityId;
+            document.getElementById('join-activity-title').textContent = `Activity: ${title}`;
+            document.getElementById('join-form-hours').value = 2;
+            document.getElementById('join-form-proof').value = '';
+            document.getElementById('join-form-notes').value = '';
+            document.getElementById('join-activity-modal').classList.remove('hidden');
+        }
+
+        async function fetchParticipations() {
+            try {
+                const response = await fetch(`${API_URL}/participations`);
+                const data = await response.json();
+                renderParticipations(data);
+            } catch (err) {
+                console.error('Error fetching participations:', err);
+            }
+        }
+
+        function renderParticipations(participations) {
+            const tbody = document.getElementById('participations-tbody');
+            tbody.innerHTML = '';
+
+            if (participations.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="5" class="py-4 text-center text-xs text-textSecondary">No participation logs found</td></tr>';
+                return;
+            }
+
+            participations.forEach(p => {
+                const tr = document.createElement('tr');
+                tr.className = 'hover:bg-bgSidebar/50 transition-colors';
+
+                const initials = p.employee_name.split(' ').map(n => n[0]).join('');
+                let colorClass = 'bg-esgBlue/15 text-esgBlue';
+                if (p.employee_name.startsWith('S')) colorClass = 'bg-esgGreen/15 text-esgGreen';
+                if (p.employee_name.startsWith('Sarah')) colorClass = 'bg-esgPurple/15 text-esgPurple';
+
+                let actionHtml = '';
+                if (p.status === 'Pending') {
+                    actionHtml = `
+                        <div class="flex justify-center items-center gap-2">
+                            <span class="px-2 py-0.5 rounded text-[10px] font-bold bg-esgOrange/10 text-esgOrange border border-esgOrange/20 mr-2">Pending</span>
+                            <button onclick="approveClaim(${p.id})" class="px-2 py-1 bg-esgGreen hover:bg-esgGreen/90 text-bgMain font-bold text-[10px] rounded transition-all shadow-sm">Approve</button>
+                            <button onclick="rejectClaim(${p.id})" class="px-2 py-1 bg-red-500 hover:bg-red-600 text-textPrimary font-bold text-[10px] rounded transition-all shadow-sm">Reject</button>
+                        </div>
+                    `;
+                } else if (p.status === 'Approved') {
+                    actionHtml = `<span class="px-2 py-0.5 rounded text-[10px] font-bold bg-esgGreen/10 text-esgGreen border border-esgGreen/20">Approved</span>`;
+                } else {
+                    actionHtml = `<span class="px-2 py-0.5 rounded text-[10px] font-bold bg-red-500/10 text-red-500 border border-red-500/20">Rejected</span>`;
+                }
+
+                const notesStr = p.employee_notes ? `<div class="text-[10px] text-textSecondary italic mt-0.5">Notes: ${p.employee_notes}</div>` : '';
+
+                tr.innerHTML = `
+                    <td class="py-4 px-6 font-semibold">
+                        <div class="flex items-center gap-2">
+                            <div class="w-7 h-7 rounded-full ${colorClass} flex items-center justify-center text-xs font-bold">${initials}</div>
+                            <span>${p.employee_name}</span>
+                        </div>
+                    </td>
+                    <td class="py-4 px-6 font-medium">
+                        ${p.activity_name}
+                        ${notesStr}
+                    </td>
+                    <td class="py-4 px-6 text-center font-mono text-xs text-textSecondary">
+                        <span class="flex items-center justify-center gap-1">
+                            <span class="material-symbols-outlined text-[13px]">schedule</span>
+                            <span>${p.hours_spent || 0} hrs</span>
+                        </span>
+                    </td>
+                    <td class="py-4 px-6 text-center font-mono">
+                        <span class="flex items-center justify-center gap-1 font-semibold text-esgBlue hover:underline cursor-pointer">
+                            <span class="material-symbols-outlined text-sm">description</span>
+                            <span>${p.proof || 'None'}</span>
+                        </span>
+                    </td>
+                    <td class="py-4 px-6 text-center font-mono font-semibold">${p.points}</td>
+                    <td class="py-4 px-6 text-center">${actionHtml}</td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+
+        async function approveClaim(id) {
+            try {
+                const response = await fetch(`${API_URL}/participations/${id}/approve`, { method: 'POST' });
+                if (response.ok) {
+                    fetchParticipations();
+                    fetchDiversityMetrics();
+                } else {
+                    const data = await response.json();
+                    alert(data.error || 'Failed to approve');
+                }
+            } catch (err) {
+                console.error(err);
+            }
+        }
+
+        async function rejectClaim(id) {
+            try {
+                const response = await fetch(`${API_URL}/participations/${id}/reject`, { method: 'POST' });
+                if (response.ok) {
+                    fetchParticipations();
+                } else {
+                    const data = await response.json();
+                    alert(data.error || 'Failed to reject');
+                }
+            } catch (err) {
+                console.error(err);
+            }
+        }
+
+        async function fetchDiversityMetrics() {
+            try {
+                const response = await fetch(`${API_URL}/diversity-metrics`);
+                const data = await response.json();
+                renderDiversity(data);
+            } catch (err) {
+                console.error('Error fetching diversity metrics:', err);
+            }
+        }
+
+        function renderDiversity(metrics) {
+            const barContainer = document.getElementById('gender-bar-container');
+            const labelContainer = document.getElementById('gender-label-container');
+
+            barContainer.innerHTML = `
+                <div class="h-full bg-esgGreen transition-all duration-500" style="width: ${metrics.genderDistribution.Female}%;" title="Female (${metrics.genderDistribution.Female}%)"></div>
+                <div class="h-full bg-esgBlue transition-all duration-500" style="width: ${metrics.genderDistribution.Male}%;" title="Male (${metrics.genderDistribution.Male}%)"></div>
+                <div class="h-full bg-esgOrange transition-all duration-500" style="width: ${metrics.genderDistribution.Other}%;" title="Other (${metrics.genderDistribution.Other}%)"></div>
+            `;
+
+            labelContainer.innerHTML = `
+                <div class="flex items-center gap-2"><div class="w-3 h-3 rounded-full bg-esgGreen"></div>Female (${metrics.genderDistribution.Female}%)</div>
+                <div class="flex items-center gap-2"><div class="w-3 h-3 rounded-full bg-esgBlue"></div>Male (${metrics.genderDistribution.Male}%)</div>
+                <div class="flex items-center gap-2"><div class="w-3 h-3 rounded-full bg-esgOrange"></div>Other (${metrics.genderDistribution.Other}%)</div>
+            `;
+
+            document.getElementById('leadership-ethnicity-value').textContent = `${metrics.leadershipEthnicity.actual}% / ${metrics.leadershipEthnicity.target}%`;
+            document.getElementById('leadership-ethnicity-bar').style.width = `${metrics.leadershipEthnicity.actual}%`;
+
+            document.getElementById('board-diversity-value').textContent = `${metrics.boardDiversity.actual}% / ${metrics.boardDiversity.target}%`;
+            document.getElementById('board-diversity-bar').style.width = `${metrics.boardDiversity.actual}%`;
+
+            // Render Hours & Category Breakdown
+            document.getElementById('diversity-total-hours').textContent = `Total CSR Hours: ${metrics.totalHours || 0} hrs`;
+            
+            document.getElementById('env-engagement-value').textContent = `${metrics.categoryEngagement.Environmental}%`;
+            document.getElementById('env-engagement-bar').style.width = `${metrics.categoryEngagement.Environmental}%`;
+
+            document.getElementById('soc-engagement-value').textContent = `${metrics.categoryEngagement.Social}%`;
+            document.getElementById('soc-engagement-bar').style.width = `${metrics.categoryEngagement.Social}%`;
+
+            document.getElementById('gov-engagement-value').textContent = `${metrics.categoryEngagement.Governance}%`;
+            document.getElementById('gov-engagement-bar').style.width = `${metrics.categoryEngagement.Governance}%`;
+        }
+
+        async function fetchTrainings() {
+            try {
+                const response = await fetch(`${API_URL}/trainings`);
+                const data = await response.json();
+                renderTrainings(data.logs);
+                document.getElementById('trainings-total-hours').textContent = `${data.totalHoursCompleted || 0} hrs`;
+            } catch (err) {
+                console.error('Error fetching trainings:', err);
+            }
+        }
+
+        function renderTrainings(trainings) {
+            const tbody = document.getElementById('trainings-tbody');
+            tbody.innerHTML = '';
+
+            if (trainings.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="5" class="py-4 text-center text-xs text-textSecondary">No training records found</td></tr>';
+                return;
+            }
+
+            trainings.forEach(t => {
+                const tr = document.createElement('tr');
+                tr.className = 'hover:bg-bgSidebar/50 transition-colors';
+
+                const initials = t.employee_name.split(' ').map(n => n[0]).join('');
+                let colorClass = 'bg-esgBlue/15 text-esgBlue';
+                if (t.employee_name.startsWith('S')) colorClass = 'bg-esgGreen/15 text-esgGreen';
+                if (t.employee_name.startsWith('Sarah')) colorClass = 'bg-esgPurple/15 text-esgPurple';
+
+                let statusHtml = '';
+                if (t.status === 'Completed') {
+                    statusHtml = `<span class="px-2 py-0.5 rounded text-[10px] font-bold bg-esgGreen/10 text-esgGreen border border-esgGreen/20">Completed</span>`;
+                } else {
+                    statusHtml = `<span class="px-2 py-0.5 rounded text-[10px] font-bold bg-esgOrange/10 text-esgOrange border border-esgOrange/20">In Progress</span>`;
+                }
+
+                const completionDate = t.completion_date 
+                    ? new Date(t.completion_date).toLocaleDateString() 
+                    : '-';
+
+                tr.innerHTML = `
+                    <td class="py-4 px-6 font-semibold flex items-center gap-2">
+                        <div class="w-7 h-7 rounded-full ${colorClass} flex items-center justify-center text-xs font-bold">${initials}</div>
+                        <span>${t.employee_name}</span>
+                    </td>
+                    <td class="py-4 px-6 font-medium">${t.training_name}</td>
+                    <td class="py-4 px-6 text-center font-mono">${t.required_hours} hrs</td>
+                    <td class="py-4 px-6 text-center">${statusHtml}</td>
+                    <td class="py-4 px-6 text-center font-mono text-xs text-textSecondary">${completionDate}</td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+
+        // On Page Load
         window.addEventListener('DOMContentLoaded', () => {
             const hash = window.location.hash.substring(1);
-            if (hash && ['activities', 'participation', 'diversity'].includes(hash)) {
+            if (hash && ['activities', 'participation', 'diversity', 'trainings'].includes(hash)) {
                 switchSubTab(hash);
             } else {
                 switchSubTab('activities'); // default
             }
+
+            // Initial fetch
+            fetchSettings();
+            fetchEmployees();
+            fetchActivities();
+            fetchParticipations();
+            fetchDiversityMetrics();
+            fetchTrainings();
+
+            // Set up Settings Toggle listener
+            document.getElementById('evidence-required-toggle').addEventListener('change', (e) => {
+                updateSettings(e.target.checked);
+            });
+
+            // Set up Search
+            document.getElementById('search-activities').addEventListener('input', (e) => {
+                fetchActivities(e.target.value);
+            });
+
+            // Set up Modal hooks
+            const modal = document.getElementById('new-activity-modal');
+            const openBtn = document.getElementById('new-activity-btn');
+            const closeBtn = document.getElementById('close-modal');
+
+            openBtn.addEventListener('click', () => modal.classList.remove('hidden'));
+            closeBtn.addEventListener('click', () => modal.classList.add('hidden'));
+
+            // Join modal closing
+            const joinModal = document.getElementById('join-activity-modal');
+            document.getElementById('close-join-modal').addEventListener('click', () => {
+                joinModal.classList.add('hidden');
+            });
+
+            // Join Submit
+            document.getElementById('join-activity-form').addEventListener('submit', async (e) => {
+                e.preventDefault();
+                const activityId = document.getElementById('join-form-activity-id').value;
+                const employeeId = document.getElementById('join-form-employee').value;
+                const hoursSpent = document.getElementById('join-form-hours').value;
+                const proof = document.getElementById('join-form-proof').value;
+                const notes = document.getElementById('join-form-notes').value;
+
+                // Validation on frontend if toggle is checked
+                if (evidenceRequirement && (!proof || proof.trim() === '')) {
+                    alert('Evidence Required: Please enter a proof document name/evidence before submitting.');
+                    return;
+                }
+
+                try {
+                    const response = await fetch(`${API_URL}/activities/${activityId}/join`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ employeeId, proof, hoursSpent, notes })
+                    });
+                    const resData = await response.json();
+                    if (response.ok) {
+                        alert(resData.message || 'Joined activity successfully!');
+                        joinModal.classList.add('hidden');
+                        fetchParticipations();
+                    } else {
+                        alert(resData.error || 'Failed to join');
+                    }
+                } catch (err) {
+                    console.error('Error joining activity:', err);
+                }
+            });
+
+            // Create Activity Submit
+            document.getElementById('new-activity-form').addEventListener('submit', async (e) => {
+                e.preventDefault();
+                const payload = {
+                    name: document.getElementById('form-name').value,
+                    category: document.getElementById('form-category').value,
+                    icon: document.getElementById('form-icon').value,
+                    points: document.getElementById('form-points').value,
+                    description: document.getElementById('form-description').value,
+                };
+
+                try {
+                    const response = await fetch(`${API_URL}/activities`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(payload)
+                    });
+                    if (response.ok) {
+                        modal.classList.add('hidden');
+                        document.getElementById('new-activity-form').reset();
+                        fetchActivities();
+                    } else {
+                        const errData = await response.json();
+                        alert(errData.error || 'Failed to create activity');
+                    }
+                } catch (err) {
+                    console.error(err);
+                }
+            });
         });
 
         // Listen for hash changes
         window.addEventListener('hashchange', () => {
             const hash = window.location.hash.substring(1);
-            if (hash && ['activities', 'participation', 'diversity'].includes(hash)) {
+            if (hash && ['activities', 'participation', 'diversity', 'trainings'].includes(hash)) {
                 switchSubTab(hash);
             }
         });

@@ -1,5 +1,6 @@
 import { initializeDatabase, sequelize } from './config/database';
 import { Department, EmissionFactor, ProductEsgProfile, EnvironmentalGoal, CarbonTransaction, DepartmentScore, User } from './models';
+import { QueryTypes } from 'sequelize';
 
 async function seed() {
   try {
@@ -317,6 +318,187 @@ async function seed() {
     // 8. Run score updates for all departments to synchronize active goal metrics
     console.log('[Seed] Synchronizing goal values and recalculating department scores...');
     await updateDepartmentScores([adminDept.id, logisticsDept.id, mfgDept.id, purchaseDept.id]);
+
+    // 9. Rebuild and Seed Social Tables
+    console.log('[Seed] Rebuilding and seeding Social module tables...');
+    await sequelize.query('DROP TABLE IF EXISTS employee_participations');
+    await sequelize.query('DROP TABLE IF EXISTS employee_trainings');
+    await sequelize.query('DROP TABLE IF EXISTS csr_activities');
+    await sequelize.query('DROP TABLE IF EXISTS trainings');
+    await sequelize.query('DROP TABLE IF EXISTS employees');
+    await sequelize.query('DROP TABLE IF EXISTS settings');
+
+    // Create Employees
+    await sequelize.query(`
+      CREATE TABLE employees (
+        id INT AUTO_INCREMENT PRIMARY KEY,
+        name VARCHAR(255) NOT NULL,
+        email VARCHAR(255) NOT NULL UNIQUE,
+        gender ENUM('Female', 'Male', 'Other') NOT NULL,
+        ethnicity VARCHAR(255) NOT NULL,
+        is_leadership BOOLEAN DEFAULT FALSE,
+        is_board BOOLEAN DEFAULT FALSE,
+        points INT DEFAULT 0,
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+      )
+    `);
+
+    // Create Trainings
+    await sequelize.query(`
+      CREATE TABLE trainings (
+        id INT AUTO_INCREMENT PRIMARY KEY,
+        name VARCHAR(255) NOT NULL,
+        description TEXT NOT NULL,
+        required_hours INT NOT NULL,
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+      )
+    `);
+
+    // Create CSR Activities
+    await sequelize.query(`
+      CREATE TABLE csr_activities (
+        id INT AUTO_INCREMENT PRIMARY KEY,
+        name VARCHAR(255) NOT NULL,
+        category VARCHAR(255) NOT NULL,
+        description TEXT NOT NULL,
+        points INT NOT NULL,
+        icon VARCHAR(50) NOT NULL,
+        prerequisite_training_id INT NULL,
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        FOREIGN KEY (prerequisite_training_id) REFERENCES trainings(id) ON DELETE SET NULL
+      )
+    `);
+
+    // Create Employee Participations
+    await sequelize.query(`
+      CREATE TABLE employee_participations (
+        id INT AUTO_INCREMENT PRIMARY KEY,
+        employee_id INT NOT NULL,
+        activity_id INT NOT NULL,
+        proof VARCHAR(255),
+        status ENUM('Pending', 'Approved', 'Rejected') DEFAULT 'Pending',
+        points INT NOT NULL,
+        hours_spent INT DEFAULT 0,
+        employee_notes TEXT,
+        completion_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        FOREIGN KEY (employee_id) REFERENCES employees(id) ON DELETE CASCADE,
+        FOREIGN KEY (activity_id) REFERENCES csr_activities(id) ON DELETE CASCADE
+      )
+    `);
+
+    // Create Employee Trainings
+    await sequelize.query(`
+      CREATE TABLE employee_trainings (
+        id INT AUTO_INCREMENT PRIMARY KEY,
+        employee_id INT NOT NULL,
+        training_id INT NOT NULL,
+        completion_date TIMESTAMP NULL,
+        status ENUM('In Progress', 'Completed') DEFAULT 'In Progress',
+        FOREIGN KEY (employee_id) REFERENCES employees(id) ON DELETE CASCADE,
+        FOREIGN KEY (training_id) REFERENCES trainings(id) ON DELETE CASCADE
+      )
+    `);
+
+    // Create Settings
+    await sequelize.query(`
+      CREATE TABLE settings (
+        setting_key VARCHAR(255) PRIMARY KEY,
+        setting_value VARCHAR(255) NOT NULL
+      )
+    `);
+
+    // Seed Employees
+    await sequelize.query(`
+      INSERT INTO employees (name, email, gender, ethnicity, is_leadership, is_board, points) VALUES
+      ('Aditya S.', 'aditya@ecosphere.com', 'Male', 'South Asian', FALSE, FALSE, 100),
+      ('Sohan Shah', 'sohan@ecosphere.com', 'Male', 'South Asian', FALSE, FALSE, 30),
+      ('Sarah Jenkins', 'sarah@ecosphere.com', 'Female', 'White', TRUE, FALSE, 200),
+      ('Maria Lopez', 'maria@ecosphere.com', 'Female', 'Hispanic', TRUE, TRUE, 150),
+      ('John Doe', 'john@ecosphere.com', 'Male', 'White', FALSE, TRUE, 80),
+      ('Alex Chen', 'alex@ecosphere.com', 'Other', 'East Asian', FALSE, FALSE, 50)
+    `);
+
+    // Seed Trainings
+    await sequelize.query(`
+      INSERT INTO trainings (id, name, description, required_hours) VALUES
+      (1, 'Safety & Environmental Health', 'Covers hazard prevention, waste disposal, and recycling protocols.', 3),
+      (2, 'Diversity & Inclusion in Workplace', 'Fosters an inclusive workplace culture and unconscious bias training.', 2),
+      (3, 'Data Privacy & Security Policies', 'Outlines details on personal data compliance, protection rules, and cybersecurity.', 4),
+      (4, 'Ethical Decision Making', 'Introduction to the corporate compliance code and governance regulations.', 2)
+    `);
+
+    // Seed CSR Activities
+    await sequelize.query(`
+      INSERT INTO csr_activities (name, category, description, points, icon, prerequisite_training_id) VALUES
+      ('Tree Plantation', 'Environmental', 'Participate in planting local native trees. Earn 50 points.', 50, 'forest', 1),
+      ('Blood Donation', 'Social / Health', 'Participate in our quarterly corporate blood drive. Earn 30 points.', 30, 'volunteer_activism', NULL),
+      ('Climate Change Seminar', 'Education', 'Learn about environmental impacts and carbon metrics. Earn 20 points.', 20, 'school', NULL),
+      ('ESG Workshop', 'Governance', 'Understand ESG configuration policies and compliance. Earn 30 points.', 30, 'gavel', 4)
+    `);
+
+    // Fetch seeded employees and activities
+    const dbEmployees = await sequelize.query('SELECT id, name FROM employees', { type: QueryTypes.SELECT }) as any[];
+    const dbActivities = await sequelize.query('SELECT id, name FROM csr_activities', { type: QueryTypes.SELECT }) as any[];
+
+    const aditya = dbEmployees.find(e => e.name === 'Aditya S.');
+    const sohan = dbEmployees.find(e => e.name === 'Sohan Shah');
+    const sarah = dbEmployees.find(e => e.name === 'Sarah Jenkins');
+    const maria = dbEmployees.find(e => e.name === 'Maria Lopez');
+
+    const treePlantation = dbActivities.find(a => a.name === 'Tree Plantation');
+    const esgWorkshop = dbActivities.find(a => a.name === 'ESG Workshop');
+    const bloodDonation = dbActivities.find(a => a.name === 'Blood Donation');
+    const seminar = dbActivities.find(a => a.name === 'Climate Change Seminar');
+
+    // Seed employee trainings
+    if (aditya) {
+      await sequelize.query(`INSERT INTO employee_trainings (employee_id, training_id, status, completion_date) VALUES (?, 1, 'Completed', NOW())`, { replacements: [aditya.id] });
+      await sequelize.query(`INSERT INTO employee_trainings (employee_id, training_id, status) VALUES (?, 2, 'In Progress')`, { replacements: [aditya.id] });
+    }
+    if (sohan) {
+      await sequelize.query(`INSERT INTO employee_trainings (employee_id, training_id, status, completion_date) VALUES (?, 2, 'Completed', NOW())`, { replacements: [sohan.id] });
+    }
+    if (sarah) {
+      await sequelize.query(`INSERT INTO employee_trainings (employee_id, training_id, status, completion_date) VALUES (?, 3, 'Completed', NOW())`, { replacements: [sarah.id] });
+      await sequelize.query(`INSERT INTO employee_trainings (employee_id, training_id, status, completion_date) VALUES (?, 4, 'Completed', NOW())`, { replacements: [sarah.id] });
+    }
+    if (maria) {
+      await sequelize.query(`INSERT INTO employee_trainings (employee_id, training_id, status, completion_date) VALUES (?, 2, 'Completed', NOW())`, { replacements: [maria.id] });
+    }
+
+    // Seed participations
+    if (aditya && treePlantation) {
+      await sequelize.query(`
+        INSERT INTO employee_participations (employee_id, activity_id, proof, status, points, hours_spent, employee_notes) VALUES
+        (?, ?, 'Docx.pdf', 'Pending', 50, 4, 'Planted 5 pine saplings in the local park.')
+      `, { replacements: [aditya.id, treePlantation.id] });
+    }
+    if (sohan && esgWorkshop) {
+      await sequelize.query(`
+        INSERT INTO employee_participations (employee_id, activity_id, proof, status, points, hours_spent, employee_notes) VALUES
+        (?, ?, 'image.png', 'Approved', 30, 2, 'Attended governance and business integrity training.')
+      `, { replacements: [sohan.id, esgWorkshop.id] });
+    }
+    if (sarah && bloodDonation) {
+      await sequelize.query(`
+        INSERT INTO employee_participations (employee_id, activity_id, proof, status, points, hours_spent, employee_notes) VALUES
+        (?, ?, 'donation_cert.pdf', 'Approved', 30, 1, 'Donated 1 unit of O+ blood.')
+      `, { replacements: [sarah.id, bloodDonation.id] });
+    }
+    if (maria && seminar) {
+      await sequelize.query(`
+        INSERT INTO employee_participations (employee_id, activity_id, proof, status, points, hours_spent, employee_notes) VALUES
+        (?, ?, 'seminar_ticket.pdf', 'Approved', 20, 3, 'Learned about emission reporting methodologies.')
+      `, { replacements: [maria.id, seminar.id] });
+    }
+
+    // Seed Settings
+    await sequelize.query(`
+      INSERT INTO settings (setting_key, setting_value) VALUES
+      ('evidence_requirement', '1')
+    `);
+
+    console.log('[Seed] Social module tables populated successfully.');
 
     console.log('[Seed] Database seeding completed successfully.');
     process.exit(0);
