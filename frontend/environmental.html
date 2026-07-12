@@ -16,6 +16,12 @@
             } else {
                 document.documentElement.classList.remove('dark');
             }
+
+            // Authentication Gate: Redirect if no user session
+            const session = localStorage.getItem('user_session');
+            if (!session) {
+                window.location.href = 'login.html';
+            }
         })();
     </script>
     <script>
@@ -181,7 +187,13 @@
                 <div class="h-6 w-px bg-borderDark"></div>
                 <div class="flex items-center gap-2.5">
                     <img class="w-8 h-8 rounded-full border border-borderDark object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCyU1DjX1WEyXlSYLA9ykyxu_KZldTBys68h5s7TJlWjydSGJwwRirA2Tva7HhJKkXEKRHC9Uhdy1xQuac0OtdKLqTvs_wbhNCILmjU4ctmHDIBvl3RpPYoOZvqmPu8XyOsudsvdCOkX22EoZI5KjocYgi1kf0pPHX47Lh_-83Gepn9lI-hW4vTQkdcnjq1UdpQ81WMiQZdDGq78rS4sTS3-giUp4IHV8x-VLkC2ITlUQfDqs0dtN_Z" alt="User Headshot"/>
-                    <span class="text-xs font-semibold text-textPrimary hidden sm:inline">Sarah Jenkins</span>
+                    <div class="hidden sm:flex flex-col text-left">
+                        <span id="user-header-name" class="text-xs font-bold text-textPrimary">Sarah Jenkins</span>
+                        <span id="user-header-role" class="text-[9px] text-textSecondary uppercase font-bold tracking-wider">CEO</span>
+                    </div>
+                    <button onclick="logout()" class="p-1 text-textSecondary hover:text-red-400 rounded-full hover:bg-bgCard ml-1.5" title="Logout">
+                        <span class="material-symbols-outlined text-[18px]">logout</span>
+                    </button>
                 </div>
             </div>
         </header>
@@ -213,14 +225,10 @@
                 <!-- Toolbar Actions -->
                 <div class="flex flex-wrap justify-between items-center gap-4">
                     <div class="flex items-center gap-3">
-                        <button class="px-4 py-2 bg-esgGreen hover:bg-esgGreen/90 text-bgMain font-bold text-xs rounded transition-all flex items-center gap-1.5 shadow"><span class="material-symbols-outlined text-sm font-bold">add</span><span>New Factor</span></button>
-                        <button class="px-4 py-2 bg-bgCard border border-borderDark text-textPrimary hover:bg-borderDark text-xs font-semibold rounded transition-all">Edit</button>
-                        <button class="px-4 py-2 bg-bgCard border border-borderDark text-textPrimary hover:bg-borderDark text-xs font-semibold rounded transition-all text-red-400 border-red-500/20 hover:bg-red-500/10">Delete</button>
-                        <button class="px-4 py-2 bg-bgCard border border-borderDark text-textPrimary hover:bg-borderDark text-xs font-semibold rounded transition-all flex items-center gap-1.5"><span class="material-symbols-outlined text-sm">download</span><span>Export</span></button>
-                    </div>
-                    <div class="relative">
-                        <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-textSecondary text-xs">search</span>
-                        <input class="w-60 pl-9 pr-4 py-1.5 bg-bgCard border border-borderDark rounded text-xs text-textPrimary focus:outline-none focus:border-esgGreen focus:ring-1 focus:ring-esgGreen" placeholder="Search factors..." type="text"/>
+                        <button onclick="openModal('factor-modal')" class="px-4 py-2 bg-esgGreen hover:bg-esgGreen/90 text-bgMain font-bold text-xs rounded transition-all flex items-center gap-1.5 shadow">
+                            <span class="material-symbols-outlined text-sm font-bold">add</span>
+                            <span>New Factor</span>
+                        </button>
                     </div>
                 </div>
 
@@ -230,62 +238,15 @@
                         <thead>
                             <tr class="bg-bgSidebar border-b border-borderDark">
                                 <th class="py-3 px-6 text-xs font-bold text-textSecondary uppercase">Name</th>
-                                <th class="py-3 px-6 text-xs font-bold text-textSecondary uppercase">Department</th>
-                                <th class="py-3 px-6 text-xs font-bold text-textSecondary uppercase text-right">Target CO2</th>
-                                <th class="py-3 px-6 text-xs font-bold text-textSecondary uppercase text-right">Current CO2</th>
-                                <th class="py-3 px-6 text-xs font-bold text-textSecondary uppercase">Progress</th>
-                                <th class="py-3 px-6 text-xs font-bold text-textSecondary uppercase">Deadline</th>
+                                <th class="py-3 px-6 text-xs font-bold text-textSecondary uppercase">Category</th>
+                                <th class="py-3 px-6 text-xs font-bold text-textSecondary uppercase text-right">Value (Carbon per Unit)</th>
+                                <th class="py-3 px-6 text-xs font-bold text-textSecondary uppercase">Unit</th>
                                 <th class="py-3 px-6 text-xs font-bold text-textSecondary uppercase text-center font-semibold">Status</th>
                             </tr>
                         </thead>
-                        <tbody class="divide-y divide-borderDark/40 text-sm">
-                            <tr class="hover:bg-bgSidebar/50 transition-colors">
-                                <td class="py-4 px-6 font-semibold">Transportation Emissions</td>
-                                <td class="py-4 px-6 text-textSecondary">Logistics</td>
-                                <td class="py-4 px-6 text-right font-mono text-textSecondary">420.0</td>
-                                <td class="py-4 px-6 text-right font-mono text-textPrimary">300.0</td>
-                                <td class="py-4 px-6">
-                                    <div class="flex items-center gap-3">
-                                        <div class="w-24 bg-bgProgress h-1.5 rounded-full overflow-hidden">
-                                            <div class="bg-esgGreen h-full" style="width: 71%"></div>
-                                        </div>
-                                        <span class="text-xs text-textSecondary font-mono">71%</span>
-                                    </div>
-                                </td>
-                                <td class="py-4 px-6 font-mono text-textSecondary">2024-12-31</td>
-                                <td class="py-4 px-6 text-center"><span class="px-2 py-0.5 rounded text-[10px] font-bold bg-esgGreen/10 text-esgGreen border border-esgGreen/20">Active</span></td>
-                            </tr>
-                            <tr class="hover:bg-bgSidebar/50 transition-colors">
-                                <td class="py-4 px-6 font-semibold">Gas Heating/Cooking</td>
-                                <td class="py-4 px-6 text-textSecondary">Manufacturing</td>
-                                <td class="py-4 px-6 text-right font-mono text-textSecondary">120.0</td>
-                                <td class="py-4 px-6 text-right font-mono text-textPrimary">90.0</td>
-                                <td class="py-4 px-6">
-                                    <div class="flex items-center gap-3">
-                                        <div class="w-24 bg-bgProgress h-1.5 rounded-full overflow-hidden">
-                                            <div class="bg-esgGreen h-full" style="width: 75%"></div>
-                                        </div>
-                                        <span class="text-xs text-textSecondary font-mono">75%</span>
-                                    </div>
-                                </td>
-                                <td class="py-4 px-6 font-mono text-textSecondary">2024-12-31</td>
-                                <td class="py-4 px-6 text-center"><span class="px-2 py-0.5 rounded text-[10px] font-bold bg-esgGreen/10 text-esgGreen border border-esgGreen/20">Active</span></td>
-                            </tr>
-                            <tr class="hover:bg-bgSidebar/50 transition-colors">
-                                <td class="py-4 px-6 font-semibold">Office Energy Use</td>
-                                <td class="py-4 px-6 text-textSecondary">Corporate</td>
-                                <td class="py-4 px-6 text-right font-mono text-textSecondary">45.0</td>
-                                <td class="py-4 px-6 text-right font-mono text-textPrimary">45.0</td>
-                                <td class="py-4 px-6">
-                                    <div class="flex items-center gap-3">
-                                        <div class="w-24 bg-bgProgress h-1.5 rounded-full overflow-hidden">
-                                            <div class="bg-bgProgress h-full" style="width: 100%"></div>
-                                        </div>
-                                        <span class="text-xs text-textSecondary font-mono">100%</span>
-                                    </div>
-                                </td>
-                                <td class="py-4 px-6 font-mono text-textSecondary">2024-12-31</td>
-                                <td class="py-4 px-6 text-center"><span class="px-2 py-0.5 rounded text-[10px] font-bold bg-esgBlue/10 text-esgBlue border border-esgBlue/20">Completed</span></td>
+                        <tbody id="factors-tbody" class="divide-y divide-borderDark/40 text-sm">
+                            <tr>
+                                <td colspan="5" class="py-6 text-center text-textSecondary text-xs">Loading emission factors...</td>
                             </tr>
                         </tbody>
                     </table>
@@ -296,38 +257,12 @@
             <div id="content-profiles" class="subtab-content hidden space-y-6">
                 <div class="flex justify-between items-center">
                     <h3 class="text-md font-semibold text-textPrimary">Product ESG Profiles</h3>
-                    <button class="px-4 py-2 bg-esgGreen hover:bg-esgGreen/90 text-bgMain font-bold text-xs rounded transition-all"><span class="mr-1">+</span> Create Profile</button>
+                    <button onclick="openModal('profile-modal')" class="px-4 py-2 bg-esgGreen hover:bg-esgGreen/90 text-bgMain font-bold text-xs rounded transition-all">
+                        <span class="mr-1">+</span> Create Profile
+                    </button>
                 </div>
-                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                    <div class="bg-bgCard border border-borderDark rounded-xl p-5 hover:border-esgGreen/30 transition-all flex flex-col gap-4">
-                        <div class="flex justify-between items-start">
-                            <div>
-                                <h4 class="font-bold text-textPrimary">Standard Steel Bracket</h4>
-                                <span class="text-[10px] text-textSecondary uppercase font-mono">SKU-ST-101</span>
-                            </div>
-                            <span class="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-esgGreen/10 text-esgGreen">Production</span>
-                        </div>
-                        <div class="flex justify-between items-center py-2 border-y border-borderDark/40">
-                            <span class="text-xs text-textSecondary">Embodied Carbon</span>
-                            <span class="text-sm font-bold font-mono text-textPrimary">4.2 kg CO2e</span>
-                        </div>
-                        <button class="text-xs font-semibold text-esgGreen hover:underline text-left">View Lifecycle Assessment &rarr;</button>
-                    </div>
-
-                    <div class="bg-bgCard border border-borderDark rounded-xl p-5 hover:border-esgGreen/30 transition-all flex flex-col gap-4">
-                        <div class="flex justify-between items-start">
-                            <div>
-                                <h4 class="font-bold text-textPrimary">Recycled Plastic Shell</h4>
-                                <span class="text-[10px] text-textSecondary uppercase font-mono">SKU-PL-304</span>
-                            </div>
-                            <span class="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-esgOrange/10 text-esgOrange">Design Stage</span>
-                        </div>
-                        <div class="flex justify-between items-center py-2 border-y border-borderDark/40">
-                            <span class="text-xs text-textSecondary">Embodied Carbon</span>
-                            <span class="text-sm font-bold font-mono text-textPrimary">1.1 kg CO2e</span>
-                        </div>
-                        <button class="text-xs font-semibold text-esgGreen hover:underline text-left">View Lifecycle Assessment &rarr;</button>
-                    </div>
+                <div id="products-container" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    <div class="bg-bgCard border border-borderDark rounded-xl p-5 text-textSecondary text-xs">Loading product ESG profiles...</div>
                 </div>
             </div>
 
@@ -338,33 +273,25 @@
                         <h3 class="text-md font-semibold text-textPrimary">Carbon Transactions Log</h3>
                         <p class="text-xs text-textSecondary">Calculated automatic and manual emission logs</p>
                     </div>
-                    <button class="px-4 py-2 bg-esgGreen hover:bg-esgGreen/90 text-bgMain font-bold text-xs rounded transition-all">+ Log Transaction</button>
+                    <button onclick="openModal('transaction-modal')" class="px-4 py-2 bg-esgGreen hover:bg-esgGreen/90 text-bgMain font-bold text-xs rounded transition-all">
+                        + Log Transaction
+                    </button>
                 </div>
                 <div class="bg-bgCard border border-borderDark rounded-xl overflow-hidden shadow-lg">
                     <table class="w-full text-left border-collapse">
                         <thead>
                             <tr class="bg-bgSidebar border-b border-borderDark">
                                 <th class="py-3 px-6 text-xs font-bold text-textSecondary uppercase">Date</th>
-                                <th class="py-3 px-6 text-xs font-bold text-textSecondary uppercase">Source</th>
-                                <th class="py-3 px-6 text-xs font-bold text-textSecondary uppercase">Details</th>
+                                <th class="py-3 px-6 text-xs font-bold text-textSecondary uppercase">Source Module</th>
+                                <th class="py-3 px-6 text-xs font-bold text-textSecondary uppercase">Record ID</th>
+                                <th class="py-3 px-6 text-xs font-bold text-textSecondary uppercase text-right">Raw Value</th>
+                                <th class="py-3 px-6 text-xs font-bold text-textSecondary uppercase text-right">Calculated Emissions</th>
                                 <th class="py-3 px-6 text-xs font-bold text-textSecondary uppercase">Department</th>
-                                <th class="py-3 px-6 text-xs font-bold text-textSecondary uppercase text-right font-semibold">Emissions</th>
                             </tr>
                         </thead>
-                        <tbody class="divide-y divide-borderDark/40 text-sm font-medium">
-                            <tr class="hover:bg-bgSidebar/50 transition-colors">
-                                <td class="py-4 px-6 font-mono text-textSecondary">2024-10-12</td>
-                                <td class="py-4 px-6">Logistics Fleet Fuel</td>
-                                <td class="py-4 px-6 text-textSecondary">1,200 liters Diesel Fuel</td>
-                                <td class="py-4 px-6 text-textSecondary">Logistics</td>
-                                <td class="py-4 px-6 text-right font-mono text-esgGreen">3.2 tCO2e</td>
-                            </tr>
-                            <tr class="hover:bg-bgSidebar/50 transition-colors">
-                                <td class="py-4 px-6 font-mono text-textSecondary">2024-10-10</td>
-                                <td class="py-4 px-6">Facility A Electricity</td>
-                                <td class="py-4 px-6 text-textSecondary">15,000 kWh Grid Power</td>
-                                <td class="py-4 px-6 text-textSecondary">Manufacturing</td>
-                                <td class="py-4 px-6 text-right font-mono text-esgGreen">6.4 tCO2e</td>
+                        <tbody id="transactions-tbody" class="divide-y divide-borderDark/40 text-sm font-medium">
+                            <tr>
+                                <td colspan="6" class="py-6 text-center text-textSecondary text-xs">Loading carbon transactions...</td>
                             </tr>
                         </tbody>
                     </table>
@@ -375,51 +302,179 @@
             <div id="content-goals" class="subtab-content hidden space-y-6">
                 <div class="flex justify-between items-center">
                     <h3 class="text-md font-semibold text-textPrimary">Environmental &amp; Sustainability Goals</h3>
-                    <button class="px-4 py-2 bg-esgGreen hover:bg-esgGreen/90 text-bgMain font-bold text-xs rounded transition-all">+ New Goal</button>
+                    <button onclick="openModal('goal-modal')" class="px-4 py-2 bg-esgGreen hover:bg-esgGreen/90 text-bgMain font-bold text-xs rounded transition-all">+ New Goal</button>
                 </div>
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <div class="bg-bgCard border border-borderDark rounded-xl p-6 flex flex-col gap-4">
-                        <div class="flex justify-between items-start">
-                            <div>
-                                <h4 class="font-bold text-textPrimary">Reduce Scope 2 Grid Emissions</h4>
-                                <p class="text-xs text-textSecondary mt-1">Target: Reduce total indirect power emissions by 75%</p>
-                            </div>
-                            <span class="px-2 py-0.5 rounded text-[10px] font-bold bg-esgGreen/10 text-esgGreen border border-esgGreen/20">Target: 2025</span>
-                        </div>
-                        <div class="space-y-2 mt-2">
-                            <div class="flex justify-between text-xs font-semibold">
-                                <span class="text-textSecondary">Current Progress</span>
-                                <span class="text-esgGreen font-mono">75% Complete</span>
-                            </div>
-                            <div class="w-full bg-bgProgress h-2 rounded-full overflow-hidden">
-                                <div class="bg-esgGreen h-full" style="width: 75%"></div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="bg-bgCard border border-borderDark rounded-xl p-6 flex flex-col gap-4">
-                        <div class="flex justify-between items-start">
-                            <div>
-                                <h4 class="font-bold text-textPrimary">Electrify Corporate Vehicle Fleet</h4>
-                                <p class="text-xs text-textSecondary mt-1">Target: Replace all legacy vehicles with EVs</p>
-                            </div>
-                            <span class="px-2 py-0.5 rounded text-[10px] font-bold bg-esgBlue/10 text-esgBlue border border-esgBlue/20">Target: 2030</span>
-                        </div>
-                        <div class="space-y-2 mt-2">
-                            <div class="flex justify-between text-xs font-semibold">
-                                <span class="text-textSecondary">Current Progress</span>
-                                <span class="text-esgBlue font-mono">42% Complete</span>
-                            </div>
-                            <div class="w-full bg-bgProgress h-2 rounded-full overflow-hidden">
-                                <div class="bg-esgBlue h-full" style="width: 42%"></div>
-                            </div>
-                        </div>
-                    </div>
+                <div id="goals-container" class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div class="bg-bgCard border border-borderDark rounded-xl p-5 text-textSecondary text-xs">Loading goals...</div>
                 </div>
             </div>
 
         </div>
     </main>
+
+    <!-- ==================================================== -->
+    <!-- ACTION MODALS (Beautifully Styled Glassmorphism popup overlays) -->
+    <!-- ==================================================== -->
+
+    <!-- 1. Emission Factor Modal -->
+    <div id="factor-modal" class="hidden fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4">
+        <div class="bg-bgCard border border-borderDark rounded-2xl w-full max-w-md p-6 shadow-2xl space-y-4">
+            <div class="flex justify-between items-center pb-2 border-b border-borderDark/40">
+                <h3 class="text-sm font-bold text-textPrimary">Create Emission Factor</h3>
+                <button onclick="closeModal('factor-modal')" class="text-textSecondary hover:text-textPrimary"><span class="material-symbols-outlined text-base">close</span></button>
+            </div>
+            <form id="factor-form" class="space-y-3.5 text-xs text-textSecondary">
+                <div class="flex flex-col gap-1.5">
+                    <label class="font-semibold text-textPrimary">Factor Name</label>
+                    <input name="name" required class="bg-bgMain border border-borderDark rounded px-3 py-2 text-textPrimary focus:outline-none focus:border-esgGreen" placeholder="e.g. Natural Gas Fuel" type="text" />
+                </div>
+                <div class="flex flex-col gap-1.5">
+                    <label class="font-semibold text-textPrimary">Category</label>
+                    <select name="category" required class="bg-bgMain border border-borderDark rounded px-3 py-2 text-textPrimary focus:outline-none focus:border-esgGreen">
+                        <option value="Fleet">Fleet</option>
+                        <option value="Manufacturing">Manufacturing</option>
+                        <option value="Purchase">Purchase</option>
+                        <option value="Expense">Expense</option>
+                    </select>
+                </div>
+                <div class="flex flex-col gap-1.5">
+                    <label class="font-semibold text-textPrimary">Factor Value (CO2 per Unit)</label>
+                    <input name="value" step="any" required class="bg-bgMain border border-borderDark rounded px-3 py-2 text-textPrimary focus:outline-none focus:border-esgGreen" placeholder="e.g. 1.93" type="number" />
+                </div>
+                <div class="flex flex-col gap-1.5">
+                    <label class="font-semibold text-textPrimary">Unit</label>
+                    <input name="unit" required class="bg-bgMain border border-borderDark rounded px-3 py-2 text-textPrimary focus:outline-none focus:border-esgGreen" placeholder="e.g. m3, kWh, liters" type="text" />
+                </div>
+                <div class="flex justify-end gap-3 pt-2">
+                    <button type="button" onclick="closeModal('factor-modal')" class="px-4 py-2 border border-borderDark rounded font-semibold text-textPrimary hover:bg-bgMain">Cancel</button>
+                    <button type="submit" class="px-4 py-2 bg-esgGreen text-bgMain font-bold rounded hover:bg-esgGreen/90">Submit</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- 2. Product Profile Modal -->
+    <div id="profile-modal" class="hidden fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4">
+        <div class="bg-bgCard border border-borderDark rounded-2xl w-full max-w-md p-6 shadow-2xl space-y-4">
+            <div class="flex justify-between items-center pb-2 border-b border-borderDark/40">
+                <h3 class="text-sm font-bold text-textPrimary">Create Product ESG Profile</h3>
+                <button onclick="closeModal('profile-modal')" class="text-textSecondary hover:text-textPrimary"><span class="material-symbols-outlined text-base">close</span></button>
+            </div>
+            <form id="profile-form" class="space-y-3.5 text-xs text-textSecondary">
+                <div class="flex flex-col gap-1.5">
+                    <label class="font-semibold text-textPrimary">Product Name</label>
+                    <input name="productName" required class="bg-bgMain border border-borderDark rounded px-3 py-2 text-textPrimary focus:outline-none focus:border-esgGreen" placeholder="e.g. Standard Steel Bracket" type="text" />
+                </div>
+                <div class="flex flex-col gap-1.5">
+                    <label class="font-semibold text-textPrimary">SKU Code</label>
+                    <input name="sku" required class="bg-bgMain border border-borderDark rounded px-3 py-2 text-textPrimary focus:outline-none focus:border-esgGreen" placeholder="e.g. SKU-ST-101" type="text" />
+                </div>
+                <div class="flex flex-col gap-1.5">
+                    <label class="font-semibold text-textPrimary">Carbon Footprint Score (kg CO2e)</label>
+                    <input name="carbonFootprintScore" step="any" required class="bg-bgMain border border-borderDark rounded px-3 py-2 text-textPrimary focus:outline-none focus:border-esgGreen" placeholder="e.g. 4.2" type="number" />
+                </div>
+                <div class="flex flex-col gap-1.5">
+                    <label class="font-semibold text-textPrimary">Sustainability Rating</label>
+                    <select name="sustainabilityRating" required class="bg-bgMain border border-borderDark rounded px-3 py-2 text-textPrimary focus:outline-none focus:border-esgGreen">
+                        <option value="A">A</option>
+                        <option value="B">B</option>
+                        <option value="C">C</option>
+                        <option value="D">D</option>
+                        <option value="E">E</option>
+                        <option value="F">F</option>
+                    </select>
+                </div>
+                <div class="flex justify-end gap-3 pt-2">
+                    <button type="button" onclick="closeModal('profile-modal')" class="px-4 py-2 border border-borderDark rounded font-semibold text-textPrimary hover:bg-bgMain">Cancel</button>
+                    <button type="submit" class="px-4 py-2 bg-esgGreen text-bgMain font-bold rounded hover:bg-esgGreen/90">Submit</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- 3. Carbon Transaction Modal -->
+    <div id="transaction-modal" class="hidden fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4">
+        <div class="bg-bgCard border border-borderDark rounded-2xl w-full max-w-md p-6 shadow-2xl space-y-4">
+            <div class="flex justify-between items-center pb-2 border-b border-borderDark/40">
+                <h3 class="text-sm font-bold text-textPrimary">Log Carbon Activity</h3>
+                <button onclick="closeModal('transaction-modal')" class="text-textSecondary hover:text-textPrimary"><span class="material-symbols-outlined text-base">close</span></button>
+            </div>
+            <form id="transaction-form" class="space-y-3.5 text-xs text-textSecondary">
+                <div class="flex flex-col gap-1.5">
+                    <label class="font-semibold text-textPrimary">Source Module</label>
+                    <select name="sourceModule" required class="bg-bgMain border border-borderDark rounded px-3 py-2 text-textPrimary focus:outline-none focus:border-esgGreen">
+                        <option value="Purchase">Purchase</option>
+                        <option value="Manufacturing">Manufacturing</option>
+                        <option value="Expense">Expense</option>
+                        <option value="Fleet">Fleet</option>
+                    </select>
+                </div>
+                <div class="flex flex-col gap-1.5">
+                    <label class="font-semibold text-textPrimary">ERP Record Reference ID</label>
+                    <input name="recordId" required class="bg-bgMain border border-borderDark rounded px-3 py-2 text-textPrimary focus:outline-none focus:border-esgGreen" placeholder="e.g. FLEET-2026-003" type="text" />
+                </div>
+                <div class="flex flex-col gap-1.5">
+                    <label class="font-semibold text-textPrimary">Raw Usage Value (Fuel/Power/Qty)</label>
+                    <input name="rawValue" step="any" required class="bg-bgMain border border-borderDark rounded px-3 py-2 text-textPrimary focus:outline-none focus:border-esgGreen" placeholder="e.g. 350" type="number" />
+                </div>
+                <div class="flex flex-col gap-1.5">
+                    <label class="font-semibold text-textPrimary">Emission Factor</label>
+                    <select id="tx-emission-factor" name="emissionFactorId" required class="bg-bgMain border border-borderDark rounded px-3 py-2 text-textPrimary focus:outline-none focus:border-esgGreen">
+                        <option value="">Loading factors...</option>
+                    </select>
+                </div>
+                <div class="flex flex-col gap-1.5">
+                    <label class="font-semibold text-textPrimary">Department</label>
+                    <select id="tx-department" name="departmentId" required class="bg-bgMain border border-borderDark rounded px-3 py-2 text-textPrimary focus:outline-none focus:border-esgGreen">
+                        <!-- Populated dynamically -->
+                    </select>
+                </div>
+                <div class="flex justify-end gap-3 pt-2">
+                    <button type="button" onclick="closeModal('transaction-modal')" class="px-4 py-2 border border-borderDark rounded font-semibold text-textPrimary hover:bg-bgMain">Cancel</button>
+                    <button type="submit" class="px-4 py-2 bg-esgGreen text-bgMain font-bold rounded hover:bg-esgGreen/90">Submit</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- 4. Environmental Goal Modal -->
+    <div id="goal-modal" class="hidden fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4">
+        <div class="bg-bgCard border border-borderDark rounded-2xl w-full max-w-md p-6 shadow-2xl space-y-4">
+            <div class="flex justify-between items-center pb-2 border-b border-borderDark/40">
+                <h3 class="text-sm font-bold text-textPrimary">Create Environmental Goal</h3>
+                <button onclick="closeModal('goal-modal')" class="text-textSecondary hover:text-textPrimary"><span class="material-symbols-outlined text-base">close</span></button>
+            </div>
+            <form id="goal-form" class="space-y-3.5 text-xs text-textSecondary">
+                <div class="flex flex-col gap-1.5">
+                    <label class="font-semibold text-textPrimary">Goal Title</label>
+                    <input name="title" required class="bg-bgMain border border-borderDark rounded px-3 py-2 text-textPrimary focus:outline-none focus:border-esgGreen" placeholder="e.g. Logistics Fleet carbon limit" type="text" />
+                </div>
+                <div class="flex flex-col gap-1.5">
+                    <label class="font-semibold text-textPrimary">Target Carbon Value (kg CO2 limit)</label>
+                    <input name="targetValue" step="any" required class="bg-bgMain border border-borderDark rounded px-3 py-2 text-textPrimary focus:outline-none focus:border-esgGreen" placeholder="e.g. 2000" type="number" />
+                </div>
+                <div class="flex flex-col gap-1.5">
+                    <label class="font-semibold text-textPrimary">Carbon Unit</label>
+                    <input name="unit" required class="bg-bgMain border border-borderDark rounded px-3 py-2 text-textPrimary focus:outline-none focus:border-esgGreen" placeholder="kg CO2" value="kg CO2" type="text" />
+                </div>
+                <div class="flex flex-col gap-1.5">
+                    <label class="font-semibold text-textPrimary">Deadline Date</label>
+                    <input name="deadline" required class="bg-bgMain border border-borderDark rounded px-3 py-2 text-textPrimary focus:outline-none focus:border-esgGreen" type="date" />
+                </div>
+                <div class="flex flex-col gap-1.5">
+                    <label class="font-semibold text-textPrimary">Department Assignment</label>
+                    <select id="goal-department" name="departmentId" class="bg-bgMain border border-borderDark rounded px-3 py-2 text-textPrimary focus:outline-none focus:border-esgGreen">
+                        <option value="">Company-Wide (Corporate)</option>
+                        <!-- Populated dynamically -->
+                    </select>
+                </div>
+                <div class="flex justify-end gap-3 pt-2">
+                    <button type="button" onclick="closeModal('goal-modal')" class="px-4 py-2 border border-borderDark rounded font-semibold text-textPrimary hover:bg-bgMain">Cancel</button>
+                    <button type="submit" class="px-4 py-2 bg-esgGreen text-bgMain font-bold rounded hover:bg-esgGreen/90">Submit</button>
+                </div>
+            </form>
+        </div>
+    </div>
 
     <!-- THEME CONTROLLER & TAB SWITCHING SCRIPT -->
     <script>
@@ -499,6 +554,336 @@
                 switchSubTab(hash);
             }
         });
+
+        // ====================================================
+        // BACKEND API INTEGRATION
+        // ====================================================
+        const API_URL = 'http://localhost:5000/api/environmental';
+
+        // Modal Helpers
+        function openModal(modalId) {
+            document.getElementById(modalId).classList.remove('hidden');
+        }
+        function closeModal(modalId) {
+            document.getElementById(modalId).classList.add('hidden');
+        }
+
+        // Shared department static list for seeding modals (matched with seed IDs)
+        const DEPARTMENTS = [
+            { id: 1, name: 'Administration' },
+            { id: 2, name: 'Logistics' },
+            { id: 3, name: 'Manufacturing' },
+            { id: 4, name: 'Purchase' }
+        ];
+
+        // 1. Fetch and render Emission Factors
+        let loadedEmissionFactors = [];
+        async function loadEmissionFactors() {
+            try {
+                const response = await fetch(`${API_URL}/emission-factors`);
+                loadedEmissionFactors = await response.json();
+                
+                const tbody = document.getElementById('factors-tbody');
+                if (loadedEmissionFactors.length === 0) {
+                    tbody.innerHTML = `<tr><td colspan="5" class="py-6 text-center text-textSecondary text-xs">No emission factors registered.</td></tr>`;
+                    return;
+                }
+
+                tbody.innerHTML = loadedEmissionFactors.map(factor => `
+                    <tr class="hover:bg-bgSidebar/50 transition-colors">
+                        <td class="py-4 px-6 font-semibold">${factor.name}</td>
+                        <td class="py-4 px-6 text-textSecondary">${factor.category}</td>
+                        <td class="py-4 px-6 text-right font-mono text-textPrimary">${factor.value.toFixed(4)}</td>
+                        <td class="py-4 px-6 text-textSecondary">${factor.unit}</td>
+                        <td class="py-4 px-6 text-center">
+                            <span class="px-2 py-0.5 rounded text-[10px] font-bold ${factor.status === 'Active' ? 'bg-esgGreen/10 text-esgGreen border border-esgGreen/20' : 'bg-textSecondary/10 text-textSecondary border border-textSecondary/20'}">
+                                ${factor.status}
+                            </span>
+                        </td>
+                    </tr>
+                `).join('');
+
+                // Populate emission factor select box in transaction log modal
+                const selectFactor = document.getElementById('tx-emission-factor');
+                selectFactor.innerHTML = loadedEmissionFactors.map(f => `
+                    <option value="${f.id}">${f.name} (${f.value} CO2 / ${f.unit})</option>
+                `).join('');
+
+            } catch (error) {
+                console.error('Error loading factors:', error);
+                document.getElementById('factors-tbody').innerHTML = `
+                    <tr><td colspan="5" class="py-6 text-center text-red-400 text-xs font-semibold">Failed to connect to backend server.</td></tr>
+                `;
+            }
+        }
+
+        // 2. Fetch and render Product ESG Profiles
+        async function loadProductProfiles() {
+            try {
+                const response = await fetch(`${API_URL}/products`);
+                const products = await response.json();
+                const container = document.getElementById('products-container');
+
+                if (products.length === 0) {
+                    container.innerHTML = `<div class="col-span-full text-center text-textSecondary text-xs py-10">No product ESG profiles available.</div>`;
+                    return;
+                }
+
+                container.innerHTML = products.map(prod => `
+                    <div class="bg-bgCard border border-borderDark rounded-xl p-5 hover:border-esgGreen/30 transition-all flex flex-col gap-4">
+                        <div class="flex justify-between items-start">
+                            <div>
+                                <h4 class="font-bold text-textPrimary text-xs">${prod.productName}</h4>
+                                <span class="text-[10px] text-textSecondary uppercase font-mono">${prod.sku}</span>
+                            </div>
+                            <span class="px-2.5 py-0.5 rounded-full text-[9px] font-bold bg-esgGreen/10 text-esgGreen">Active</span>
+                        </div>
+                        <div class="flex justify-between items-center py-2 border-y border-borderDark/40">
+                            <span class="text-xs text-textSecondary">Carbon Footprint Score</span>
+                            <span class="text-xs font-bold font-mono text-textPrimary">${prod.carbonFootprintScore} kg CO2e</span>
+                        </div>
+                        <div class="flex justify-between items-center">
+                            <span class="text-xs text-textSecondary font-semibold">Sustainability Rating</span>
+                            <span class="px-2.5 py-0.5 rounded text-[10px] font-extrabold ${['A','B'].includes(prod.sustainabilityRating) ? 'bg-esgGreen/10 text-esgGreen' : ['C','D'].includes(prod.sustainabilityRating) ? 'bg-esgOrange/10 text-esgOrange' : 'bg-red-500/10 text-red-400'}">
+                                Rating ${prod.sustainabilityRating}
+                            </span>
+                        </div>
+                    </div>
+                `).join('');
+
+            } catch (error) {
+                console.error('Error loading products:', error);
+                document.getElementById('products-container').innerHTML = `
+                    <div class="col-span-full text-center text-red-400 text-xs py-10">Failed to load product profiles.</div>
+                `;
+            }
+        }
+
+        // 3. Fetch and render Carbon Transactions Log
+        async function loadTransactions() {
+            try {
+                const response = await fetch(`${API_URL}/report`);
+                const report = await response.json();
+                const tbody = document.getElementById('transactions-tbody');
+
+                if (!report.data || report.data.length === 0) {
+                    tbody.innerHTML = `<tr><td colspan="6" class="py-6 text-center text-textSecondary text-xs">No transaction activities logged yet.</td></tr>`;
+                    return;
+                }
+
+                tbody.innerHTML = report.data.map(tx => {
+                    const dateStr = new Date(tx.timestamp).toLocaleDateString();
+                    return `
+                        <tr class="hover:bg-bgSidebar/50 transition-colors">
+                            <td class="py-4 px-6 font-mono text-textSecondary text-xs">${dateStr}</td>
+                            <td class="py-4 px-6 text-xs">${tx.sourceModule}</td>
+                            <td class="py-4 px-6 text-textSecondary text-xs">${tx.recordId}</td>
+                            <td class="py-4 px-6 text-right font-mono text-textSecondary text-xs">${tx.rawValue.toLocaleString()} ${tx.emissionFactor?.unit || ''}</td>
+                            <td class="py-4 px-6 text-right font-mono text-esgGreen text-xs font-bold">${tx.calculatedEmission.toLocaleString()} kg CO2</td>
+                            <td class="py-4 px-6 text-textSecondary text-xs">${tx.department?.name || 'Unknown'}</td>
+                        </tr>
+                    `;
+                }).join('');
+
+            } catch (error) {
+                console.error('Error loading transactions:', error);
+                document.getElementById('transactions-tbody').innerHTML = `
+                    <tr><td colspan="6" class="py-6 text-center text-red-400 text-xs font-semibold">Failed to load carbon activities.</td></tr>
+                `;
+            }
+        }
+
+        // 4. Fetch and render Environmental Goals
+        async function loadGoals() {
+            try {
+                const response = await fetch(`${API_URL}/goals`);
+                const goals = await response.json();
+                const container = document.getElementById('goals-container');
+
+                if (goals.length === 0) {
+                    container.innerHTML = `<div class="col-span-full text-center text-textSecondary text-xs py-10">No sustainability goals set.</div>`;
+                    return;
+                }
+
+                container.innerHTML = goals.map(goal => {
+                    const completionPct = goal.targetValue > 0 
+                        ? Math.min(100, Math.round((goal.currentValue / goal.targetValue) * 100)) 
+                        : 0;
+
+                    let statusClass = 'bg-esgGreen/10 text-esgGreen border border-esgGreen/20';
+                    if (goal.status === 'Failed') statusClass = 'bg-red-500/10 text-red-400 border border-red-500/20';
+                    else if (goal.status === 'Achieved') statusClass = 'bg-esgBlue/10 text-esgBlue border border-esgBlue/20';
+
+                    return `
+                        <div class="bg-bgCard border border-borderDark rounded-xl p-6 flex flex-col gap-4">
+                            <div class="flex justify-between items-start">
+                                <div>
+                                    <h4 class="font-bold text-textPrimary text-xs">${goal.title}</h4>
+                                    <p class="text-[10px] text-textSecondary mt-0.5">Assigned to: ${goal.department ? goal.department.name : 'Company-wide (Corporate)'}</p>
+                                </div>
+                                <span class="px-2 py-0.5 rounded text-[9px] font-bold ${statusClass}">${goal.status}</span>
+                            </div>
+                            <div class="space-y-2 mt-2">
+                                <div class="flex justify-between text-xs font-semibold">
+                                    <span class="text-textSecondary">Carbon emissions: ${goal.currentValue.toLocaleString()} / ${goal.targetValue.toLocaleString()} ${goal.unit}</span>
+                                    <span class="text-esgGreen font-mono">${completionPct}%</span>
+                                </div>
+                                <div class="w-full bg-bgProgress h-1.5 rounded-full overflow-hidden">
+                                    <div class="bg-esgGreen h-full" style="width: ${completionPct}%"></div>
+                                </div>
+                            </div>
+                            <div class="text-[10px] text-textSecondary flex justify-between items-center pt-2 border-t border-borderDark/40">
+                                <span>Deadline: ${new Date(goal.deadline).toLocaleDateString()}</span>
+                                <span class="font-semibold ${completionPct > 100 ? 'text-red-400' : 'text-esgGreen'}">
+                                    ${completionPct > 100 ? 'Target Exceeded' : 'Under Limit'}
+                                </span>
+                            </div>
+                        </div>
+                    `;
+                }).join('');
+
+            } catch (error) {
+                console.error('Error loading goals:', error);
+                document.getElementById('goals-container').innerHTML = `
+                    <div class="col-span-full text-center text-red-400 text-xs py-10">Failed to load sustainability goals.</div>
+                `;
+            }
+        }
+
+        // ====================================================
+        // FORM SUBMISSION HANDLERS
+        // ====================================================
+
+        // 1. Submit Emission Factor
+        document.getElementById('factor-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const formData = new FormData(e.target);
+            const body = Object.fromEntries(formData.entries());
+            
+            try {
+                const response = await fetch(`${API_URL}/emission-factors`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(body)
+                });
+                if (!response.ok) throw new Error('Create factor failed');
+                
+                closeModal('factor-modal');
+                e.target.reset();
+                loadEmissionFactors(); // Reload
+            } catch (error) {
+                alert('Failed to create emission factor: ' + error.message);
+            }
+        });
+
+        // 2. Submit Product ESG Profile
+        document.getElementById('profile-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const formData = new FormData(e.target);
+            const body = Object.fromEntries(formData.entries());
+
+            try {
+                const response = await fetch(`${API_URL}/products`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(body)
+                });
+                if (!response.ok) throw new Error('Create profile failed');
+
+                closeModal('profile-modal');
+                e.target.reset();
+                loadProductProfiles(); // Reload
+            } catch (error) {
+                alert('Failed to create product profile: ' + error.message);
+            }
+        });
+
+        // 3. Submit Carbon Transaction
+        document.getElementById('transaction-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const formData = new FormData(e.target);
+            const body = Object.fromEntries(formData.entries());
+
+            try {
+                const response = await fetch(`${API_URL}/carbon-transactions`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(body)
+                });
+                if (!response.ok) {
+                    const errData = await response.json();
+                    throw new Error(errData.error || 'Log transaction failed');
+                }
+
+                closeModal('transaction-modal');
+                e.target.reset();
+                
+                // Reload tables
+                loadTransactions();
+                loadGoals();
+            } catch (error) {
+                alert('Failed to log carbon activity: ' + error.message);
+            }
+        });
+
+        // 4. Submit Environmental Goal
+        document.getElementById('goal-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const formData = new FormData(e.target);
+            const body = Object.fromEntries(formData.entries());
+            if (body.departmentId === "") body.departmentId = null;
+
+            try {
+                const response = await fetch(`${API_URL}/goals`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(body)
+                });
+                if (!response.ok) throw new Error('Create goal failed');
+
+                closeModal('goal-modal');
+                e.target.reset();
+                loadGoals(); // Reload
+            } catch (error) {
+                alert('Failed to create goal: ' + error.message);
+            }
+        });
+
+        // Initial setup for form select boxes
+        function initSelectBoxes() {
+            // Populate department dropdown in transaction and goal modals
+            const deptOptions = DEPARTMENTS.map(d => `<option value="${d.id}">${d.name}</option>`).join('');
+            document.getElementById('tx-department').innerHTML = deptOptions;
+            
+            const goalDeptSelect = document.getElementById('goal-department');
+            goalDeptSelect.innerHTML = `<option value="">Company-Wide (Corporate)</option>` + deptOptions;
+        }
+
+        // Initialize page loads
+        window.addEventListener('DOMContentLoaded', () => {
+            initSelectBoxes();
+            loadEmissionFactors();
+            loadProductProfiles();
+            loadTransactions();
+            loadGoals();
+            displayUserSession();
+        });
+
+        function displayUserSession() {
+            const sessionStr = localStorage.getItem('user_session');
+            if (sessionStr) {
+                const session = JSON.parse(sessionStr);
+                const nameEl = document.getElementById('user-header-name');
+                const roleEl = document.getElementById('user-header-role');
+                if (nameEl) nameEl.textContent = session.name;
+                if (roleEl) roleEl.textContent = session.role + (session.department ? ` (${session.department})` : '');
+            }
+        }
+
+        function logout() {
+            localStorage.removeItem('user_session');
+            window.location.href = 'login.html';
+        }
     </script>
 </body>
 </html>

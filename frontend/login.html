@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html class="dark" lang="en">
+<head>
+    <meta charset="utf-8"/>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+    <title>EcoSphere - Login</title>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&amp;display=swap" rel="stylesheet"/>
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+    <script>
+        // Apply theme immediately
+        (function() {
+            const theme = localStorage.getItem('theme') || 'dark';
+            if (theme === 'dark') {
+                document.documentElement.classList.add('dark');
+            } else {
+                document.documentElement.classList.remove('dark');
+            }
+        })();
+    </script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        bgMain: "var(--bg-main)",
+                        bgSidebar: "var(--bg-sidebar)",
+                        bgCard: "var(--bg-card)",
+                        bgHeader: "var(--bg-header)",
+                        bgProgress: "var(--bg-progress)",
+                        borderDark: "var(--border-dark)",
+                        textPrimary: "var(--text-primary)",
+                        textSecondary: "var(--text-secondary)",
+                        esgGreen: "#10b981",
+                        esgBlue: "#3b82f6",
+                        esgOrange: "#f97316",
+                        esgPurple: "#a855f7"
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        :root {
+            --bg-main: #f8f9ff;
+            --bg-sidebar: #eff4ff;
+            --bg-card: #ffffff;
+            --bg-header: #ffffff;
+            --bg-progress: #e2e8f0;
+            --border-dark: #cbd5e1;
+            --text-primary: #0f172a;
+            --text-secondary: #475569;
+        }
+        .dark {
+            --bg-main: #0b0f17;
+            --bg-sidebar: #11151d;
+            --bg-card: #181d28;
+            --bg-header: #0d111a;
+            --bg-progress: #202735;
+            --border-dark: #262c3a;
+            --text-primary: #f3f4f6;
+            --text-secondary: #9ca3af;
+        }
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--bg-main);
+            color: var(--text-primary);
+        }
+    </style>
+</head>
+<body class="flex min-h-screen items-center justify-center bg-bgMain text-textPrimary antialiased p-4 relative overflow-hidden">
+    <!-- Decorative background blur blobs -->
+    <div class="absolute -top-40 -left-40 w-96 h-96 bg-esgGreen/10 rounded-full blur-3xl pointer-events-none"></div>
+    <div class="absolute -bottom-40 -right-40 w-96 h-96 bg-esgBlue/10 rounded-full blur-3xl pointer-events-none"></div>
+
+    <div class="w-full max-w-4xl grid grid-cols-1 md:grid-cols-2 bg-bgCard border border-borderDark rounded-2xl shadow-2xl overflow-hidden z-10">
+        
+        <!-- Left Side: Branding / Intro -->
+        <div class="p-8 bg-bgSidebar border-r border-borderDark/40 flex flex-col justify-between gap-8">
+            <div class="flex items-center gap-2 text-esgGreen">
+                <span class="material-symbols-outlined text-3xl font-bold">eco</span>
+                <span class="text-xl font-bold">EcoSphere</span>
+            </div>
+            <div class="space-y-4">
+                <h2 class="text-2xl font-extrabold tracking-tight text-textPrimary leading-tight">
+                    ESG Management Portal
+                </h2>
+                <p class="text-xs text-textSecondary leading-relaxed">
+                    EcoSphere integrates environmental, social, and corporate governance monitoring directly into daily ERP processes. 
+                </p>
+                <div class="p-4 border border-borderDark/40 rounded-xl bg-bgMain/40 text-[10px] space-y-2">
+                    <span class="font-bold text-textPrimary uppercase tracking-wider block text-esgOrange">Access Restriction</span>
+                    <p class="text-textSecondary leading-relaxed">
+                        To maintain compliance integrity and policy control, access is strictly limited to the **CEO**, **CTO**, and **Department Heads**. Standard employee roles are unauthorized.
+                    </p>
+                </div>
+            </div>
+            <div class="text-[10px] text-textSecondary font-mono">
+                EcoSphere ESG Platform v1.0.0
+            </div>
+        </div>
+
+        <!-- Right Side: Login Form -->
+        <div class="p-8 flex flex-col justify-between gap-6 bg-bgCard">
+            <div class="space-y-1">
+                <h3 class="text-lg font-bold text-textPrimary">Sign In</h3>
+                <p class="text-xs text-textSecondary">Enter your credentials to access the dashboard</p>
+            </div>
+
+            <!-- Error message container -->
+            <div id="error-box" class="hidden p-3 rounded-lg border border-red-500/20 bg-red-500/5 text-red-400 text-xs flex gap-2 items-start animate-pulse">
+                <span class="material-symbols-outlined text-base">error</span>
+                <span id="error-msg"></span>
+            </div>
+
+            <!-- Form -->
+            <form id="login-form" class="space-y-4 text-xs text-textSecondary">
+                <div class="flex flex-col gap-1.5">
+                    <label class="font-semibold text-textPrimary">Username</label>
+                    <div class="relative">
+                        <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-textSecondary text-base">person</span>
+                        <input name="username" required class="w-full pl-9 pr-4 py-2.5 bg-bgMain border border-borderDark rounded text-xs text-textPrimary focus:outline-none focus:border-esgGreen" placeholder="e.g. sarah.ceo" type="text" />
+                    </div>
+                </div>
+
+                <div class="flex flex-col gap-1.5">
+                    <label class="font-semibold text-textPrimary">Password</label>
+                    <div class="relative">
+                        <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-textSecondary text-base">lock</span>
+                        <input name="password" required class="w-full pl-9 pr-4 py-2.5 bg-bgMain border border-borderDark rounded text-xs text-textPrimary focus:outline-none focus:border-esgGreen" placeholder="••••••••" type="password" />
+                    </div>
+                </div>
+
+                <button type="submit" class="w-full py-2.5 bg-esgGreen text-bgMain font-extrabold text-xs rounded hover:bg-esgGreen/90 transition-all shadow-md">
+                    Login
+                </button>
+            </form>
+
+            <!-- Divider -->
+            <div class="relative flex py-1 items-center">
+                <div class="flex-grow border-t border-borderDark/40"></div>
+                <span class="flex-shrink mx-4 text-[9px] text-textSecondary uppercase font-bold tracking-wider">Demo Accounts</span>
+                <div class="flex-grow border-t border-borderDark/40"></div>
+            </div>
+
+            <!-- Password Helper Note -->
+            <p class="text-[8px] text-center text-textSecondary/80 -mt-2">Password for all accounts is <code class="font-mono text-esgGreen bg-bgSidebar/80 px-1 py-0.5 rounded">ecosphere2026</code></p>
+
+            <!-- Demo Credentials Helper -->
+            <div class="grid grid-cols-2 gap-2 text-[9px] text-textSecondary">
+                <div onclick="fillCredentials('sarah.ceo')" class="p-2 border border-borderDark/30 rounded-lg hover:border-esgGreen/50 bg-bgSidebar/40 hover:bg-bgSidebar/80 cursor-pointer transition-all flex flex-col justify-between">
+                    <span class="font-bold text-textPrimary">Sarah Jenkins (CEO)</span>
+                    <span class="font-mono mt-0.5">sarah.ceo</span>
+                </div>
+                <div onclick="fillCredentials('marcus.cto')" class="p-2 border border-borderDark/30 rounded-lg hover:border-esgGreen/50 bg-bgSidebar/40 hover:bg-bgSidebar/80 cursor-pointer transition-all flex flex-col justify-between">
+                    <span class="font-bold text-textPrimary">Marcus Reed (CTO)</span>
+                    <span class="font-mono mt-0.5">marcus.cto</span>
+                </div>
+                <div onclick="fillCredentials('john.log')" class="p-2 border border-borderDark/30 rounded-lg hover:border-esgGreen/50 bg-bgSidebar/40 hover:bg-bgSidebar/80 cursor-pointer transition-all flex flex-col justify-between">
+                    <span class="font-bold text-textPrimary">John Doe (Logistics)</span>
+                    <span class="font-mono mt-0.5">john.log</span>
+                </div>
+                <div onclick="fillCredentials('bill.emp')" class="p-2 border border-red-500/20 rounded-lg hover:border-red-500/50 bg-red-500/5 cursor-pointer transition-all flex flex-col justify-between">
+                    <span class="font-bold text-textPrimary">Bill Burns (Employee)</span>
+                    <span class="font-mono mt-0.5 text-red-400">bill.emp [Blocked]</span>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <script>
+        const API_URL = 'http://localhost:5000/api/environmental';
+
+        function fillCredentials(username) {
+            const form = document.getElementById('login-form');
+            form.elements['username'].value = username;
+            form.elements['password'].value = ''; // Don't auto-fill password
+            form.elements['password'].focus(); // Focus password input to type it
+            // Clear any error states
+            document.getElementById('error-box').classList.add('hidden');
+        }
+
+        document.getElementById('login-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const formData = new FormData(e.target);
+            const payload = Object.fromEntries(formData.entries());
+            const errorBox = document.getElementById('error-box');
+            const errorMsg = document.getElementById('error-msg');
+
+            errorBox.classList.add('hidden');
+
+            try {
+                const response = await fetch(`${API_URL}/auth/login`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+
+                const data = await response.json();
+                
+                if (!response.ok) {
+                    throw new Error(data.error || 'Authentication failed');
+                }
+
+                // Cache session data locally
+                localStorage.setItem('user_session', JSON.stringify(data));
+                
+                // Redirect to main dashboard
+                window.location.href = 'index.html';
+
+            } catch (error) {
+                errorMsg.textContent = error.message;
+                errorBox.classList.remove('hidden');
+            }
+        });
+    </script>
+</body>
+</html>
