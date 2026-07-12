@@ -5,6 +5,7 @@ import { initializeDatabase, sequelize } from './config/database';
 import environmentalRoutes from './routes/environmentalRoutes';
 import socialRoutes from './routes/socialRoutes';
 import governanceRoutes from './routes/governanceRoutes';
+import gamificationRoutes from './routes/gamificationRoutes';
 
 dotenv.config();
 
@@ -19,6 +20,7 @@ app.use(express.json());
 app.use('/api/environmental', environmentalRoutes);
 app.use('/api', socialRoutes);
 app.use('/api', governanceRoutes);
+app.use('/api', gamificationRoutes);
 
 // Health check endpoint
 app.get('/health', (req, res) => {

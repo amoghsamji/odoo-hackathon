@@ -15,6 +15,16 @@ async function seed() {
     await sequelize.query('DROP TABLE IF EXISTS audits');
     await sequelize.query('DROP TABLE IF EXISTS notifications');
     await sequelize.query('DROP TABLE IF EXISTS employee_participations');
+    await sequelize.query('DROP TABLE IF EXISTS employee_trainings');
+    await sequelize.query('DROP TABLE IF EXISTS csr_activities');
+    await sequelize.query('DROP TABLE IF EXISTS trainings');
+    await sequelize.query('DROP TABLE IF EXISTS redemptions');
+    await sequelize.query('DROP TABLE IF EXISTS rewards');
+    await sequelize.query('DROP TABLE IF EXISTS employee_badges');
+    await sequelize.query('DROP TABLE IF EXISTS badges');
+    await sequelize.query('DROP TABLE IF EXISTS challenge_participations');
+    await sequelize.query('DROP TABLE IF EXISTS challenges');
+    await sequelize.query('DROP TABLE IF EXISTS employees');
     await sequelize.query('DROP TABLE IF EXISTS settings');
     await sequelize.sync({ force: true });
     await sequelize.query('SET FOREIGN_KEY_CHECKS = 1');
@@ -348,6 +358,7 @@ async function seed() {
         is_leadership BOOLEAN DEFAULT FALSE,
         is_board BOOLEAN DEFAULT FALSE,
         points INT DEFAULT 0,
+        xp INT DEFAULT 0,
         department_id INT NULL,
         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
         FOREIGN KEY (department_id) REFERENCES departments(id) ON DELETE SET NULL
@@ -420,13 +431,13 @@ async function seed() {
 
     // Seed Employees
     await sequelize.query(`
-      INSERT INTO employees (name, email, gender, ethnicity, is_leadership, is_board, points, department_id) VALUES
-      ('Aditya S.', 'aditya@ecosphere.com', 'Male', 'South Asian', FALSE, FALSE, 100, 2),
-      ('Sohan Shah', 'sohan@ecosphere.com', 'Male', 'South Asian', FALSE, FALSE, 30, 3),
-      ('Sarah Jenkins', 'sarah@ecosphere.com', 'Female', 'White', TRUE, FALSE, 200, 1),
-      ('Maria Lopez', 'maria@ecosphere.com', 'Female', 'Hispanic', TRUE, TRUE, 150, 1),
-      ('John Doe', 'john@ecosphere.com', 'Male', 'White', FALSE, TRUE, 80, 2),
-      ('Alex Chen', 'alex@ecosphere.com', 'Other', 'East Asian', FALSE, FALSE, 50, 4)
+      INSERT INTO employees (name, email, gender, ethnicity, is_leadership, is_board, points, xp, department_id) VALUES
+      ('Aditya S.', 'aditya@ecosphere.com', 'Male', 'South Asian', FALSE, FALSE, 1000, 1000, 2),
+      ('Sohan Shah', 'sohan@ecosphere.com', 'Male', 'South Asian', FALSE, FALSE, 300, 300, 3),
+      ('Sarah Jenkins', 'sarah@ecosphere.com', 'Female', 'White', TRUE, FALSE, 3500, 3500, 1),
+      ('Maria Lopez', 'maria@ecosphere.com', 'Female', 'Hispanic', TRUE, TRUE, 2500, 2500, 1),
+      ('John Doe', 'john@ecosphere.com', 'Male', 'White', FALSE, TRUE, 1800, 1800, 2),
+      ('Alex Chen', 'alex@ecosphere.com', 'Other', 'East Asian', FALSE, FALSE, 500, 500, 4)
     `);
 
     // Seed Trainings
@@ -627,6 +638,138 @@ async function seed() {
     }
 
     console.log('[Seed] Governance module tables populated successfully.');
+
+    // 11. Rebuild and Seed Gamification Tables
+    console.log('[Seed] Rebuilding and seeding Gamification module tables...');
+    await sequelize.query('DROP TABLE IF EXISTS redemptions');
+    await sequelize.query('DROP TABLE IF EXISTS rewards');
+    await sequelize.query('DROP TABLE IF EXISTS employee_badges');
+    await sequelize.query('DROP TABLE IF EXISTS badges');
+    await sequelize.query('DROP TABLE IF EXISTS challenge_participations');
+    await sequelize.query('DROP TABLE IF EXISTS challenges');
+
+    // Create Challenges
+    await sequelize.query(`
+      CREATE TABLE challenges (
+        id INT AUTO_INCREMENT PRIMARY KEY,
+        title VARCHAR(255) NOT NULL,
+        description TEXT NOT NULL,
+        xp INT NOT NULL,
+        difficulty ENUM('Easy', 'Medium', 'Hard') DEFAULT 'Easy',
+        evidence_required BOOLEAN DEFAULT FALSE,
+        deadline DATE NOT NULL,
+        status ENUM('Draft', 'Active', 'Under Review', 'Completed', 'Archived') DEFAULT 'Draft',
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+      )
+    `);
+
+    // Create Challenge Participations
+    await sequelize.query(`
+      CREATE TABLE challenge_participations (
+        id INT AUTO_INCREMENT PRIMARY KEY,
+        challenge_id INT NOT NULL,
+        employee_id INT NOT NULL,
+        progress INT DEFAULT 0,
+        proof VARCHAR(255) NULL,
+        status ENUM('Pending', 'Approved', 'Rejected') DEFAULT 'Pending',
+        xp_awarded INT DEFAULT 0,
+        completion_date TIMESTAMP NULL,
+        FOREIGN KEY (challenge_id) REFERENCES challenges(id) ON DELETE CASCADE,
+        FOREIGN KEY (employee_id) REFERENCES employees(id) ON DELETE CASCADE,
+        UNIQUE KEY unique_participation (challenge_id, employee_id)
+      )
+    `);
+
+    // Create Badges
+    await sequelize.query(`
+      CREATE TABLE badges (
+        id INT AUTO_INCREMENT PRIMARY KEY,
+        name VARCHAR(255) NOT NULL,
+        description TEXT NOT NULL,
+        unlock_rule VARCHAR(255) NOT NULL,
+        icon VARCHAR(100) NOT NULL,
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+      )
+    `);
+
+    // Create Employee Badges
+    await sequelize.query(`
+      CREATE TABLE employee_badges (
+        id INT AUTO_INCREMENT PRIMARY KEY,
+        employee_id INT NOT NULL,
+        badge_id INT NOT NULL,
+        awarded_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        FOREIGN KEY (employee_id) REFERENCES employees(id) ON DELETE CASCADE,
+        FOREIGN KEY (badge_id) REFERENCES badges(id) ON DELETE CASCADE,
+        UNIQUE KEY unique_badge (employee_id, badge_id)
+      )
+    `);
+
+    // Create Rewards
+    await sequelize.query(`
+      CREATE TABLE rewards (
+        id INT AUTO_INCREMENT PRIMARY KEY,
+        name VARCHAR(255) NOT NULL,
+        description TEXT NOT NULL,
+        points_required INT NOT NULL,
+        stock INT NOT NULL,
+        status ENUM('Active', 'Inactive') DEFAULT 'Active',
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+      )
+    `);
+
+    // Create Redemptions
+    await sequelize.query(`
+      CREATE TABLE redemptions (
+        id INT AUTO_INCREMENT PRIMARY KEY,
+        employee_id INT NOT NULL,
+        reward_id INT NOT NULL,
+        redeemed_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        FOREIGN KEY (employee_id) REFERENCES employees(id) ON DELETE CASCADE,
+        FOREIGN KEY (reward_id) REFERENCES rewards(id) ON DELETE CASCADE
+      )
+    `);
+
+    // Seed default Challenges
+    await sequelize.query(`
+      INSERT INTO challenges (title, description, xp, difficulty, evidence_required, deadline, status) VALUES
+      ('Sustainability Sprint', 'Complete 5 carbon logging tasks this week.', 200, 'Hard', TRUE, '2026-07-20', 'Active'),
+      ('Recycle Challenge', 'Log plastic recycling activities daily.', 80, 'Easy', FALSE, '2026-07-15', 'Active'),
+      ('Commute Green Week', 'Cycle or walk to work for 5 days.', 120, 'Medium', TRUE, '2026-07-25', 'Draft')
+    `);
+
+    // Seed default Badges
+    await sequelize.query(`
+      INSERT INTO badges (name, description, unlock_rule, icon) VALUES
+      ('Green Beginner', 'Awarded when employee gets at least 500 XP.', 'min_xp:500', 'eco'),
+      ('Carbon Saver', 'Awarded when employee completes 2 approved challenges.', 'challenges:2', 'local_fire_department'),
+      ('Sustainability Champion', 'Awarded when employee reaches 2000 XP.', 'min_xp:2000', 'workspace_premium'),
+      ('Team Player', 'Awarded when employee completes first challenge.', 'challenges:1', 'group')
+    `);
+
+    // Seed default Rewards
+    await sequelize.query(`
+      INSERT INTO rewards (name, description, points_required, stock, status) VALUES
+      ('Reusable Coffee Cup', 'High-quality bamboo fiber travel mug.', 500, 10, 'Active'),
+      ('Donation: Plant a Tree', 'Donate a sapling planting in your name.', 800, 50, 'Active'),
+      ('E-Scooter Rental (1 Wk)', 'One-week subscription card for city micro-mobility.', 2500, 0, 'Active')
+    `);
+
+    // Seed some mock Badges for employees
+    await sequelize.query(`
+      INSERT INTO employee_badges (employee_id, badge_id) VALUES
+      (3, 1), (3, 3), (3, 4), -- Sarah Jenkins (unlocked Beginner, Champ, Team Player)
+      (4, 1), (4, 3)          -- Maria Lopez (unlocked Beginner, Champ)
+    `);
+
+    // Seed Badge Auto-Award default configuration
+    await sequelize.query(`
+      INSERT INTO settings (setting_key, setting_value) VALUES
+      ('badge_auto_award', '1')
+      ON DUPLICATE KEY UPDATE setting_value = '1'
+    `);
+
+    console.log('[Seed] Gamification module tables populated successfully.');
 
     console.log('[Seed] Database seeding completed successfully.');
     process.exit(0);

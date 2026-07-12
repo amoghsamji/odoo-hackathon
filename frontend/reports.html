@@ -220,7 +220,7 @@
             
             <!-- 1. ESG Summary / Standard Reports -->
             <div id="content-summary" class="subtab-content space-y-6">
-                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-6">
                     <!-- Environmental Report -->
                     <div class="bg-bgCard border border-borderDark rounded-xl p-5 hover:border-esgGreen/40 transition-all flex flex-col justify-between h-44">
                         <div>
@@ -258,6 +258,19 @@
                             <p class="text-xs text-textSecondary mt-1 line-clamp-2">Policies, audits, and compliance issues.</p>
                         </div>
                         <button onclick="generateGovernanceReport()" class="w-full mt-4 py-2 bg-esgPurple hover:bg-esgPurple/90 text-textPrimary font-bold text-xs rounded transition-all">Generate</button>
+                    </div>
+
+                    <!-- Gamification Report -->
+                    <div class="bg-bgCard border border-borderDark rounded-xl p-5 hover:border-esgOrange/40 transition-all flex flex-col justify-between h-44">
+                        <div>
+                            <div class="flex justify-between items-start mb-2">
+                                <span class="px-2 py-0.5 rounded text-[9px] font-bold bg-esgOrange/10 text-esgOrange uppercase">Gamification</span>
+                                <span class="material-symbols-outlined text-esgOrange">military_tech</span>
+                            </div>
+                            <h4 class="font-bold text-textPrimary text-sm">Gamification Report</h4>
+                            <p class="text-xs text-textSecondary mt-1 line-clamp-2">Leaderboard scenario, rewards points, and challenge completions.</p>
+                        </div>
+                        <button onclick="generateGamificationReport()" class="w-full mt-4 py-2 bg-esgOrange hover:bg-esgOrange/90 text-bgMain font-bold text-xs rounded transition-all">Generate</button>
                     </div>
 
                     <!-- ESG Summary -->
@@ -303,6 +316,7 @@
                                 <option value="environmental">Environmental Module</option>
                                 <option value="social">Social Module</option>
                                 <option value="governance">Governance Module</option>
+                                <option value="gamification">Gamification Module</option>
                             </select>
                         </div>
                     </div>
@@ -470,6 +484,12 @@
 
         function generateGovernanceReport() {
             document.getElementById('report-module-select').value = 'governance';
+            switchSubTab('builder');
+            runReport();
+        }
+
+        function generateGamificationReport() {
+            document.getElementById('report-module-select').value = 'gamification';
             switchSubTab('builder');
             runReport();
         }
@@ -672,6 +692,69 @@
                                 <td class="py-4 px-6 font-mono text-textSecondary text-xs">${dueStr}</td>
                                 <td class="py-4 px-6 text-center text-xs">
                                     <span class="px-2 py-0.5 rounded text-[10px] font-bold border ${statusClass}">${tx.status}</span>
+                                </td>
+                            </tr>
+                        `;
+                    }).join('');
+                } else if (module === 'gamification') {
+                    // Gamification Module Report
+                    document.getElementById('report-summary-label-1').textContent = 'Completed / Joined Challenges';
+                    document.getElementById('report-summary-label-2').textContent = 'Total XP Points Awarded / Leaderboard Points';
+                    document.getElementById('report-thead-row').innerHTML = `
+                        <th class="py-3 px-6">Completion Date</th>
+                        <th class="py-3 px-6">Department</th>
+                        <th class="py-3 px-6">Employee</th>
+                        <th class="py-3 px-6">Challenge Title</th>
+                        <th class="py-3 px-6">Difficulty</th>
+                        <th class="py-3 px-6 text-center">Status</th>
+                        <th class="py-3 px-6 text-right font-semibold">XP Awarded</th>
+                    `;
+
+                    const response = await fetch(`${API_URL}/gamification/report?${params.toString()}`);
+                    if (!response.ok) throw new Error('Report query failed');
+                    const report = await response.json();
+
+                    // 1. Update summary widgets
+                    document.getElementById('report-summary-count').textContent = report.summary.recordCount;
+                    document.getElementById('report-summary-emissions').textContent = 
+                        `${report.summary.approvedCount} Completed | +${report.summary.totalPoints.toLocaleString()} XP`;
+
+                    // Unhide summary row and table
+                    document.getElementById('report-summary-row').classList.remove('hidden');
+                    document.getElementById('report-table-container').classList.remove('hidden');
+
+                    // 2. Render table body
+                    const tbody = document.getElementById('report-tbody');
+                    if (report.data.length === 0) {
+                        tbody.innerHTML = `
+                            <tr>
+                                <td colspan="7" class="py-6 text-center text-textSecondary text-xs">
+                                    No records found matching the configured filters.
+                                </td>
+                            </tr>
+                        `;
+                        return;
+                    }
+
+                    tbody.innerHTML = report.data.map(tx => {
+                        const dateStr = tx.completion_date ? new Date(tx.completion_date).toLocaleDateString() : 'Pending Completion';
+                        
+                        let statusClass = 'bg-esgOrange/10 text-esgOrange border-esgOrange/20';
+                        if (tx.status === 'Approved') statusClass = 'bg-esgGreen/10 text-esgGreen border-esgGreen/20';
+                        else if (tx.status === 'Rejected') statusClass = 'bg-red-500/10 text-red-500 border-red-500/20';
+
+                        return `
+                            <tr class="hover:bg-bgSidebar/50 transition-colors">
+                                <td class="py-4 px-6 font-mono text-textSecondary text-xs">${dateStr}</td>
+                                <td class="py-4 px-6 text-xs">${tx.department_name || 'Global'}</td>
+                                <td class="py-4 px-6 text-xs font-semibold">${tx.employee_name}</td>
+                                <td class="py-4 px-6 text-xs text-textSecondary">${tx.challenge_title}</td>
+                                <td class="py-4 px-6 text-xs font-mono uppercase">${tx.difficulty}</td>
+                                <td class="py-4 px-6 text-center text-xs">
+                                    <span class="px-2 py-0.5 rounded text-[10px] font-bold border ${statusClass}">${tx.status}</span>
+                                </td>
+                                <td class="py-4 px-6 text-right font-mono text-esgOrange text-xs font-bold">
+                                    +${tx.xp_awarded} XP
                                 </td>
                             </tr>
                         `;

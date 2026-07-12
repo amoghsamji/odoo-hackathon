@@ -177,11 +177,32 @@
                 <button id="theme-toggle" onclick="toggleTheme()" class="p-1.5 text-textSecondary hover:text-textPrimary rounded-full hover:bg-bgCard focus:outline-none">
                     <span id="theme-icon" class="material-symbols-outlined text-[20px]">light_mode</span>
                 </button>
-                <button class="p-1.5 text-textSecondary hover:text-textPrimary rounded-full hover:bg-bgCard"><span class="material-symbols-outlined text-[20px]">notifications</span></button>
+                <div class="relative">
+                    <button id="notif-bell-btn" onclick="toggleNotifDropdown()" class="p-1.5 text-textSecondary hover:text-textPrimary rounded-full hover:bg-bgCard relative">
+                        <span class="material-symbols-outlined text-[20px]">notifications</span>
+                        <span id="notif-badge" class="absolute w-2 h-2 rounded-full bg-esgOrange top-1 right-1 hidden"></span>
+                    </button>
+                    <!-- Notification Dropdown -->
+                    <div id="notif-dropdown" class="hidden absolute right-0 mt-2 w-80 bg-bgCard border border-borderDark rounded-xl shadow-2xl overflow-hidden z-50 text-left">
+                        <div class="px-4 py-3 bg-bgSidebar border-b border-borderDark flex justify-between items-center">
+                            <span class="text-xs font-bold text-textPrimary uppercase tracking-wider">Live Notifications</span>
+                            <button onclick="clearNotifications()" class="text-[10px] text-esgPurple hover:underline font-semibold">Clear All</button>
+                        </div>
+                        <div id="notif-list" class="max-h-60 overflow-y-auto divide-y divide-borderDark/40 custom-scroll">
+                            <!-- Live updates -->
+                        </div>
+                    </div>
+                </div>
                 <div class="h-6 w-px bg-borderDark"></div>
                 <div class="flex items-center gap-2.5">
                     <img class="w-8 h-8 rounded-full border border-borderDark object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCyU1DjX1WEyXlSYLA9ykyxu_KZldTBys68h5s7TJlWjydSGJwwRirA2Tva7HhJKkXEKRHC9Uhdy1xQuac0OtdKLqTvs_wbhNCILmjU4ctmHDIBvl3RpPYoOZvqmPu8XyOsudsvdCOkX22EoZI5KjocYgi1kf0pPHX47Lh_-83Gepn9lI-hW4vTQkdcnjq1UdpQ81WMiQZdDGq78rS4sTS3-giUp4IHV8x-VLkC2ITlUQfDqs0dtN_Z" alt="User Headshot"/>
-                    <span class="text-xs font-semibold text-textPrimary hidden sm:inline">Sarah Jenkins</span>
+                    <div class="hidden sm:flex flex-col text-left">
+                        <span id="user-header-name" class="text-xs font-bold text-textPrimary">Sarah Jenkins</span>
+                        <span id="user-header-role" class="text-[9px] text-textSecondary uppercase font-bold tracking-wider">CEO</span>
+                    </div>
+                    <button onclick="logout()" class="p-1 text-textSecondary hover:text-red-400 rounded-full hover:bg-bgCard ml-1.5" title="Logout">
+                        <span class="material-symbols-outlined text-[18px]">logout</span>
+                    </button>
                 </div>
             </div>
         </header>
@@ -211,54 +232,19 @@
             
             <!-- 1. Challenges Sub-tab -->
             <div id="content-challenges" class="subtab-content space-y-6">
+
+
                 <div class="flex justify-between items-center">
-                    <button class="px-4 py-2 bg-esgOrange hover:bg-esgOrange/90 text-bgMain font-bold text-xs rounded transition-all flex items-center gap-1"><span class="material-symbols-outlined text-sm font-bold">add</span><span>New Challenge</span></button>
+                    <button onclick="openChallengeModal()" class="px-4 py-2 bg-esgOrange hover:bg-esgOrange/90 text-bgMain font-bold text-xs rounded transition-all flex items-center gap-1"><span class="material-symbols-outlined text-sm font-bold">add</span><span>New Challenge</span></button>
                     <div class="relative">
                         <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-textSecondary text-xs">search</span>
-                        <input class="w-60 pl-9 pr-4 py-1.5 bg-bgCard border border-borderDark rounded text-xs text-textPrimary focus:outline-none focus:border-esgOrange focus:ring-1 focus:ring-esgOrange" placeholder="Search challenges..." type="text"/>
+                        <input oninput="searchChallenges(this.value)" class="w-60 pl-9 pr-4 py-1.5 bg-bgCard border border-borderDark rounded text-xs text-textPrimary focus:outline-none focus:border-esgOrange focus:ring-1 focus:ring-esgOrange" placeholder="Search challenges..." type="text"/>
                     </div>
                 </div>
 
                 <!-- Challenges Cards -->
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-                    <!-- Challenge 1 -->
-                    <div class="bg-bgCard border border-borderDark rounded-xl p-5 hover:border-esgOrange/40 transition-all flex flex-col justify-between h-44">
-                        <div>
-                            <div class="flex justify-between items-start mb-2">
-                                <span class="px-2.5 py-0.5 rounded text-[10px] font-bold bg-esgOrange/10 text-esgOrange font-mono">XP: 250</span>
-                                <span class="material-symbols-outlined text-esgOrange">workspace_premium</span>
-                            </div>
-                            <h4 class="font-bold text-textPrimary text-sm">Sustainability Sprint</h4>
-                            <p class="text-xs text-textSecondary mt-1 line-clamp-2">Complete 5 carbon logging tasks this week.</p>
-                        </div>
-                        <button class="w-full mt-4 py-2 bg-esgOrange hover:bg-esgOrange/90 text-bgMain font-bold text-xs rounded transition-all">Join Challenge</button>
-                    </div>
-
-                    <!-- Challenge 2 -->
-                    <div class="bg-bgCard border border-borderDark rounded-xl p-5 hover:border-esgOrange/40 transition-all flex flex-col justify-between h-44">
-                        <div>
-                            <div class="flex justify-between items-start mb-2">
-                                <span class="px-2.5 py-0.5 rounded text-[10px] font-bold bg-esgOrange/10 text-esgOrange font-mono">XP: 400</span>
-                                <span class="material-symbols-outlined text-esgOrange">directions_bike</span>
-                            </div>
-                            <h4 class="font-bold text-textPrimary text-sm">Commuter Challenge</h4>
-                            <p class="text-xs text-textSecondary mt-1 line-clamp-2">Cycle or walk to work for 10 days.</p>
-                        </div>
-                        <button class="w-full mt-4 py-2 bg-esgOrange hover:bg-esgOrange/90 text-bgMain font-bold text-xs rounded transition-all">Join Challenge</button>
-                    </div>
-
-                    <!-- Challenge 3 -->
-                    <div class="bg-bgCard border border-borderDark rounded-xl p-5 hover:border-esgOrange/40 transition-all flex flex-col justify-between h-44">
-                        <div>
-                            <div class="flex justify-between items-start mb-2">
-                                <span class="px-2.5 py-0.5 rounded text-[10px] font-bold bg-esgOrange/10 text-esgOrange font-mono">XP: 150</span>
-                                <span class="material-symbols-outlined text-esgOrange">delete_outline</span>
-                            </div>
-                            <h4 class="font-bold text-textPrimary text-sm">Zero Waste Week</h4>
-                            <p class="text-xs text-textSecondary mt-1 line-clamp-2">Log zero plastic usage in the cafeteria.</p>
-                        </div>
-                        <button class="w-full mt-4 py-2 bg-esgOrange hover:bg-esgOrange/90 text-bgMain font-bold text-xs rounded transition-all">Join Challenge</button>
-                    </div>
+                <div id="challenges-cards-grid" class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    <!-- Populated dynamically -->
                 </div>
             </div>
 
@@ -267,41 +253,8 @@
                 <div class="flex justify-between items-center">
                     <h3 class="text-md font-semibold text-textPrimary">Your Active Challenges Progress</h3>
                 </div>
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <div class="bg-bgCard border border-borderDark rounded-xl p-6 flex flex-col gap-4">
-                        <div class="flex justify-between items-start">
-                            <div>
-                                <h4 class="font-bold text-textPrimary">Bike to Work Month</h4>
-                                <span class="text-xs text-textSecondary block mt-0.5">14 Days Left</span>
-                            </div>
-                            <span class="px-2 py-0.5 rounded text-[10px] font-bold bg-esgGreen/10 text-esgGreen border border-esgGreen/20">Active</span>
-                        </div>
-                        <div class="space-y-2 mt-2">
-                            <div class="flex justify-between text-xs font-semibold">
-                                <span class="text-textSecondary">Progress</span>
-                                <span class="text-esgGreen font-mono">6 / 10 Days</span>
-                            </div>
-                            <div class="w-full bg-bgProgress h-2 rounded-full overflow-hidden">
-                                <div class="bg-esgGreen h-full" style="width: 60%"></div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="bg-bgCard border border-borderDark rounded-xl p-6 flex flex-col gap-4">
-                        <div class="flex justify-between items-start">
-                            <div>
-                                <h4 class="font-bold text-textPrimary">Paperless Quarter</h4>
-                                <span class="text-xs text-textSecondary block mt-0.5">Awaiting Approval</span>
-                            </div>
-                            <span class="px-2 py-0.5 rounded text-[10px] font-bold bg-esgOrange/10 text-esgOrange border border-esgOrange/20">Under Review</span>
-                        </div>
-                        <div class="space-y-2 mt-2">
-                            <div class="flex justify-between text-xs font-semibold">
-                                <span class="text-textSecondary">Pending Points</span>
-                                <span class="text-esgOrange font-mono">300 XP</span>
-                            </div>
-                        </div>
-                    </div>
+                <div id="participation-grid" class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <!-- Populated dynamically -->
                 </div>
             </div>
 
@@ -310,35 +263,8 @@
                 <div class="flex justify-between items-center">
                     <h3 class="text-md font-semibold text-textPrimary">Badges Catalog</h3>
                 </div>
-                <div class="grid grid-cols-2 md:grid-cols-4 gap-6">
-                    <div class="bg-bgCard border border-borderDark rounded-xl p-5 flex flex-col items-center text-center gap-3">
-                        <div class="w-16 h-16 rounded-full bg-esgGreen/10 flex items-center justify-center text-esgGreen">
-                            <span class="material-symbols-outlined text-4xl">eco</span>
-                        </div>
-                        <h4 class="font-bold text-sm">Eco-Champion</h4>
-                        <span class="text-[10px] text-textSecondary">Top carbon reduction contributor</span>
-                    </div>
-                    <div class="bg-bgCard border border-borderDark rounded-xl p-5 flex flex-col items-center text-center gap-3">
-                        <div class="w-16 h-16 rounded-full bg-esgOrange/10 flex items-center justify-center text-esgOrange">
-                            <span class="material-symbols-outlined text-4xl">local_fire_department</span>
-                        </div>
-                        <h4 class="font-bold text-sm">Carbon Hero</h4>
-                        <span class="text-[10px] text-textSecondary">Log 10 carbon transactions</span>
-                    </div>
-                    <div class="bg-bgCard border border-borderDark rounded-xl p-5 flex flex-col items-center text-center gap-3">
-                        <div class="w-16 h-16 rounded-full bg-esgPurple/10 flex items-center justify-center text-esgPurple">
-                            <span class="material-symbols-outlined text-4xl">policy</span>
-                        </div>
-                        <h4 class="font-bold text-sm">Sustainability Specialist</h4>
-                        <span class="text-[10px] text-textSecondary">Complete ESG configurations workshop</span>
-                    </div>
-                    <div class="bg-bgCard border border-borderDark rounded-xl p-5 flex flex-col items-center text-center gap-3">
-                        <div class="w-16 h-16 rounded-full bg-esgBlue/10 flex items-center justify-center text-esgBlue">
-                            <span class="material-symbols-outlined text-4xl">directions_bike</span>
-                        </div>
-                        <h4 class="font-bold text-sm">Green Rider</h4>
-                        <span class="text-[10px] text-textSecondary">Complete bicycle commuting challenge</span>
-                    </div>
+                <div id="badges-grid" class="grid grid-cols-2 md:grid-cols-4 gap-6">
+                    <!-- Populated dynamically -->
                 </div>
             </div>
 
@@ -351,98 +277,59 @@
                     </div>
                     <div class="flex items-center gap-1 text-esgGreen bg-esgGreen/10 px-3 py-1 rounded">
                         <span class="material-symbols-outlined text-sm">monetization_on</span>
-                        <span class="font-mono text-xs font-bold">1,200 pts</span>
+                        <span id="rewards-points-balance" class="font-mono text-xs font-bold">0 pts</span>
                     </div>
                 </div>
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-                    <div class="bg-bgCard border border-borderDark rounded-xl p-5 flex flex-col justify-between h-48">
-                        <div>
-                            <div class="flex justify-between items-start">
-                                <span class="material-symbols-outlined text-esgGreen text-2xl">local_cafe</span>
-                                <span class="text-xs font-bold text-textPrimary font-mono">500 pts</span>
-                            </div>
-                            <h4 class="font-bold text-sm mt-3">Reusable Coffee Cup</h4>
-                            <p class="text-xs text-textSecondary mt-1">High-quality bamboo fiber travel mug.</p>
-                        </div>
-                        <button class="w-full mt-4 py-2 bg-esgGreen hover:bg-esgGreen/90 text-bgMain font-bold text-xs rounded transition-all">Redeem</button>
-                    </div>
-
-                    <div class="bg-bgCard border border-borderDark rounded-xl p-5 flex flex-col justify-between h-48">
-                        <div>
-                            <div class="flex justify-between items-start">
-                                <span class="material-symbols-outlined text-esgGreen text-2xl">forest</span>
-                                <span class="text-xs font-bold text-textPrimary font-mono">800 pts</span>
-                            </div>
-                            <h4 class="font-bold text-sm mt-3">Donation: Plant a Tree</h4>
-                            <p class="text-xs text-textSecondary mt-1">Donate a sapling planting in your name.</p>
-                        </div>
-                        <button class="w-full mt-4 py-2 bg-esgGreen hover:bg-esgGreen/90 text-bgMain font-bold text-xs rounded transition-all">Redeem</button>
-                    </div>
-
-                    <div class="bg-bgCard border border-borderDark rounded-xl p-5 flex flex-col justify-between h-48 opacity-60">
-                        <div>
-                            <div class="flex justify-between items-start">
-                                <span class="material-symbols-outlined text-textSecondary text-2xl">electric_scooter</span>
-                                <span class="text-xs font-bold text-textSecondary font-mono">2,500 pts</span>
-                            </div>
-                            <h4 class="font-bold text-sm mt-3 line-through">E-Scooter Rental (1 Wk)</h4>
-                            <p class="text-xs text-textSecondary mt-1">One-week subscription card for city micro-mobility.</p>
-                        </div>
-                        <button disabled class="w-full mt-4 py-2 bg-borderDark text-textSecondary font-bold text-xs rounded cursor-not-allowed">Out of Stock</button>
-                    </div>
+                <div id="rewards-grid" class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    <!-- Populated dynamically -->
                 </div>
             </div>
 
             <!-- 5. Leaderboard Sub-tab -->
             <div id="content-leaderboard" class="subtab-content hidden space-y-6">
-                <div class="flex justify-between items-center">
-                    <div>
-                        <h3 class="text-md font-semibold text-textPrimary">Leaderboard Rankings</h3>
-                        <p class="text-xs text-textSecondary">Top performing employees this cycle</p>
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                    <!-- Employee Rankings -->
+                    <div class="space-y-4">
+                        <h3 class="text-sm font-bold text-textPrimary uppercase tracking-wider">Employee Leaderboard</h3>
+                        <div class="bg-bgCard border border-borderDark rounded-xl overflow-hidden shadow-lg">
+                            <table class="w-full text-left border-collapse">
+                                <thead>
+                                    <tr class="bg-bgSidebar border-b border-borderDark">
+                                        <th class="py-3 px-6 text-xs font-bold text-textSecondary uppercase">Rank</th>
+                                        <th class="py-3 px-6 text-xs font-bold text-textSecondary uppercase">Employee</th>
+                                        <th class="py-3 px-6 text-xs font-bold text-textSecondary uppercase">Department</th>
+                                        <th class="py-3 px-6 text-xs font-bold text-textSecondary uppercase text-right font-semibold">Total XP</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="leaderboard-employees-tbody" class="divide-y divide-borderDark/40 text-sm">
+                                    <!-- Populated dynamically -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <!-- Department Rankings -->
+                    <div class="space-y-4">
+                        <h3 class="text-sm font-bold text-textPrimary uppercase tracking-wider">Department Leaderboard</h3>
+                        <div class="bg-bgCard border border-borderDark rounded-xl overflow-hidden shadow-lg">
+                            <table class="w-full text-left border-collapse">
+                                <thead>
+                                    <tr class="bg-bgSidebar border-b border-borderDark">
+                                        <th class="py-3 px-6 text-xs font-bold text-textSecondary uppercase">Rank</th>
+                                        <th class="py-3 px-6 text-xs font-bold text-textSecondary uppercase">Department</th>
+                                        <th class="py-3 px-6 text-xs font-bold text-textSecondary uppercase text-right font-semibold">Accumulated XP</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="leaderboard-departments-tbody" class="divide-y divide-borderDark/40 text-sm">
+                                    <!-- Populated dynamically -->
+                                </tbody>
+                            </table>
+                        </div>
                     </div>
                 </div>
-                <div class="bg-bgCard border border-borderDark rounded-xl overflow-hidden shadow-lg">
-                    <table class="w-full text-left border-collapse">
-                        <thead>
-                            <tr class="bg-bgSidebar border-b border-borderDark">
-                                <th class="py-3 px-6 text-xs font-bold text-textSecondary uppercase">Rank</th>
-                                <th class="py-3 px-6 text-xs font-bold text-textSecondary uppercase">Employee</th>
-                                <th class="py-3 px-6 text-xs font-bold text-textSecondary uppercase">Department</th>
-                                <th class="py-3 px-6 text-xs font-bold text-textSecondary uppercase text-right font-semibold">Total XP</th>
-                            </tr>
-                        </thead>
-                        <tbody class="divide-y divide-borderDark/40 text-sm">
-                            <tr class="hover:bg-bgSidebar/50 transition-colors">
-                                <td class="py-4 px-6 font-mono text-esgOrange font-bold text-base">#1</td>
-                                <td class="py-4 px-6 font-semibold flex items-center gap-2">
-                                    <div class="w-7 h-7 rounded-full bg-esgOrange/15 text-esgOrange flex items-center justify-center text-xs font-bold">MR</div>
-                                    <span>Marcus Reed</span>
-                                </td>
-                                <td class="py-4 px-6 text-textSecondary">Logistics</td>
-                                <td class="py-4 px-6 text-right font-mono font-bold text-esgOrange">4,850</td>
-                            </tr>
-                            <tr class="hover:bg-bgSidebar/50 transition-colors">
-                                <td class="py-4 px-6 font-mono text-textSecondary font-semibold">#2</td>
-                                <td class="py-4 px-6 font-semibold flex items-center gap-2">
-                                    <div class="w-7 h-7 rounded-full bg-esgBlue/15 text-esgBlue flex items-center justify-center text-xs font-bold">EL</div>
-                                    <span>Elena Lopez</span>
-                                </td>
-                                <td class="py-4 px-6 text-textSecondary">Finance</td>
-                                <td class="py-4 px-6 text-right font-mono font-semibold">3,950</td>
-                            </tr>
-                            <tr class="hover:bg-bgSidebar/50 transition-colors bg-esgGreen/5">
-                                <td class="py-4 px-6 font-mono text-esgGreen font-bold">#3</td>
-                                <td class="py-4 px-6 font-semibold flex items-center gap-2">
-                                    <div class="w-7 h-7 rounded-full bg-esgGreen/15 text-esgGreen flex items-center justify-center text-xs font-bold">SJ</div>
-                                    <span>Sarah Jenkins (You)</span>
-                                </td>
-                                <td class="py-4 px-6 text-textSecondary">CSR</td>
-                                <td class="py-4 px-6 text-right font-mono font-bold text-esgGreen">3,500</td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
             </div>
+
+        </div>
 
         </div>
     </main>
@@ -508,6 +395,638 @@
             }
         }
 
+        // ====================================================
+        // BACKEND API INTEGRATION - GAMIFICATION
+        // ====================================================
+        const API_URL = 'http://127.0.0.1:5000/api';
+        let allChallenges = [];
+        let allParticipations = [];
+        let currentUserId = 3; // Default fallback to Sarah Jenkins if no session
+        let userPoints = 0;
+
+        // Session logic
+        function initSession() {
+            const sessionStr = localStorage.getItem('user_session');
+            if (!sessionStr) {
+                window.location.href = 'login.html';
+                return;
+            }
+            const session = JSON.parse(sessionStr);
+            document.getElementById('user-header-name').textContent = session.name;
+            document.getElementById('user-header-role').textContent = session.role + (session.department ? ` (${session.department})` : '');
+            
+            // Map session user to an id (1=Aditya, 2=Sohan, 3=Sarah, 4=Maria, 5=John, 6=Alex)
+            const nameMap = {
+                'Aditya S.': 1,
+                'Sohan Shah': 2,
+                'Sarah Jenkins': 3,
+                'Maria Lopez': 4,
+                'John Doe': 5,
+                'Alex Chen': 6
+            };
+            currentUserId = nameMap[session.name] || 3;
+            updatePointsBalance();
+        }
+
+        async function updatePointsBalance() {
+            try {
+                const res = await fetch(`${API_URL}/leaderboard`);
+                const data = await res.json();
+                const userObj = data.employees.find(e => e.id === currentUserId);
+                if (userObj) {
+                    userPoints = userObj.points; // Points balance is deducted, XP is not
+                    const balanceEl = document.getElementById('rewards-points-balance');
+                    if (balanceEl) balanceEl.textContent = `${userPoints.toLocaleString()} pts`;
+                }
+            } catch (err) {
+                console.error(err);
+            }
+        }
+
+        function logout() {
+            localStorage.removeItem('user_session');
+            window.location.href = 'login.html';
+        }
+
+        // Live notification dropdown
+        function toggleNotifDropdown() {
+            const dropdown = document.getElementById('notif-dropdown');
+            dropdown.classList.toggle('hidden');
+        }
+
+        // Modals
+        function openChallengeModal() { document.getElementById('challenge-modal').classList.remove('hidden'); }
+        function closeChallengeModal() { document.getElementById('challenge-modal').classList.add('hidden'); }
+
+        let currentSubmitPartId = null;
+        function openSubmitProofModal(participationId, evidenceRequired) {
+            currentSubmitPartId = participationId;
+            const proofLabel = document.getElementById('proof-label-req');
+            if (evidenceRequired) {
+                proofLabel.classList.remove('hidden');
+                document.getElementById('proof-file').setAttribute('required', 'true');
+            } else {
+                proofLabel.classList.add('hidden');
+                document.getElementById('proof-file').removeAttribute('required');
+            }
+            document.getElementById('proof-modal').classList.remove('hidden');
+        }
+
+        function closeSubmitProofModal() {
+            document.getElementById('proof-modal').classList.add('hidden');
+            document.getElementById('proof-form').reset();
+        }
+
+        // 1. Challenges API Loaders
+        async function loadChallenges() {
+            try {
+                const res = await fetch(`${API_URL}/challenges`);
+                allChallenges = await res.json();
+                
+                const partRes = await fetch(`${API_URL}/challenges/participation?employeeId=${currentUserId}`);
+                allParticipations = await partRes.json();
+
+                renderChallenges(allChallenges);
+            } catch (err) {
+                console.error(err);
+            }
+        }
+
+        function renderChallenges(challenges) {
+            const grid = document.getElementById('challenges-cards-grid');
+            if (challenges.length === 0) {
+                grid.innerHTML = `<div class="col-span-3 text-center text-textSecondary text-xs py-10">No challenges scheduled yet.</div>`;
+                return;
+            }
+
+            grid.innerHTML = challenges.map(c => {
+                const isJoined = allParticipations.some(p => p.challenge_id === c.id);
+                const hasJoinedText = isJoined ? 'Joined' : 'Join Challenge';
+                const hasJoinedClass = isJoined 
+                    ? 'bg-bgProgress text-textSecondary cursor-not-allowed' 
+                    : 'bg-esgOrange hover:bg-esgOrange/90 text-bgMain font-bold';
+
+                const joinedPart = allParticipations.find(p => p.challenge_id === c.id);
+                const isApproved = joinedPart && joinedPart.status === 'Approved';
+
+                let statusBadge = '';
+                if (c.status === 'Active') statusBadge = `<span class="px-2 py-0.5 rounded text-[9px] font-bold bg-esgGreen/10 text-esgGreen border border-esgGreen/20">Active</span>`;
+                else if (c.status === 'Draft') statusBadge = `<span class="px-2 py-0.5 rounded text-[9px] font-bold bg-bgProgress text-textSecondary border border-borderDark/40">Draft</span>`;
+                else if (c.status === 'Under Review') statusBadge = `<span class="px-2 py-0.5 rounded text-[9px] font-bold bg-esgOrange/10 text-esgOrange border border-esgOrange/20">Under Review</span>`;
+                else if (c.status === 'Completed') statusBadge = `<span class="px-2 py-0.5 rounded text-[9px] font-bold bg-esgBlue/10 text-esgBlue border border-esgBlue/20">Completed</span>`;
+
+                let icon = 'workspace_premium';
+                if (c.title.toLowerCase().includes('commute') || c.title.toLowerCase().includes('bike')) icon = 'directions_bike';
+                else if (c.title.toLowerCase().includes('recycle') || c.title.toLowerCase().includes('plastic')) icon = 'recycling';
+                else if (c.title.toLowerCase().includes('waste') || c.title.toLowerCase().includes('paper')) icon = 'delete_outline';
+
+                return `
+                    <div class="bg-bgCard border border-borderDark rounded-xl p-5 hover:border-esgOrange/40 transition-all flex flex-col justify-between h-48">
+                        <div>
+                            <div class="flex justify-between items-start mb-2">
+                                <span class="px-2.5 py-0.5 rounded text-[10px] font-bold bg-esgOrange/10 text-esgOrange font-mono">XP: ${c.xp}</span>
+                                <span class="material-symbols-outlined text-esgOrange text-xl">${icon}</span>
+                            </div>
+                            <h4 class="font-bold text-textPrimary text-sm">${c.title}</h4>
+                            <p class="text-xs text-textSecondary mt-1 line-clamp-2">${c.description}</p>
+                            <div class="flex items-center gap-2 mt-2">
+                                <select onchange="updateChallengeStatus(${c.id}, this.value)" class="text-[10px] bg-bgCard border border-borderDark rounded px-1.5 py-0.5 text-textPrimary focus:outline-none focus:border-esgOrange">
+                                    <option value="Draft" ${c.status === 'Draft' ? 'selected' : ''}>Draft</option>
+                                    <option value="Active" ${c.status === 'Active' ? 'selected' : ''}>Active</option>
+                                    <option value="Under Review" ${c.status === 'Under Review' ? 'selected' : ''}>Under Review</option>
+                                    <option value="Completed" ${c.status === 'Completed' ? 'selected' : ''}>Completed</option>
+                                    <option value="Archived" ${c.status === 'Archived' ? 'selected' : ''}>Archived</option>
+                                </select>
+                                <span class="text-[9px] text-textSecondary font-mono uppercase">${c.difficulty}</span>
+                            </div>
+                        </div>
+                        ${isApproved ? `
+                            <button disabled class="w-full mt-4 py-2 bg-esgGreen/10 text-esgGreen border border-esgGreen/20 font-bold text-xs rounded cursor-not-allowed flex items-center justify-center gap-1">
+                                <span class="material-symbols-outlined text-sm font-bold">check_circle</span>
+                                <span>Completed</span>
+                            </button>
+                        ` : `
+                            <button onclick="joinChallenge(${c.id})" ${isJoined ? 'disabled' : ''} class="w-full mt-4 py-2 text-xs rounded transition-all ${hasJoinedClass}">
+                                ${hasJoinedText}
+                            </button>
+                        `}
+                    </div>
+                `;
+            }).join('');
+        }
+
+        async function updateChallengeStatus(challengeId, status) {
+            try {
+                const res = await fetch(`${API_URL}/challenges/${challengeId}/update-status`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ status })
+                });
+                if (!res.ok) throw new Error();
+                alert('Challenge status updated!');
+                loadChallenges();
+                loadParticipation();
+            } catch (err) {
+                alert('Failed to update challenge status.');
+            }
+        }
+
+        function searchChallenges(query) {
+            const filtered = allChallenges.filter(c => c.title.toLowerCase().includes(query.toLowerCase()) || c.description.toLowerCase().includes(query.toLowerCase()));
+            renderChallenges(filtered);
+        }
+
+        async function submitChallenge(e) {
+            e.preventDefault();
+            const payload = {
+                title: document.getElementById('challenge-title').value,
+                description: document.getElementById('challenge-desc').value,
+                xp: parseInt(document.getElementById('challenge-xp').value),
+                difficulty: document.getElementById('challenge-diff').value,
+                evidence_required: document.getElementById('challenge-evid').checked,
+                deadline: document.getElementById('challenge-deadline').value,
+                status: document.getElementById('challenge-status').value
+            };
+
+            try {
+                const res = await fetch(`${API_URL}/challenges`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+                if (!res.ok) throw new Error();
+                
+                alert('Challenge created successfully!');
+                closeChallengeModal();
+                document.getElementById('challenge-form').reset();
+                loadChallenges();
+            } catch (err) {
+                alert('Failed to create challenge.');
+            }
+        }
+
+        let employeesLoaded = false;
+        async function loadEmployeesForJoin() {
+            if (employeesLoaded) return;
+            try {
+                const res = await fetch(`${API_URL}/leaderboard`);
+                const data = await res.json();
+                const selectEl = document.getElementById('join-challenge-employee');
+                selectEl.innerHTML = data.employees.map(e => `<option value="${e.id}">${e.name}</option>`).join('');
+                employeesLoaded = true;
+            } catch (err) {
+                console.error('Failed to load employees for selector:', err);
+            }
+        }
+
+        async function joinChallenge(challengeId) {
+            document.getElementById('join-challenge-id').value = challengeId;
+            await loadEmployeesForJoin();
+            document.getElementById('join-challenge-modal').classList.remove('hidden');
+        }
+
+        function closeJoinChallengeModal() {
+            document.getElementById('join-challenge-modal').classList.add('hidden');
+        }
+
+        async function submitJoinChallenge(e) {
+            e.preventDefault();
+            const challengeId = document.getElementById('join-challenge-id').value;
+            const employeeId = document.getElementById('join-challenge-employee').value;
+
+            try {
+                const res = await fetch(`${API_URL}/challenges/${challengeId}/join`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ employeeId: parseInt(employeeId) })
+                });
+                
+                if (!res.ok) {
+                    const data = await res.json();
+                    alert(data.error || 'Failed to join challenge');
+                    return;
+                }
+
+                alert('Employee joined challenge successfully!');
+                closeJoinChallengeModal();
+                loadChallenges();
+                loadParticipation();
+            } catch (err) {
+                alert('Connection error joining challenge.');
+            }
+        }
+
+        // 2. Challenge Participations API Loaders
+        async function loadParticipation() {
+            try {
+                const res = await fetch(`${API_URL}/challenges/participation?employeeId=${currentUserId}`);
+                const data = await res.json();
+                
+                const grid = document.getElementById('participation-grid');
+                if (data.length === 0) {
+                    grid.innerHTML = `<div class="col-span-2 text-center text-textSecondary text-xs py-10">You have not joined any challenges yet. Go to the Challenges tab to join!</div>`;
+                    return;
+                }
+
+                grid.innerHTML = data.map(p => {
+                    let statusClass = 'bg-esgOrange/10 text-esgOrange border-esgOrange/20';
+                    if (p.status === 'Approved') statusClass = 'bg-esgGreen/10 text-esgGreen border-esgGreen/20';
+                    else if (p.status === 'Rejected') statusClass = 'bg-red-500/10 text-red-400 border-red-500/20';
+
+                    let actionHtml = '';
+                    if (p.status === 'Pending') {
+                        actionHtml = `
+                            <button onclick="openSubmitProofModal(${p.id}, ${p.evidence_required})" class="px-3 py-1 bg-esgOrange hover:bg-esgOrange/90 text-bgMain font-bold text-[10px] rounded transition-all mt-3">
+                                Submit Progress / Proof
+                            </button>
+                        `;
+                    } else if (p.status === 'Under Review') {
+                        // Admin approval bypass simulation
+                        actionHtml = `
+                            <div class="flex items-center gap-2 mt-3">
+                                <span class="text-[10px] text-textSecondary italic">Awaiting verification</span>
+                                <button onclick="adminApproveParticipation(${p.id})" class="px-2 py-0.5 bg-esgGreen/20 text-esgGreen hover:bg-esgGreen/30 text-[9px] font-bold rounded border border-esgGreen/30">
+                                    Simulate Approval
+                                </button>
+                            </div>
+                        `;
+                    }
+
+                    return `
+                        <div class="bg-bgCard border border-borderDark rounded-xl p-6 flex flex-col gap-4">
+                            <div class="flex justify-between items-start">
+                                <div>
+                                    <h4 class="font-bold text-textPrimary">${p.title}</h4>
+                                    <span class="text-xs text-textSecondary block mt-0.5">Difficulty: ${p.difficulty} | Rewards: ${p.xp} XP</span>
+                                </div>
+                                <span class="px-2 py-0.5 rounded text-[10px] font-bold border ${statusClass}">${p.status}</span>
+                            </div>
+                            <div class="space-y-2 mt-2">
+                                <div class="flex justify-between text-xs font-semibold">
+                                    <span class="text-textSecondary">Progress</span>
+                                    <span class="text-esgOrange font-mono">${p.progress}%</span>
+                                </div>
+                                <div class="w-full bg-bgProgress h-2 rounded-full overflow-hidden">
+                                    <div class="bg-esgOrange h-full" style="width: ${p.progress}%"></div>
+                                </div>
+                                ${actionHtml}
+                            </div>
+                        </div>
+                    `;
+                }).join('');
+
+            } catch (err) {
+                console.error(err);
+            }
+        }
+
+        async function submitProof(e) {
+            e.preventDefault();
+            const progress = parseInt(document.getElementById('proof-progress').value);
+            const proof = document.getElementById('proof-file').value;
+
+            try {
+                const res = await fetch(`${API_URL}/challenges/participation/${currentSubmitPartId}/submit-proof`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ progress, proof })
+                });
+                if (!res.ok) {
+                    const data = await res.json();
+                    alert(data.error || 'Failed to submit proof');
+                    return;
+                }
+
+                alert('Progress/proof submitted successfully!');
+                closeSubmitProofModal();
+                loadParticipation();
+                loadChallenges();
+            } catch (err) {
+                alert('Connection error submitting progress.');
+            }
+        }
+
+        async function adminApproveParticipation(id) {
+            try {
+                const res = await fetch(`${API_URL}/challenges/participation/${id}/approve`, { method: 'POST' });
+                const data = await res.json();
+                
+                alert(`${data.message}\n${data.badgeMessage || ''}`);
+                loadParticipation();
+                loadChallenges();
+                loadBadges();
+                loadLeaderboard();
+                updatePointsBalance();
+                loadNotifications();
+            } catch (err) {
+                alert('Approve simulator failed.');
+            }
+        }
+
+        // 3. Badges API Loaders
+        async function loadBadges() {
+            try {
+                const res = await fetch(`${API_URL}/badges?employeeId=${currentUserId}`);
+                const data = await res.json();
+
+                const grid = document.getElementById('badges-grid');
+                grid.innerHTML = data.map(b => {
+                    const statusClass = b.unlocked ? 'border-esgOrange/40' : 'opacity-40 grayscale border-borderDark/40';
+                    const iconColor = b.unlocked ? 'text-esgOrange bg-esgOrange/10' : 'text-textSecondary bg-bgProgress';
+                    
+                    return `
+                        <div class="bg-bgCard border rounded-xl p-5 flex flex-col items-center text-center gap-3 transition-all ${statusClass}">
+                            <div class="w-16 h-16 rounded-full flex items-center justify-center ${iconColor}">
+                                <span class="material-symbols-outlined text-4xl">${b.icon}</span>
+                            </div>
+                            <h4 class="font-bold text-sm">${b.name}</h4>
+                            <span class="text-[10px] text-textSecondary">${b.description}</span>
+                            <span class="px-1.5 py-0.5 rounded text-[8px] font-bold bg-bgProgress text-textSecondary border border-borderDark/40 uppercase tracking-wide">
+                                ${b.unlocked ? 'Unlocked' : 'Locked'}
+                            </span>
+                        </div>
+                    `;
+                }).join('');
+
+            } catch (err) {
+                console.error(err);
+            }
+        }
+
+        // 4. Rewards API Loaders
+        async function loadRewards() {
+            try {
+                const res = await fetch(`${API_URL}/rewards`);
+                const data = await res.json();
+
+                const grid = document.getElementById('rewards-grid');
+                grid.innerHTML = data.map(r => {
+                    const isOutOfStock = r.stock <= 0;
+                    const cardClass = isOutOfStock ? 'opacity-50' : '';
+                    
+                    let buttonHtml = `<button onclick="redeemReward(${r.id})" class="w-full mt-4 py-2 bg-esgGreen hover:bg-esgGreen/90 text-bgMain font-bold text-xs rounded transition-all">Redeem</button>`;
+                    if (isOutOfStock) {
+                        buttonHtml = `<button disabled class="w-full mt-4 py-2 bg-borderDark text-textSecondary font-bold text-xs rounded cursor-not-allowed">Out of Stock</button>`;
+                    }
+
+                    let icon = 'redeem';
+                    if (r.name.toLowerCase().includes('cup') || r.name.toLowerCase().includes('mug')) icon = 'local_cafe';
+                    else if (r.name.toLowerCase().includes('tree') || r.name.toLowerCase().includes('plant')) icon = 'forest';
+                    else if (r.name.toLowerCase().includes('scooter') || r.name.toLowerCase().includes('rental')) icon = 'electric_scooter';
+
+                    return `
+                        <div class="bg-bgCard border border-borderDark rounded-xl p-5 flex flex-col justify-between h-48 transition-all ${cardClass}">
+                            <div>
+                                <div class="flex justify-between items-start">
+                                    <span class="material-symbols-outlined text-esgGreen text-2xl">${icon}</span>
+                                    <span class="text-xs font-bold text-textPrimary font-mono">${r.points_required} pts</span>
+                                </div>
+                                <h4 class="font-bold text-sm mt-3">${r.name}</h4>
+                                <p class="text-xs text-textSecondary mt-1">${r.description}</p>
+                                <div class="text-[9px] font-mono text-textSecondary mt-2">Available Stock: ${r.stock} items</div>
+                            </div>
+                            ${buttonHtml}
+                        </div>
+                    `;
+                }).join('');
+
+            } catch (err) {
+                console.error(err);
+            }
+        }
+
+        async function redeemReward(rewardId) {
+            try {
+                const res = await fetch(`${API_URL}/rewards/${rewardId}/redeem`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ employeeId: currentUserId })
+                });
+
+                const data = await res.json();
+                if (!res.ok) {
+                    alert(data.error || 'Failed to redeem reward');
+                    return;
+                }
+
+                alert(data.message);
+                updatePointsBalance();
+                loadRewards();
+                loadNotifications();
+            } catch (err) {
+                alert('Redeem request connection error.');
+            }
+        }
+
+        // 5. Leaderboard API Loaders
+        async function loadLeaderboard() {
+            try {
+                const res = await fetch(`${API_URL}/leaderboard`);
+                const data = await res.json();
+
+                // Render employee table
+                const empTbody = document.getElementById('leaderboard-employees-tbody');
+                empTbody.innerHTML = data.employees.map((e, index) => {
+                    const isCurrentUser = e.id === currentUserId;
+                    const rowClass = isCurrentUser ? 'bg-esgOrange/5 font-semibold' : 'hover:bg-bgSidebar/50';
+                    const initials = e.name.split(' ').map(n => n[0]).join('');
+                    
+                    return `
+                        <tr class="transition-colors ${rowClass}">
+                            <td class="py-4 px-6 font-mono text-esgOrange font-bold text-sm">#${index + 1}</td>
+                            <td class="py-4 px-6 flex items-center gap-2">
+                                <div class="w-7 h-7 rounded-full bg-esgOrange/15 text-esgOrange flex items-center justify-center text-xs font-bold">${initials}</div>
+                                <span>${e.name} ${isCurrentUser ? '(You)' : ''}</span>
+                            </td>
+                            <td class="py-4 px-6 text-textSecondary text-xs">${e.department_name || 'Global'}</td>
+                            <td class="py-4 px-6 text-right font-mono font-bold text-esgOrange">${e.xp.toLocaleString()}</td>
+                        </tr>
+                    `;
+                }).join('');
+
+                // Render department table
+                const deptTbody = document.getElementById('leaderboard-departments-tbody');
+                deptTbody.innerHTML = data.departments.map((d, index) => {
+                    return `
+                        <tr class="hover:bg-bgSidebar/50 transition-colors">
+                            <td class="py-4 px-6 font-mono text-textSecondary font-bold text-sm">#${index + 1}</td>
+                            <td class="py-4 px-6 font-semibold">${d.department_name}</td>
+                            <td class="py-4 px-6 text-right font-mono font-bold text-textPrimary">${parseInt(d.total_xp || 0).toLocaleString()} XP</td>
+                        </tr>
+                    `;
+                }).join('');
+
+            } catch (err) {
+                console.error(err);
+            }
+        }
+
+        // Notifications API Loaders
+        async function loadNotifications() {
+            try {
+                const res = await fetch(`${API_URL}/notifications`);
+                const notifs = await res.json();
+                
+                const badge = document.getElementById('notif-badge');
+                const unread = notifs.filter(n => !n.is_read).length;
+                if (unread > 0) {
+                    badge.classList.remove('hidden');
+                } else {
+                    badge.classList.add('hidden');
+                }
+
+                const container = document.getElementById('notif-list');
+                if (notifs.length === 0) {
+                    container.innerHTML = `<div class="px-4 py-6 text-center text-textSecondary text-xs">No new notifications.</div>`;
+                    return;
+                }
+
+                container.innerHTML = notifs.map(n => {
+                    const dateStr = new Date(n.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+                    return `
+                        <div class="px-4 py-3 hover:bg-bgSidebar/40 transition-colors text-xs ${!n.is_read ? 'bg-esgOrange/5' : ''}">
+                            <div class="flex justify-between items-start">
+                                <span class="font-bold text-[9px] text-esgOrange uppercase">${n.type.replace(/_/g, ' ')}</span>
+                                <span class="text-[9px] text-textSecondary font-mono">${dateStr}</span>
+                            </div>
+                            <p class="text-textSecondary mt-1 line-clamp-2">${n.message}</p>
+                        </div>
+                    `;
+                }).join('');
+
+            } catch (err) {
+                console.error('Error loading notifications:', err);
+            }
+        }
+
+        async function clearNotifications() {
+            try {
+                await fetch(`${API_URL}/notifications/clear`, { method: 'POST' });
+                loadNotifications();
+            } catch (err) {
+                console.error(err);
+            }
+        }
+
+        // On Page Load
+        window.addEventListener('DOMContentLoaded', () => {
+            initSession();
+            loadChallenges();
+            loadParticipation();
+            loadBadges();
+            loadRewards();
+            loadLeaderboard();
+            loadNotifications();
+
+            // Poll for notifications
+            setInterval(() => {
+                loadNotifications();
+            }, 10000);
+        });
+
+        // Close dropdown when clicking outside
+        window.addEventListener('click', (e) => {
+            const dropdown = document.getElementById('notif-dropdown');
+            const bell = document.getElementById('notif-bell-btn');
+            if (dropdown && bell && !dropdown.contains(e.target) && !bell.contains(e.target)) {
+                dropdown.classList.add('hidden');
+            }
+        });
+
+        // Original theme and horizontal subtab switching logic
+        function applyTheme() {
+            const theme = localStorage.getItem('theme') || 'dark';
+            const html = document.documentElement;
+            const themeIcon = document.getElementById('theme-icon');
+            
+            if (theme === 'dark') {
+                html.classList.add('dark');
+                if (themeIcon) themeIcon.textContent = 'light_mode';
+            } else {
+                html.classList.remove('dark');
+                if (themeIcon) themeIcon.textContent = 'dark_mode';
+            }
+        }
+
+        function toggleTheme() {
+            const currentTheme = localStorage.getItem('theme') || 'dark';
+            const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+            localStorage.setItem('theme', newTheme);
+            applyTheme();
+        }
+
+        applyTheme();
+
+        function switchSubTab(tabId) {
+            document.querySelectorAll('.subtab-content').forEach(content => {
+                content.classList.add('hidden');
+            });
+            const targetContent = document.getElementById('content-' + tabId);
+            if (targetContent) {
+                targetContent.classList.remove('hidden');
+            }
+
+            document.querySelectorAll('.subtab-btn').forEach(btn => {
+                btn.classList.remove('bg-esgOrange', 'text-bgMain', 'font-semibold');
+                btn.classList.add('text-textSecondary', 'font-medium');
+            });
+            const targetBtn = document.getElementById('tab-' + tabId);
+            if (targetBtn) {
+                targetBtn.classList.remove('text-textSecondary', 'font-medium');
+                targetBtn.classList.add('bg-esgOrange', 'text-bgMain', 'font-semibold');
+            }
+
+            document.querySelectorAll('.sidebar-subtab').forEach(link => {
+                link.classList.remove('bg-esgGreen/10', 'border-l-4', 'border-esgGreen', 'text-textPrimary', 'font-semibold');
+                link.classList.add('text-textSecondary');
+            });
+            const targetSidebarLink = document.getElementById(tabId + '-link');
+            if (targetSidebarLink) {
+                targetSidebarLink.classList.remove('text-textSecondary');
+                targetSidebarLink.classList.add('bg-esgGreen/10', 'border-l-4', 'border-esgGreen', 'text-textPrimary', 'font-semibold');
+            }
+        }
+
         // On Page Load, check hash in URL to default to specific subtab
         window.addEventListener('DOMContentLoaded', () => {
             const hash = window.location.hash.substring(1);
@@ -518,7 +1037,6 @@
             }
         });
 
-        // Listen for hash changes
         window.addEventListener('hashchange', () => {
             const hash = window.location.hash.substring(1);
             if (hash && ['challenges', 'participation', 'badges', 'rewards', 'leaderboard'].includes(hash)) {
@@ -526,5 +1044,94 @@
             }
         });
     </script>
+
+    <!-- Modals Layout Elements -->
+    <!-- Create Challenge Modal -->
+    <div id="challenge-modal" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+        <div class="bg-bgCard border border-borderDark w-full max-w-lg rounded-2xl shadow-2xl p-6 relative">
+            <button onclick="closeChallengeModal()" class="absolute top-4 right-4 text-textSecondary hover:text-textPrimary flex items-center"><span class="material-symbols-outlined">close</span></button>
+            <h3 class="text-md font-bold text-textPrimary mb-4">Create Sustainability Challenge</h3>
+            <form id="challenge-form" onsubmit="submitChallenge(event)" class="space-y-4 text-xs">
+                <div class="flex flex-col gap-1.5 text-left">
+                    <label class="font-semibold text-textSecondary">Challenge Title</label>
+                    <input type="text" id="challenge-title" required class="bg-bgMain border border-borderDark rounded text-xs text-textPrimary focus:outline-none p-2" placeholder="e.g. Plastic Free July" />
+                </div>
+                <div class="flex flex-col gap-1.5 text-left">
+                    <label class="font-semibold text-textSecondary">Description</label>
+                    <textarea id="challenge-desc" required rows="3" class="bg-bgMain border border-borderDark rounded text-xs text-textPrimary focus:outline-none p-2" placeholder="Describe instructions and rules..."></textarea>
+                </div>
+                <div class="grid grid-cols-2 gap-4 text-left">
+                    <div class="flex flex-col gap-1.5">
+                        <label class="font-semibold text-textSecondary">XP Reward</label>
+                        <input type="number" id="challenge-xp" required min="10" class="bg-bgMain border border-borderDark rounded text-xs text-textPrimary focus:outline-none p-2" placeholder="XP e.g. 150" />
+                    </div>
+                    <div class="flex flex-col gap-1.5">
+                        <label class="font-semibold text-textSecondary">Difficulty</label>
+                        <select id="challenge-diff" required class="bg-bgMain border border-borderDark rounded text-xs text-textPrimary focus:outline-none p-2">
+                            <option value="Easy">Easy</option>
+                            <option value="Medium">Medium</option>
+                            <option value="Hard">Hard</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="grid grid-cols-2 gap-4 text-left">
+                    <div class="flex flex-col gap-1.5">
+                        <label class="font-semibold text-textSecondary">Deadline</label>
+                        <input type="date" id="challenge-deadline" required class="bg-bgMain border border-borderDark rounded text-xs text-textPrimary focus:outline-none p-2" />
+                    </div>
+                    <div class="flex flex-col gap-1.5">
+                        <label class="font-semibold text-textSecondary">Initial Status</label>
+                        <select id="challenge-status" required class="bg-bgMain border border-borderDark rounded text-xs text-textPrimary focus:outline-none p-2">
+                            <option value="Draft">Draft</option>
+                            <option value="Active">Active</option>
+                            <option value="Completed">Completed</option>
+                            <option value="Archived">Archived</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="flex items-center gap-2 text-left">
+                    <input type="checkbox" id="challenge-evid" class="rounded border-borderDark text-esgOrange bg-bgMain focus:ring-esgOrange" />
+                    <label for="challenge-evid" class="font-semibold text-textSecondary">Require file proof/evidence upload on completion</label>
+                </div>
+                <button type="submit" class="w-full py-2.5 mt-2 bg-esgOrange text-bgMain font-bold text-xs rounded hover:bg-esgOrange/90 transition-all shadow-md">Create Challenge</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Submit Proof / Progress Modal -->
+    <div id="proof-modal" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+        <div class="bg-bgCard border border-borderDark w-full max-w-md rounded-2xl shadow-2xl p-6 relative">
+            <button onclick="closeSubmitProofModal()" class="absolute top-4 right-4 text-textSecondary hover:text-textPrimary flex items-center"><span class="material-symbols-outlined">close</span></button>
+            <h3 class="text-md font-bold text-textPrimary mb-4">Log Progress &amp; Submit Proof</h3>
+            <form id="proof-form" onsubmit="submitProof(event)" class="space-y-4 text-xs">
+                <div class="flex flex-col gap-1.5 text-left">
+                    <label class="font-semibold text-textSecondary">Challenge Completion Progress (%)</label>
+                    <input type="number" id="proof-progress" required min="10" max="100" class="bg-bgMain border border-borderDark rounded text-xs text-textPrimary focus:outline-none p-2" placeholder="e.g. 100" />
+                </div>
+                <div class="flex flex-col gap-1.5 text-left">
+                    <label class="font-semibold text-textSecondary">Proof Description / Evidence Notes <span id="proof-label-req" class="text-red-500 font-bold hidden">*</span></label>
+                    <textarea id="proof-file" rows="3" class="bg-bgMain border border-borderDark rounded text-xs text-textPrimary focus:outline-none p-2" placeholder="Upload note details or file link details..."></textarea>
+                </div>
+                <button type="submit" class="w-full py-2.5 mt-2 bg-esgOrange text-bgMain font-bold text-xs rounded hover:bg-esgOrange/90 transition-all shadow-md">Submit Evidence</button>
+            </form>
+        </div>
+    </div>
+    <!-- Select Employee to Join Challenge Modal -->
+    <div id="join-challenge-modal" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+        <div class="bg-bgCard border border-borderDark w-full max-w-md rounded-2xl shadow-2xl p-6 relative">
+            <button onclick="closeJoinChallengeModal()" class="absolute top-4 right-4 text-textSecondary hover:text-textPrimary flex items-center"><span class="material-symbols-outlined">close</span></button>
+            <h3 class="text-md font-bold text-textPrimary mb-4 font-semibold uppercase tracking-wider">Join Sustainability Challenge</h3>
+            <form id="join-challenge-form" onsubmit="submitJoinChallenge(event)" class="space-y-4 text-xs">
+                <input type="hidden" id="join-challenge-id" />
+                <div class="flex flex-col gap-1.5 text-left">
+                    <label class="font-semibold text-textSecondary">Select Employee</label>
+                    <select id="join-challenge-employee" required class="bg-bgMain border border-borderDark rounded text-xs text-textPrimary focus:outline-none p-2 focus:border-esgOrange focus:ring-1 focus:ring-esgOrange">
+                        <!-- Populated dynamically -->
+                    </select>
+                </div>
+                <button type="submit" class="w-full py-2.5 mt-2 bg-esgOrange text-bgMain font-bold text-xs rounded hover:bg-esgOrange/90 transition-all shadow-md">Join Challenge</button>
+            </form>
+        </div>
+    </div>
 </body>
 </html>
