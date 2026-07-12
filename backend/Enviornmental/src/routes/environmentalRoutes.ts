@@ -11,6 +11,9 @@ import {
   createProductEsgProfile,
   listProductEsgProfiles,
   loginUser,
+  listDepartments,
+  createDepartment,
+  deleteDepartment,
 } from '../controllers/environmentalController';
 
 const router = Router();
@@ -41,5 +44,10 @@ router.get('/products', listProductEsgProfiles);
 
 // Authentication
 router.post('/auth/login', loginUser);
+
+// Departments Management
+router.get('/departments', listDepartments);
+router.post('/departments', createDepartment);
+router.delete('/departments/:id', deleteDepartment);
 
 export default router;

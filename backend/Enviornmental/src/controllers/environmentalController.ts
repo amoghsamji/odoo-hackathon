@@ -480,4 +480,50 @@ export async function loginUser(req: Request, res: Response) {
   }
 }
 
+// ==========================================
+// 9. DEPARTMENTS CONTROLLER
+// ==========================================
+
+export async function listDepartments(req: Request, res: Response) {
+  try {
+    const depts = await Department.findAll({
+      order: [['name', 'ASC']]
+    });
+    return res.status(200).json(depts);
+  } catch (error: any) {
+    return res.status(500).json({ error: error.message || 'Failed to retrieve departments.' });
+  }
+}
+
+export async function createDepartment(req: Request, res: Response) {
+  try {
+    const { name, code, head, parentDepartmentId, employeeCount, status } = req.body;
+    if (!name || !code) {
+      return res.status(400).json({ error: 'Name and Code are required.' });
+    }
+    const dept = await Department.create({
+      name,
+      code,
+      head: head || '',
+      parentDepartmentId: parentDepartmentId ? parseInt(parentDepartmentId) : null,
+      employeeCount: employeeCount ? parseInt(employeeCount) : 0,
+      status: status || 'Active'
+    });
+    return res.status(201).json(dept);
+  } catch (error: any) {
+    return res.status(500).json({ error: error.message || 'Failed to create department.' });
+  }
+}
+
+export async function deleteDepartment(req: Request, res: Response) {
+  try {
+    const { id } = req.params;
+    const deleted = await Department.destroy({ where: { id: parseInt(id) } });
+    if (!deleted) return res.status(404).json({ error: 'Department not found' });
+    return res.status(200).json({ message: 'Department deleted successfully' });
+  } catch (error: any) {
+    return res.status(500).json({ error: error.message || 'Failed to delete department.' });
+  }
+}
+
 

@@ -574,7 +574,7 @@
                                     </div>
                                 </div>
                                 <div class="text-[9px] text-textSecondary/80 flex items-center justify-between border-t border-borderDark/30 pt-2">
-                                    <span>Deadline: ${new Date(goal.deadline).toLocaleDateString()}</span>
+                                    <span>Deadline: ${new Date(goal.deadline).toLocaleDateString('en-CA')}</span>
                                     <span class="font-bold uppercase text-[8px] ${goal.completionPercentage > 100 ? 'text-red-400' : 'text-esgGreen'}">
                                         ${goal.completionPercentage > 100 ? 'Exceeded Limit' : 'Within Target'}
                                     </span>

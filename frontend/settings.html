@@ -228,9 +228,7 @@
                 <!-- Toolbar Actions -->
                 <div class="flex flex-wrap justify-between items-center gap-4">
                     <div class="flex items-center gap-3">
-                        <button class="px-4 py-2 bg-esgOrange hover:bg-esgOrange/90 text-bgMain font-bold text-xs rounded transition-all flex items-center gap-1"><span class="material-symbols-outlined text-sm font-bold">add</span><span>New Department</span></button>
-                        <button class="px-4 py-2 bg-bgCard border border-borderDark text-textPrimary hover:bg-borderDark text-xs font-semibold rounded transition-all">Edit</button>
-                        <button class="px-4 py-2 bg-bgCard border border-borderDark text-textPrimary hover:bg-borderDark text-xs font-semibold rounded transition-all text-red-400 border-red-500/20 hover:bg-red-500/10">Delete</button>
+                        <button onclick="openDeptModal()" class="px-4 py-2 bg-esgOrange hover:bg-esgOrange/90 text-bgMain font-bold text-xs rounded transition-all flex items-center gap-1"><span class="material-symbols-outlined text-sm font-bold">add</span><span>New Department</span></button>
                     </div>
                 </div>
 
@@ -245,33 +243,11 @@
                                 <th class="py-3 px-6 text-xs font-bold text-textSecondary uppercase">Parent Dept</th>
                                 <th class="py-3 px-6 text-xs font-bold text-textSecondary uppercase text-right font-semibold">Employees</th>
                                 <th class="py-3 px-6 text-xs font-bold text-textSecondary uppercase text-center font-semibold">Status</th>
+                                <th class="py-3 px-6 text-xs font-bold text-textSecondary uppercase text-center font-semibold">Action</th>
                             </tr>
                         </thead>
-                        <tbody class="divide-y divide-borderDark/40 text-sm">
-                            <tr class="hover:bg-bgSidebar/50 transition-colors">
-                                <td class="py-4 px-6 font-semibold">Manufacturing</td>
-                                <td class="py-4 px-6 font-mono text-textSecondary text-xs">MFG</td>
-                                <td class="py-4 px-6 text-textSecondary">Marcus Reed</td>
-                                <td class="py-4 px-6 text-textSecondary">Operations</td>
-                                <td class="py-4 px-6 text-right font-mono font-semibold">120</td>
-                                <td class="py-4 px-6 text-center"><span class="px-2 py-0.5 rounded text-[10px] font-bold bg-esgGreen/10 text-esgGreen border border-esgGreen/20">Active</span></td>
-                            </tr>
-                            <tr class="hover:bg-bgSidebar/50 transition-colors">
-                                <td class="py-4 px-6 font-semibold">Logistics</td>
-                                <td class="py-4 px-6 font-mono text-textSecondary text-xs">LOG</td>
-                                <td class="py-4 px-6 text-textSecondary">Marcus Reed</td>
-                                <td class="py-4 px-6 text-textSecondary">Operations</td>
-                                <td class="py-4 px-6 text-right font-mono font-semibold">45</td>
-                                <td class="py-4 px-6 text-center"><span class="px-2 py-0.5 rounded text-[10px] font-bold bg-esgGreen/10 text-esgGreen border border-esgGreen/20">Active</span></td>
-                            </tr>
-                            <tr class="hover:bg-bgSidebar/50 transition-colors">
-                                <td class="py-4 px-6 font-semibold">Corporate</td>
-                                <td class="py-4 px-6 font-mono text-textSecondary text-xs">COR</td>
-                                <td class="py-4 px-6 text-textSecondary">Sarah Jenkins</td>
-                                <td class="py-4 px-6 text-textSecondary">Administration</td>
-                                <td class="py-4 px-6 text-right font-mono font-semibold">15</td>
-                                <td class="py-4 px-6 text-center"><span class="px-2 py-0.5 rounded text-[10px] font-bold bg-esgGreen/10 text-esgGreen border border-esgGreen/20">Active</span></td>
-                            </tr>
+                        <tbody id="departments-tbody" class="divide-y divide-borderDark/40 text-sm">
+                            <!-- Populated dynamically -->
                         </tbody>
                     </table>
                 </div>
@@ -292,19 +268,8 @@
                                 <th class="py-3 px-6 text-xs font-bold text-textSecondary uppercase font-semibold">Description</th>
                             </tr>
                         </thead>
-                        <tbody class="divide-y divide-borderDark/40 text-sm">
-                            <tr class="hover:bg-bgSidebar/50 transition-colors">
-                                <td class="py-4 px-6 font-semibold">Scope 1 Emissions</td>
-                                <td class="py-4 px-6 font-mono text-textSecondary text-xs">S1</td>
-                                <td class="py-4 px-6 text-textSecondary"><span class="px-2 py-0.5 rounded text-[10px] font-bold bg-esgGreen/10 text-esgGreen">Environmental</span></td>
-                                <td class="py-4 px-6 text-textSecondary">Direct emissions from corporate assets</td>
-                            </tr>
-                            <tr class="hover:bg-bgSidebar/50 transition-colors">
-                                <td class="py-4 px-6 font-semibold">Community Engagement</td>
-                                <td class="py-4 px-6 font-mono text-textSecondary text-xs">CE</td>
-                                <td class="py-4 px-6 text-textSecondary"><span class="px-2 py-0.5 rounded text-[10px] font-bold bg-esgBlue/10 text-esgBlue">Social</span></td>
-                                <td class="py-4 px-6 text-textSecondary">Local community volunteer programs</td>
-                            </tr>
+                        <tbody id="categories-tbody" class="divide-y divide-borderDark/40 text-sm">
+                            <!-- Populated dynamically -->
                         </tbody>
                     </table>
                 </div>
@@ -317,21 +282,21 @@
                     
                     <div class="space-y-4 max-w-lg">
                         <label class="flex items-center gap-3 cursor-pointer p-2 hover:bg-bgSidebar rounded transition-all">
-                            <input type="checkbox" checked class="w-4 h-4 rounded text-esgOrange bg-bgMain border-borderDark focus:ring-offset-bgCard focus:ring-esgOrange"/>
+                            <input type="checkbox" id="setting-auto-calculation" onchange="saveSetting('auto_emission_calculation', this.checked)" class="w-4 h-4 rounded text-esgOrange bg-bgMain border-borderDark focus:ring-offset-bgCard focus:ring-esgOrange"/>
                             <div class="flex flex-col">
                                 <span class="text-xs font-semibold text-textPrimary">Enable auto emission calculation</span>
                                 <span class="text-[10px] text-textSecondary mt-0.5">Calculates fuel/electricity logs using EPA multiplier databases automatically.</span>
                             </div>
                         </label>
                         <label class="flex items-center gap-3 cursor-pointer p-2 hover:bg-bgSidebar rounded transition-all">
-                            <input type="checkbox" checked class="w-4 h-4 rounded text-esgOrange bg-bgMain border-borderDark focus:ring-offset-bgCard focus:ring-esgOrange"/>
+                            <input type="checkbox" id="setting-evidence-requirement" onchange="saveSetting('evidence_requirement', this.checked)" class="w-4 h-4 rounded text-esgOrange bg-bgMain border-borderDark focus:ring-offset-bgCard focus:ring-esgOrange"/>
                             <div class="flex flex-col">
                                 <span class="text-xs font-semibold text-textPrimary">Require evidence for all CSR Activities</span>
                                 <span class="text-[10px] text-textSecondary mt-0.5">Employees must upload PDFs or images for points claims.</span>
                             </div>
                         </label>
                         <label class="flex items-center gap-3 cursor-pointer p-2 hover:bg-bgSidebar rounded transition-all">
-                            <input type="checkbox" class="w-4 h-4 rounded text-esgOrange bg-bgMain border-borderDark focus:ring-offset-bgCard focus:ring-esgOrange"/>
+                            <input type="checkbox" id="setting-badge-auto-award" onchange="saveSetting('badge_auto_award', this.checked)" class="w-4 h-4 rounded text-esgOrange bg-bgMain border-borderDark focus:ring-offset-bgCard focus:ring-esgOrange"/>
                             <div class="flex flex-col">
                                 <span class="text-xs font-semibold text-textPrimary">Auto-award badges on challenge completion</span>
                                 <span class="text-[10px] text-textSecondary mt-0.5">Locks/unlocks badges automatically on checking checklist milestones.</span>
@@ -348,21 +313,21 @@
                     
                     <div class="space-y-4 max-w-lg">
                         <label class="flex items-center gap-3 cursor-pointer p-2 hover:bg-bgSidebar rounded transition-all">
-                            <input type="checkbox" checked class="w-4 h-4 rounded text-esgOrange bg-bgMain border-borderDark focus:ring-offset-bgCard focus:ring-esgOrange"/>
+                            <input type="checkbox" id="setting-notif-email-compliance" onchange="saveSetting('notif_email_compliance', this.checked)" class="w-4 h-4 rounded text-esgOrange bg-bgMain border-borderDark focus:ring-offset-bgCard focus:ring-esgOrange"/>
                             <div class="flex flex-col">
                                 <span class="text-xs font-semibold text-textPrimary">Email alerts for new compliance issues</span>
                                 <span class="text-[10px] text-textSecondary mt-0.5">Sends notification digest when high-severity issues are created.</span>
                             </div>
                         </label>
                         <label class="flex items-center gap-3 cursor-pointer p-2 hover:bg-bgSidebar rounded transition-all">
-                            <input type="checkbox" checked class="w-4 h-4 rounded text-esgOrange bg-bgMain border-borderDark focus:ring-offset-bgCard focus:ring-esgOrange"/>
+                            <input type="checkbox" id="setting-notif-report-digests" onchange="saveSetting('notif_report_digests', this.checked)" class="w-4 h-4 rounded text-esgOrange bg-bgMain border-borderDark focus:ring-offset-bgCard focus:ring-esgOrange"/>
                             <div class="flex flex-col">
                                 <span class="text-xs font-semibold text-textPrimary">Daily/weekly report digests</span>
                                 <span class="text-[10px] text-textSecondary mt-0.5">Delivers a summary ESG report via email.</span>
                             </div>
                         </label>
                         <label class="flex items-center gap-3 cursor-pointer p-2 hover:bg-bgSidebar rounded transition-all">
-                            <input type="checkbox" class="w-4 h-4 rounded text-esgOrange bg-bgMain border-borderDark focus:ring-offset-bgCard focus:ring-esgOrange"/>
+                            <input type="checkbox" id="setting-notif-sms-urgent" onchange="saveSetting('notif_sms_urgent', this.checked)" class="w-4 h-4 rounded text-esgOrange bg-bgMain border-borderDark focus:ring-offset-bgCard focus:ring-esgOrange"/>
                             <div class="flex flex-col">
                                 <span class="text-xs font-semibold text-textPrimary">SMS notification for urgent audits</span>
                                 <span class="text-[10px] text-textSecondary mt-0.5">Sends SMS warnings to compliance owners for urgent findings.</span>
@@ -524,6 +489,185 @@
                 switchSubTab(hash);
             }
         });
+
+        const API_URL = 'http://localhost:5000/api';
+
+        // Fetch and load settings from database
+        async function loadSettings() {
+            try {
+                const response = await fetch(`${API_URL}/settings`);
+                if (!response.ok) throw new Error('Failed to load settings');
+                const settings = await response.json();
+
+                // Map keys to checkboxes (default to false if not present)
+                document.getElementById('setting-auto-calculation').checked = !!settings.auto_emission_calculation;
+                document.getElementById('setting-evidence-requirement').checked = !!settings.evidence_requirement;
+                document.getElementById('setting-badge-auto-award').checked = !!settings.badge_auto_award;
+                document.getElementById('setting-notif-email-compliance').checked = !!settings.notif_email_compliance;
+                document.getElementById('setting-notif-report-digests').checked = !!settings.notif_report_digests;
+                document.getElementById('setting-notif-sms-urgent').checked = !!settings.notif_sms_urgent;
+            } catch (e) {
+                console.error(e);
+            }
+        }
+
+        // Save a single setting
+        async function saveSetting(key, value) {
+            try {
+                const response = await fetch(`${API_URL}/settings`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ [key]: value })
+                });
+                if (!response.ok) throw new Error('Failed to save setting');
+            } catch (e) {
+                console.error(e);
+                alert('Failed to save setting.');
+            }
+        }
+
+        // Fetch and list departments
+        async function loadDepartments() {
+            try {
+                const response = await fetch(`${API_URL}/environmental/departments`);
+                if (!response.ok) throw new Error('Failed to load departments');
+                const depts = await response.json();
+                
+                const tbody = document.getElementById('departments-tbody');
+                tbody.innerHTML = depts.map(d => `
+                    <tr class="hover:bg-bgSidebar/50 transition-colors">
+                        <td class="py-4 px-6 font-semibold">${d.name}</td>
+                        <td class="py-4 px-6 font-mono text-textSecondary text-xs">${d.code}</td>
+                        <td class="py-4 px-6 text-textSecondary">${d.head || 'None'}</td>
+                        <td class="py-4 px-6 text-textSecondary">${d.parentDepartmentId || 'None'}</td>
+                        <td class="py-4 px-6 text-right font-mono font-semibold">${d.employeeCount}</td>
+                        <td class="py-4 px-6 text-center">
+                            <span class="px-2 py-0.5 rounded text-[10px] font-bold border ${d.status === 'Active' ? 'bg-esgGreen/10 text-esgGreen border-esgGreen/20' : 'bg-textSecondary/10 text-textSecondary border-borderDark/20'}">${d.status}</span>
+                        </td>
+                        <td class="py-4 px-6 text-center">
+                            <button onclick="deleteDept(${d.id})" class="text-red-400 hover:text-red-600 transition-colors">
+                                <span class="material-symbols-outlined text-[18px]">delete</span>
+                            </button>
+                        </td>
+                    </tr>
+                `).join('');
+            } catch (e) {
+                console.error(e);
+            }
+        }
+
+        // Fetch and list categories
+        async function loadCategories() {
+            try {
+                const response = await fetch(`${API_URL}/categories`);
+                if (!response.ok) throw new Error('Failed to load categories');
+                const categories = await response.json();
+                
+                const tbody = document.getElementById('categories-tbody');
+                tbody.innerHTML = categories.map(c => `
+                    <tr class="hover:bg-bgSidebar/50 transition-colors">
+                        <td class="py-4 px-6 font-semibold">${c.name}</td>
+                        <td class="py-4 px-6 font-mono text-textSecondary text-xs">${c.code}</td>
+                        <td class="py-4 px-6 text-textSecondary">
+                            <span class="px-2 py-0.5 rounded text-[10px] font-bold ${c.type === 'Environmental' ? 'bg-esgGreen/10 text-esgGreen' : 'bg-esgBlue/10 text-esgBlue'}">${c.type}</span>
+                        </td>
+                        <td class="py-4 px-6 text-textSecondary">${c.description}</td>
+                    </tr>
+                `).join('');
+            } catch (e) {
+                console.error(e);
+            }
+        }
+
+        // Modal triggers
+        function openDeptModal() {
+            document.getElementById('dept-modal').classList.remove('hidden');
+        }
+
+        function closeDeptModal() {
+            document.getElementById('dept-modal').classList.add('hidden');
+            document.getElementById('dept-form').reset();
+        }
+
+        async function submitDepartment(event) {
+            event.preventDefault();
+            const name = document.getElementById('dept-name').value;
+            const code = document.getElementById('dept-code').value;
+            const head = document.getElementById('dept-head').value;
+            const employeeCount = document.getElementById('dept-employees').value;
+            const status = document.getElementById('dept-status').value;
+
+            try {
+                const response = await fetch(`${API_URL}/environmental/departments`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ name, code, head, employeeCount, status })
+                });
+                if (!response.ok) throw new Error('Failed to create department');
+                closeDeptModal();
+                loadDepartments();
+            } catch (e) {
+                console.error(e);
+                alert('Failed to create department.');
+            }
+        }
+
+        async function deleteDept(id) {
+            if (!confirm('Are you sure you want to delete this department?')) return;
+            try {
+                const response = await fetch(`${API_URL}/environmental/departments/${id}`, {
+                    method: 'DELETE'
+                });
+                if (!response.ok) throw new Error('Failed to delete department');
+                loadDepartments();
+            } catch (e) {
+                console.error(e);
+                alert('Failed to delete department.');
+            }
+        }
+
+        // Initialize Settings
+        window.addEventListener('DOMContentLoaded', () => {
+            loadSettings();
+            loadDepartments();
+            loadCategories();
+        });
     </script>
+
+    <!-- New Department Modal -->
+    <div id="dept-modal" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+        <div class="bg-bgCard border border-borderDark w-full max-w-md rounded-2xl shadow-2xl p-6 relative animate-in fade-in zoom-in-95 duration-200">
+            <button onclick="closeDeptModal()" class="absolute top-4 right-4 text-textSecondary hover:text-textPrimary flex items-center"><span class="material-symbols-outlined">close</span></button>
+            <h3 class="text-md font-bold text-textPrimary mb-4">Add New Department</h3>
+            <form id="dept-form" onsubmit="submitDepartment(event)" class="space-y-4 text-xs">
+                <div class="flex flex-col gap-1.5 text-left">
+                    <label class="font-semibold text-textSecondary">Department Name</label>
+                    <input type="text" id="dept-name" required class="bg-bgMain border border-borderDark rounded text-xs text-textPrimary focus:outline-none p-2" placeholder="e.g. Research & Development" />
+                </div>
+                <div class="flex flex-col gap-1.5 text-left">
+                    <label class="font-semibold text-textSecondary">Department Code</label>
+                    <input type="text" id="dept-code" required class="bg-bgMain border border-borderDark rounded text-xs text-textPrimary focus:outline-none p-2" placeholder="e.g. RND" />
+                </div>
+                <div class="flex flex-col gap-1.5 text-left">
+                    <label class="font-semibold text-textSecondary">Department Head</label>
+                    <input type="text" id="dept-head" required class="bg-bgMain border border-borderDark rounded text-xs text-textPrimary focus:outline-none p-2" placeholder="e.g. Dr. Aris" />
+                </div>
+                <div class="grid grid-cols-2 gap-4 text-left">
+                    <div class="flex flex-col gap-1.5">
+                        <label class="font-semibold text-textSecondary">Employee Count</label>
+                        <input type="number" id="dept-employees" min="0" required class="bg-bgMain border border-borderDark rounded text-xs text-textPrimary focus:outline-none p-2" placeholder="e.g. 12" />
+                    </div>
+                    <div class="flex flex-col gap-1.5">
+                        <label class="font-semibold text-textSecondary">Status</label>
+                        <select id="dept-status" required class="bg-bgMain border border-borderDark rounded text-xs text-textPrimary focus:outline-none p-2">
+                            <option value="Active">Active</option>
+                            <option value="Inactive">Inactive</option>
+                        </select>
+                    </div>
+                </div>
+                <button type="submit" class="w-full py-2.5 mt-2 bg-esgOrange text-bgMain font-bold text-xs rounded hover:bg-esgOrange/90 transition-all shadow-md">Create Department</button>
+            </form>
+        </div>
+    </div>
 </body>
 </html>
