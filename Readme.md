@@ -358,7 +358,7 @@ Organization Dashboard & Reports
 
 Video Demo:
 ```
-(https://drive.google.com/file/d/18oJ_AgIZTA_UsnmsrU0jOvxO_J9kKaXF/view?usp=sharing)
+https://drive.google.com/file/d/18oJ_AgIZTA_UsnmsrU0jOvxO_J9kKaXF/view?usp=sharing
 ```
 
 Mockup:
